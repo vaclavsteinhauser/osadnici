@@ -11,6 +11,14 @@ public class GameContext:DbContext
         {
             optionsBuilder.UseMySQL(connectionString);
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
 
-        public DbSet<player> players { get; set; }
+            modelBuilder.Entity<Hra>().HasMany(d => d.hraci).WithMany();
+        }
+
+        public DbSet<StavHrace> hraci { get; set; }
+        public DbSet<Hra> hry { get; set; }
+        public DbSet<Mapka> mapky { get; set; }
 }
