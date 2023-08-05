@@ -5,7 +5,7 @@ namespace databaze;
 public class GameContext:DbContext
 {
 
-    private const string connectionString = "server=localhost;port=3306;database=osadnici;user=osadnici;password=osadnici;";
+    private const string connectionString = "server=localhost;port=3306;database=hry;user=osadnici;password=osadnici;";
  
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

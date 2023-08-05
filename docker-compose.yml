@@ -1,0 +1,22 @@
+version: '3'
+ 
+services:
+  mysql-server-osadnici:
+    image: mariadb:10.9
+    container_name: mysql-server-osadnici
+    environment:
+      MYSQL_ROOT_PASSWORD: vaclav
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./docker/provision/mysql/init:/docker-entrypoint-initdb.d
+  mysql-admin-osadnici:
+    image: phpmyadmin/phpmyadmin
+    container_name: mysql-admin-osadnici
+    links:
+      - mysql-server-osadnici:db
+    restart: always
+    ports:
+      - 8080:80
+volumes:
+  dbdata:
