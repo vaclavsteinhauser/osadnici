@@ -9,7 +9,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./docker-init:/docker-entrypoint-initdb.d
+      - ./:/docker-entrypoint-initdb.d
       - dbdata:/var/lib/mysql
   mysql-admin-osadnici:
     image: phpmyadmin/phpmyadmin
