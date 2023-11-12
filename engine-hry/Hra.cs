@@ -1,4 +1,4 @@
-﻿namespace databaze;
+﻿namespace enginehry;
 
 public class Hra
 {

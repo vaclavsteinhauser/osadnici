@@ -1,8 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "databaze", "databaze\databaze.csproj", "{1069D52A-0335-4802-9663-1E3A3684A957}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34221.43
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "engine-hry", "engine-hry\engine-hry.csproj", "{1069D52A-0335-4802-9663-1E3A3684A957}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test-docker", "test-docker\test-docker.csproj", "{01E1804A-18D4-4D9B-8491-3F83137D55BD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "testovaci-spousteci-projekt", "testovaci-spousteci-projekt\testovaci-spousteci-projekt.csproj", "{4E78C814-49E9-48B7-A3FD-768E67F3D954}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,9 +17,15 @@ Global
 		{1069D52A-0335-4802-9663-1E3A3684A957}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1069D52A-0335-4802-9663-1E3A3684A957}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1069D52A-0335-4802-9663-1E3A3684A957}.Release|Any CPU.Build.0 = Release|Any CPU
-		{01E1804A-18D4-4D9B-8491-3F83137D55BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{01E1804A-18D4-4D9B-8491-3F83137D55BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{01E1804A-18D4-4D9B-8491-3F83137D55BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{01E1804A-18D4-4D9B-8491-3F83137D55BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E78C814-49E9-48B7-A3FD-768E67F3D954}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E78C814-49E9-48B7-A3FD-768E67F3D954}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E78C814-49E9-48B7-A3FD-768E67F3D954}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E78C814-49E9-48B7-A3FD-768E67F3D954}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {33C69DD0-3F08-4808-9D64-CA05248C383A}
 	EndGlobalSection
 EndGlobal

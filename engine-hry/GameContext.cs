@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace databaze;
+namespace enginehry;
 
 public class GameContext:DbContext
 {

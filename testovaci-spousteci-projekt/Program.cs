@@ -1,18 +1,15 @@
-﻿// See https://aka.ms/new-console-template for more information
-using databaze;
+﻿
 using Microsoft.EntityFrameworkCore;
+using enginehry;
 
 using (var db = new GameContext())
 {
-    var hra = db.hry.Include("hraci").ToList()
-        ;
-    
-    /*db.Database.EnsureCreated();
-    Hrac v = new Hrac
+    db.Database.EnsureCreated();
+    StavHrace v = new StavHrace
     {
         Name = "Vaclav"
     };
-    Hrac j = new Hrac
+    StavHrace j = new StavHrace
     {
         Name = "Janka"
     };
@@ -22,10 +19,12 @@ using (var db = new GameContext())
     db.hraci.Add(j);
     db.hry.Add(h);
     db.mapky.Add(m);
-    h.hraci = new List<Hrac>();
+    h.hraci = new List<StavHrace>();
     h.mapka = new Mapka();
     h.hraci.Add(v);
     h.hraci.Add(j);
     db.SaveChanges();
- */
+
+    var hra = db.hry.Include("hraci").ToList();
+    Console.WriteLine("");
 }
