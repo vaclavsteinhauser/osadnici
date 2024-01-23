@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  mariadb:
+    image: "mariadb-latest"
+    hostname: "mariadb"
+    restart: always
+    ports: 
+        - 1433:1433
+    environment:
+      - ACCEPT_EULA="Y"
+      - SA_PASSWORD=5c95d87f-8d92-4d63-873b-815b55c4dc16
