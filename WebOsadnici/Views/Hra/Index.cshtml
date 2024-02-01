@@ -4,7 +4,7 @@
         int vyska = Pole.velikost.Height;
         int sirka = Pole.velikost.Width;
         return $@"
-            <svg style='position: absolute; top: {p.pozice.Height * vyska}px; left: {p.pozice.Width * sirka}px;' width='{sirka}px' height='{vyska}px' viewBox='0 0 {sirka} {vyska}' xmlns='http://www.w3.org/2000/svg' alt='{p.surovina.Nazev}'>
+            <svg id='{p.Id}' style='position: absolute; top: {p.pozice.Height * vyska}px; left: {p.pozice.Width * sirka}px;' width='{sirka}px' height='{vyska}px' viewBox='0 0 {sirka} {vyska}' xmlns='http://www.w3.org/2000/svg' alt='{p.surovina.Nazev}'>
                 <polygon points='{sirka / 2},0 {sirka},{vyska / 4} {sirka},{3 * vyska / 4} {sirka / 2},{vyska} 0,{3 * vyska / 4} 0,{vyska / 4}' style='fill:{p.surovina.BackColor};' />
                 <clipPath id='hexMask'>
                     <polygon points='{sirka / 2},0 {sirka},{vyska / 4} {sirka},{3 * vyska / 4} {sirka / 2},{vyska} 0,{3 * vyska / 4} 0,{vyska / 4}' />
@@ -25,4 +25,7 @@
     {
         @Html.Raw(VykresleniPolicka(policko))
     }
+    <p id="text">SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS</p>
 </div>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/click.js"></script>

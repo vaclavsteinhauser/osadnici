@@ -5,7 +5,19 @@ public abstract class Surovina : HerniEntita
     public string Nazev { get; protected set; }
     public string ImageUrl { get; protected set; }
     public string BackColor { get; protected set; }
-
+    public static Dictionary<String, Surovina> SurovinaList { get; private set; }
+    static Surovina()
+    {
+        SurovinaList = new Dictionary<string, Surovina>
+        {
+            { "drevo", new Drevo() },
+            { "cihla", new Cihla() },
+            { "ovce", new Ovce() },
+            { "obili", new Obili() },
+            { "kamen", new Kamen() },
+            { "poust", new Poust() }
+        };
+    }
 }
 public class Drevo : Surovina
 {
@@ -51,6 +63,16 @@ public class Kamen : Surovina
         Nazev = "Kámen";
         ImageUrl = "kamen.svg";
         BackColor = "Gray";
+    }
+
+}
+public class Poust : Surovina
+{
+    public Poust()
+    {
+        Nazev = "Poušť";
+        ImageUrl = "poust.svg";
+        BackColor = "Yellow";
     }
 
 }

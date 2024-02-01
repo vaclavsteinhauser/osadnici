@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebOsadnici.Data;
+using WebOsadnici.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,5 +42,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+app.MapHub<ClickHub>("/clickHub");
 
 app.Run();
