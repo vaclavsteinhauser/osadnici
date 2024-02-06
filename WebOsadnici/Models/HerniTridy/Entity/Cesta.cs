@@ -1,7 +1,22 @@
-﻿using WebOsadnici.Models.HerniTridy;
+﻿using System.Drawing;
+using WebOsadnici.Models.HerniTridy;
 
 public class Cesta : HerniEntita
 {
-    private Hrac? hrac;
-    private List<Rozcesti> konce= new();
+    internal static readonly Size velikost = new Size(2,2);
+    internal readonly int poziceX, poziceY;
+    internal Hrac? hrac;
+    internal readonly Rozcesti[] konce= new Rozcesti[2];
+    //jak natocena ma byt pri vykreslovani cesta
+    //0 - |
+    //1 - /
+    //2 - \
+    internal readonly int natoceni;
+
+    internal Cesta(int poziceX,int poziceY, int natoceni)
+    {
+        this.poziceX = poziceX;
+        this.poziceY = poziceY;
+        this.natoceni = natoceni;
+    }
 }

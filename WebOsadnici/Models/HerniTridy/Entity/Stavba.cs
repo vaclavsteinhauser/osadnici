@@ -1,19 +1,17 @@
 ﻿using WebOsadnici.Models.HerniTridy;
 
-internal abstract class Stavba : HerniEntita
+public class Stavba : HerniEntita
 {
+    internal string Nazev;
     internal int zisk;
-}
-internal class Vesnice : Stavba
-{
-    public Vesnice() {
-        zisk = 1;
-    }
-}
-internal class Mesto : Stavba
-{
-    public Mesto()
+    public Stavba(string Nazev,int zisk)
     {
-        zisk = 2;
+        this.Nazev = Nazev;
+        this.zisk = zisk;
     }
+    internal static readonly List<Stavba> stavbyList = 
+        new() { 
+            new Stavba("Vesnice",1),
+            new Stavba("Město",2)
+        };
 }

@@ -4,9 +4,11 @@ namespace WebOsadnici.Hubs
 {
     public class ClickHub : Hub
     {
-        public async Task SendMessage(string user, string message)
+        public async Task ReceiveSvgId(string connectionId, string hraId, string svgId)
         {
-            await Clients.All.SendAsync("ReceiveMessage", user, message);
+            // Zpracování id nadřazeného svg elementu, například odeslání zpět klientovi
+
+            await Clients.Client(connectionId).SendAsync("SvgIdReceived", svgId+hraId);
         }
     }
 }

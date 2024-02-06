@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebOsadnici.Data;
 
@@ -11,16 +10,49 @@ using WebOsadnici.Data;
 namespace WebOsadnici.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231218194435_InitialCreate")]
-    partial class InitialCreate
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            modelBuilder.Entity("Cesta", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("MapkaId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("RozcestiId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("hracId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("natoceni")
+                        .HasColumnType("int");
+
+                    b.Property<int>("poziceX")
+                        .HasColumnType("int");
+
+                    b.Property<int>("poziceY")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MapkaId");
+
+                    b.HasIndex("RozcestiId");
+
+                    b.HasIndex("hracId");
+
+                    b.ToTable("Cesty", (string)null);
+                });
 
             modelBuilder.Entity("Hra", b =>
                 {
@@ -28,9 +60,14 @@ namespace WebOsadnici.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid?>("mapkaId1")
+                        .HasColumnType("char(36)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("hry");
+                    b.HasIndex("mapkaId1");
+
+                    b.ToTable("Hry", (string)null);
                 });
 
             modelBuilder.Entity("HraHrac", b =>
@@ -112,7 +149,7 @@ namespace WebOsadnici.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("Hraci", (string)null);
                 });
 
             modelBuilder.Entity("Mapka", b =>
@@ -121,9 +158,14 @@ namespace WebOsadnici.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid>("hraId")
+                        .HasColumnType("char(36)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("mapky");
+                    b.HasIndex("hraId");
+
+                    b.ToTable("Mapky", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -258,6 +300,156 @@ namespace WebOsadnici.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Pole", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("MapkaId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<bool>("blokovane")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("cislo")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("hraId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("poziceX")
+                        .HasColumnType("int");
+
+                    b.Property<int>("poziceY")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("surovinaId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MapkaId");
+
+                    b.HasIndex("hraId");
+
+                    b.HasIndex("surovinaId");
+
+                    b.ToTable("Policka", (string)null);
+                });
+
+            modelBuilder.Entity("Rozcesti", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("CestaId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("MapkaId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("PoleId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<bool>("blokovane")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("hracId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("poziceX")
+                        .HasColumnType("int");
+
+                    b.Property<int>("poziceY")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("stavbaId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CestaId");
+
+                    b.HasIndex("MapkaId");
+
+                    b.HasIndex("PoleId");
+
+                    b.HasIndex("hracId");
+
+                    b.HasIndex("stavbaId");
+
+                    b.ToTable("Rozcesti", (string)null);
+                });
+
+            modelBuilder.Entity("Stavba", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Nazev")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("zisk")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Stavby", (string)null);
+                });
+
+            modelBuilder.Entity("Surovina", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("BackColor")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Nazev")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Suroviny", (string)null);
+                });
+
+            modelBuilder.Entity("Cesta", b =>
+                {
+                    b.HasOne("Mapka", null)
+                        .WithMany("cesty")
+                        .HasForeignKey("MapkaId");
+
+                    b.HasOne("Rozcesti", null)
+                        .WithMany("cesty")
+                        .HasForeignKey("RozcestiId");
+
+                    b.HasOne("Hrac", "hrac")
+                        .WithMany()
+                        .HasForeignKey("hracId");
+
+                    b.Navigation("hrac");
+                });
+
+            modelBuilder.Entity("Hra", b =>
+                {
+                    b.HasOne("Mapka", "mapka")
+                        .WithMany()
+                        .HasForeignKey("mapkaId1");
+
+                    b.Navigation("mapka");
+                });
+
             modelBuilder.Entity("HraHrac", b =>
                 {
                     b.HasOne("Hra", null)
@@ -271,6 +463,17 @@ namespace WebOsadnici.Migrations
                         .HasForeignKey("hraciId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Mapka", b =>
+                {
+                    b.HasOne("Hra", "hra")
+                        .WithMany()
+                        .HasForeignKey("hraId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("hra");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -322,6 +525,76 @@ namespace WebOsadnici.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Pole", b =>
+                {
+                    b.HasOne("Mapka", null)
+                        .WithMany("policka")
+                        .HasForeignKey("MapkaId");
+
+                    b.HasOne("Hra", "hra")
+                        .WithMany()
+                        .HasForeignKey("hraId");
+
+                    b.HasOne("Surovina", "surovina")
+                        .WithMany()
+                        .HasForeignKey("surovinaId");
+
+                    b.Navigation("hra");
+
+                    b.Navigation("surovina");
+                });
+
+            modelBuilder.Entity("Rozcesti", b =>
+                {
+                    b.HasOne("Cesta", null)
+                        .WithMany("konce")
+                        .HasForeignKey("CestaId");
+
+                    b.HasOne("Mapka", null)
+                        .WithMany("rozcesti")
+                        .HasForeignKey("MapkaId");
+
+                    b.HasOne("Pole", null)
+                        .WithMany("rozcesti")
+                        .HasForeignKey("PoleId");
+
+                    b.HasOne("Hrac", "hrac")
+                        .WithMany()
+                        .HasForeignKey("hracId");
+
+                    b.HasOne("Stavba", "stavba")
+                        .WithMany()
+                        .HasForeignKey("stavbaId");
+
+                    b.Navigation("hrac");
+
+                    b.Navigation("stavba");
+                });
+
+            modelBuilder.Entity("Cesta", b =>
+                {
+                    b.Navigation("konce");
+                });
+
+            modelBuilder.Entity("Mapka", b =>
+                {
+                    b.Navigation("cesty");
+
+                    b.Navigation("policka");
+
+                    b.Navigation("rozcesti");
+                });
+
+            modelBuilder.Entity("Pole", b =>
+                {
+                    b.Navigation("rozcesti");
+                });
+
+            modelBuilder.Entity("Rozcesti", b =>
+                {
+                    b.Navigation("cesty");
                 });
 #pragma warning restore 612, 618
         }

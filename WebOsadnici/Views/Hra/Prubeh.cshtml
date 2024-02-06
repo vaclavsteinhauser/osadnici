@@ -1,0 +1,91 @@
+﻿@functions {
+    public string VykresleniPolicka(Pole p)
+    {
+        int odsazeniX = (p.poziceX - (Pole.velikost.Width / 2)) * Mapka.rozmeryMrizky.Width;
+        int odsazeniY = (p.poziceY - (Pole.velikost.Height / 2)) * Mapka.rozmeryMrizky.Height;
+        int vyska = Pole.velikost.Height * Mapka.rozmeryMrizky.Height;
+        int sirka = Pole.velikost.Width * Mapka.rozmeryMrizky.Width;
+        string cislo=(p.cislo!=0) ? $@"<circle cx='{sirka / 2}' cy='{vyska / 2}' r='{Math.Min(sirka, vyska) / 8}' fill='white' stroke='black' stroke-width='2' style='pointer-events: none;' />
+                <text x='{sirka / 2}' y='{vyska / 2}' text-anchor='middle' alignment-baseline='middle' fill='black' font-weight='bold' font-size='{Math.Min(sirka, vyska) / 6}' style='pointer-events: none;'>{p.cislo}</text>" : "";
+        return $@"
+            <svg id='{p.Id}' style='position: absolute; pointer-events: none;
+                    top: {odsazeniY}px;
+                    left: {odsazeniX}px;'
+                    width='{sirka}px'
+                    height='{vyska}px'
+                    xmlns='http://www.w3.org/2000/svg' alt='{p.surovina.Nazev}'>
+                <polygon points='{sirka / 2},0 {sirka},{vyska / 3} {sirka},{2 * vyska / 3} {sirka / 2},{vyska} 0,{2 * vyska / 3} 0,{vyska / 3}'  style='fill:{p.surovina.BackColor}; pointer-events: auto;'  />
+                <clipPath id='hexMask'>
+                    <polygon points='{sirka / 2},0 {sirka},{vyska / 3} {sirka},{2 * vyska / 3} {sirka / 2},{vyska} 0,{2 * vyska / 3} 0,{vyska / 3}' style='pointer-events: auto;' />
+                </clipPath>
+                <image xlink:href='{p.surovina.ImageUrl}' width='80%' height='80%' x='10%' y='10%' clip-path='url(#hexMask)' style='pointer-events: none;' />
+                {cislo}
+            </svg>";
+    }
+    public string VykresleniCesty(Cesta c)
+    {
+        int odsazeniX = (c.poziceX - (Cesta.velikost.Width / 2)) * Mapka.rozmeryMrizky.Width;
+        int odsazeniY = (c.poziceY - (Cesta.velikost.Height / 2)) * Mapka.rozmeryMrizky.Height;
+        int vyska = Cesta.velikost.Height * Mapka.rozmeryMrizky.Height;
+        int sirka = Cesta.velikost.Width * Mapka.rozmeryMrizky.Width;
+        String polygon;
+        switch (c.natoceni)
+        {
+            case 0: polygon = $"{13 * sirka / 30},0 {17 * sirka / 30},0 {17 * sirka / 30},{vyska} {13 * sirka / 30},{vyska}"; break;
+            case 1: polygon = $"0,0 {1 * sirka / 10},0 {sirka},{9 * vyska / 10} {sirka},{vyska} {9 * sirka / 10},{vyska} 0,{1 * vyska / 10}"; break;
+            default: polygon = $"{9 * sirka / 10},0 {sirka},0 {sirka},{1 * vyska / 10} {1 * sirka / 10},{vyska} 0,{vyska} 0,{9 * vyska / 10}"; break;
+        }
+        return $@"
+            <svg id='{c.Id}' style='position: absolute; pointer-events: none;
+                    top: {odsazeniY}px;
+                    left: {odsazeniX}px;'
+                    width='{sirka}px'
+                    height='{vyska}px'
+                    xmlns='http://www.w3.org/2000/svg' alt='cesta'>
+                <polygon points='{polygon}'  style='fill:black; pointer-events: auto;'  />
+            </svg>";
+    }
+    public string VykresleniRozcesti(Rozcesti r)
+    {
+        int odsazeniX = (r.poziceX * Mapka.rozmeryMrizky.Width - (Rozcesti.velikost.Width * Mapka.rozmeryMrizky.Width / 2));
+        int odsazeniY = (r.poziceY * Mapka.rozmeryMrizky.Height - (Rozcesti.velikost.Height * Mapka.rozmeryMrizky.Height / 2));
+        int vyska = Rozcesti.velikost.Height * Mapka.rozmeryMrizky.Height;
+        int sirka = Rozcesti.velikost.Width * Mapka.rozmeryMrizky.Width;
+        string nazev = (r.hrac == null) ? "Prazdne" : r.hrac.Name;
+        return $@"
+            <svg id='{r.Id}' style='position: absolute; pointer-events: none;
+                    top: {odsazeniY}px;
+                    left: {odsazeniX}px;'
+                    width='{sirka}px'
+                    height='{vyska}px'
+                    xmlns='http://www.w3.org/2000/svg' alt='{nazev} rozcesti'>
+                <circle cx = '{sirka / 2}' cy = '{vyska / 2}' r = '{Math.Min(sirka, vyska) / 4}' stroke = 'black' stroke-width = '3' fill = 'black' style='pointer-events: auto;' />
+            </svg>";
+    }
+}
+@model Hra
+@{
+    ViewData["Title"] = "Home Page";
+}
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+    @foreach (var policko in Model.mapka.policka)
+    {
+        @Html.Raw(VykresleniPolicka(policko))
+    }
+    @foreach (var cesta in Model.mapka.cesty)
+    {
+        @Html.Raw(VykresleniCesty(cesta))
+    }@foreach (var rozcesti in Model.mapka.rozcesti)
+    {
+        @Html.Raw(VykresleniRozcesti(rozcesti))
+    }
+
+    <p id="id-hry">@Model.Id</p>
+    <p id="text">text</p>
+    <p id="receivedSvgId">prijaty</p>
+</div>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/click.js"></script>

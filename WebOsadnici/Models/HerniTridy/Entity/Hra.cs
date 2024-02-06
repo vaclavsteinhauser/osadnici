@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using WebOsadnici.Models.HerniTridy;
+﻿using WebOsadnici.Models.HerniTridy;
 
 public class Hra : HerniEntita
 {
@@ -8,9 +7,10 @@ public class Hra : HerniEntita
         mapka = new Mapka(this);
     }
     public List<Hrac> hraci=new List<Hrac>();
-    public static readonly Dictionary<Hrac, List<Surovina>> ruka = new Dictionary<Hrac, List<Surovina>>();
+    public readonly Dictionary<Hrac, Dictionary<Surovina,int>> ruka = new();
     private int hracNaTahu = -1;
     public Mapka mapka;
+
     private Random kostka=new Random();
     int hodnotaKostek;
     private void HodKostkou(int pocet=2)
@@ -24,7 +24,8 @@ public class Hra : HerniEntita
     internal void PridejHrace(Hrac h)
     {
         hraci.Add(h);
-        ruka.Add(h,new List<Surovina>());
+        ruka.Add(h, new Dictionary<Surovina, int>());
+        
     }
     private void ZacniTah()
     {
@@ -34,11 +35,17 @@ public class Hra : HerniEntita
             if (p.cislo == hodnotaKostek)
             {
                 foreach (var r in p.rozcesti) {
-                if(r.stavba!=null)
-                        for(int i = 0; i < r.stavba.zisk; i++)
+                    if (r.stavba != null)
+                    {
+                        if (!ruka[r.hrac].ContainsKey(p.surovina))
                         {
-                            ruka[r.hrac].Add(p.surovina);
+                            ruka[r.hrac].Add(p.surovina, r.stavba.zisk);
                         }
+                        else
+                        {
+                            ruka[r.hrac][p.surovina] += r.stavba.zisk;
+                        }
+                    }
                 }
             }
         }

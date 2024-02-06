@@ -1,31 +1,15 @@
-﻿@functions {
-    public string VykresleniPolicka(Pole p)
-    {
-        int vyska = Pole.velikost.Height;
-        int sirka = Pole.velikost.Width;
-        return $@"
-            <svg id='{p.Id}' style='position: absolute; top: {p.pozice.Height * vyska}px; left: {p.pozice.Width * sirka}px;' width='{sirka}px' height='{vyska}px' viewBox='0 0 {sirka} {vyska}' xmlns='http://www.w3.org/2000/svg' alt='{p.surovina.Nazev}'>
-                <polygon points='{sirka / 2},0 {sirka},{vyska / 4} {sirka},{3 * vyska / 4} {sirka / 2},{vyska} 0,{3 * vyska / 4} 0,{vyska / 4}' style='fill:{p.surovina.BackColor};' />
-                <clipPath id='hexMask'>
-                    <polygon points='{sirka / 2},0 {sirka},{vyska / 4} {sirka},{3 * vyska / 4} {sirka / 2},{vyska} 0,{3 * vyska / 4} 0,{vyska / 4}' />
-                </clipPath>
-                <image xlink:href='{p.surovina.ImageUrl}' width='50%' height='50%' x='25%' y='25%' clip-path='url(#hexMask)' />
-            </svg>";
-    }
-}
-@model Hra
+﻿@model Hra[]
 @{
     ViewData["Title"] = "Home Page";
 }
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-
-    @foreach (var policko in Model.mapka.policka)
-    {
-        @Html.Raw(VykresleniPolicka(policko))
-    }
-    <p id="text">SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS</p>
+    <table>
+        @foreach(var h in Model)
+        {
+            <tr>
+                <td><a href="Prugeh/@h.Id">@h.Id</a></td>
+                
+            </tr>
+        }
+    </table>
 </div>
-<script src="~/js/signalr/dist/browser/signalr.js"></script>
-<script src="~/js/click.js"></script>

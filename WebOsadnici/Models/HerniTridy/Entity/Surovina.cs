@@ -1,78 +1,64 @@
 ﻿using WebOsadnici.Models.HerniTridy;
 
-public abstract class Surovina : HerniEntita
+public class Surovina : HerniEntita
 {
     public string Nazev { get; protected set; }
     public string ImageUrl { get; protected set; }
     public string BackColor { get; protected set; }
-    public static Dictionary<String, Surovina> SurovinaList { get; private set; }
-    static Surovina()
-    {
-        SurovinaList = new Dictionary<string, Surovina>
+    public static List<Surovina> SurovinaList { get; private set; }
+    = new List<Surovina>()
         {
-            { "drevo", new Drevo() },
-            { "cihla", new Cihla() },
-            { "ovce", new Ovce() },
-            { "obili", new Obili() },
-            { "kamen", new Kamen() },
-            { "poust", new Poust() }
+            
+            new Surovina()
+            {
+                Nazev= "Dřevo",
+                ImageUrl = "../drevo.svg",
+                BackColor = "Sienna"
+                },
+             new Surovina()
+             {
+                Nazev= "Cihla",
+                ImageUrl = "../cihla.svg",
+                BackColor = "Firebrick"
+                },
+             new Surovina()
+             {
+                 Nazev = "Ovce",
+                ImageUrl = "../ovce.svg",
+                BackColor = "Limegreen"
+             },
+             new Surovina()
+             {
+                 Nazev = "Obilí",
+                ImageUrl = "../obili.svg",
+                BackColor = "Gold"
+             },
+             new Surovina()
+             {
+                 Nazev = "Kámen",
+                ImageUrl = "../kamen.svg",
+                BackColor = "Gray"
+             },
+             new Surovina()
+             {
+                 Nazev = "Poušť",
+                ImageUrl = "../poust.svg",
+                BackColor = "Yellow"
+             }
+
+            
+
         };
-    }
-}
-public class Drevo : Surovina
-{
-    public Drevo() {
-        Nazev = "Dřevo";
-        ImageUrl = "drevo.svg";
-        BackColor = "Sienna";
-    }
-}
-public class Cihla : Surovina
-{
-    public Cihla()
+    public static Surovina GetSurovina(string surovinaId)
     {
-        Nazev = "Cihla";
-        ImageUrl = "cihla.svg";
-        BackColor = "Firebrick";
+        foreach(Surovina surovina in SurovinaList)
+            if(surovina.Nazev == surovinaId)
+                return surovina;
+        return null;
+    } 
+public Surovina()
+    {
+        
     }
 }
-public class Ovce : Surovina
-{
-    public Ovce()
-    {
-        Nazev = "Ovce";
-        ImageUrl = "ovce.svg";
-        BackColor = "Limegreen";
-    }
 
-}
-public class Obili : Surovina
-{
-    public Obili()
-    {
-        Nazev = "Obili";
-        ImageUrl = "obili.svg";
-        BackColor = "Gold";
-    }
-
-}
-public class Kamen : Surovina
-{
-    public Kamen()
-    {
-        Nazev = "Kámen";
-        ImageUrl = "kamen.svg";
-        BackColor = "Gray";
-    }
-
-}
-public class Poust : Surovina
-{
-    public Poust()
-    {
-        Nazev = "Poušť";
-        ImageUrl = "poust.svg";
-        BackColor = "Yellow";
-    }
-
-}

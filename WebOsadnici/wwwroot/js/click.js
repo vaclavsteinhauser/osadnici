@@ -2,24 +2,42 @@
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/clickHub").build();
 
-//Disable the send button until connection is established.
-//document.getElementById("sendButton").disabled = true;
-
-/*connection.on("ReceiveMessage", function (user, message) {
-    var li = document.createElement("li");
-    document.getElementById("messagesList").appendChild(li);
-    // We can assign user-supplied strings to an element's textContent because it
-    // is not interpreted as markup. If you're assigning in any other way, you 
-    // should be aware of possible script injection concerns.
-    li.textContent = `${user} says ${message}`;
-});
-
 connection.start().then(function () {
-    document.getElementById("sendButton").disabled = false;
+    console.log("Connection established.");
 }).catch(function (err) {
     return console.error(err.toString());
-});*/
+});
 
-document.getElementsByTagName("svg").forEach(addEventListener("click", function (event) {
-    document.getElementById("text").innerText = this.id;
-}));
+// Posluchaè pro metodu SvgIdReceived
+connection.on("SvgIdReceived", function (svgId) {
+    console.log("Received SVG ID from server:", svgId);
+
+    // Zpracujte svgId podle potøeby, napøíklad aktualizujte UI
+    document.getElementById("receivedSvgId").innerText = "Received SVG ID: " + svgId;
+});
+
+
+var polygons = document.querySelectorAll("svg > *");
+
+polygons.forEach(function (polygon) {
+    polygon.addEventListener("click", function (event) {
+        var clickedId = findClosestSvgId(polygon.closest("svg"));
+
+        connection.invoke("ReceiveSvgId", connection.connectionId, document.getElementById("id-hry").innerText, clickedId)
+            .catch(function (err) {
+                console.error("Invocation error:", err.toString());
+            });
+
+        document.getElementById("text").innerText = "Id odesláno: " + clickedId;
+    });
+});
+
+function findClosestSvgId(element) {
+    if (element.tagName === "svg") {
+        return element.id;
+    } else if (element.parentNode) {
+        return findClosestSvgId(element.parentNode);
+    } else {
+        return null;
+    }
+}
