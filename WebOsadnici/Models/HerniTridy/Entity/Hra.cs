@@ -1,15 +1,26 @@
-﻿using WebOsadnici.Models.HerniTridy;
+﻿using Microsoft.EntityFrameworkCore;
+using WebOsadnici.Data;
+using WebOsadnici.Models.HerniTridy;
 
 public class Hra : HerniEntita
 {
+    public static IQueryable<Hra> NactiHry(ApplicationDbContext context)
+    {
+        return context.hry
+                .Include(h => h.hraci)
+                .Include(h => h.mapka)
+                .Include(h => h.mapka.cesty)
+                .Include(h => h.mapka.rozcesti)
+                .Include(h => h.mapka.policka);
+    }
     public Hra()
     {
         mapka = new Mapka(this);
     }
     public List<Hrac> hraci=new List<Hrac>();
-    public readonly Dictionary<Hrac, Dictionary<Surovina,int>> ruka = new();
-    private int hracNaTahu = -1;
-    public Mapka mapka;
+    //public readonly Dictionary<Hrac, Dictionary<Surovina,int>> ruka = new();
+    public int hracNaTahu = -1;
+    public Mapka? mapka;
 
     private Random kostka=new Random();
     int hodnotaKostek;
@@ -24,7 +35,7 @@ public class Hra : HerniEntita
     internal void PridejHrace(Hrac h)
     {
         hraci.Add(h);
-        ruka.Add(h, new Dictionary<Surovina, int>());
+        //ruka.Add(h, new Dictionary<Surovina, int>());
         
     }
     private void ZacniTah()
@@ -37,14 +48,14 @@ public class Hra : HerniEntita
                 foreach (var r in p.rozcesti) {
                     if (r.stavba != null)
                     {
-                        if (!ruka[r.hrac].ContainsKey(p.surovina))
+                        /*if (!ruka[r.hrac].ContainsKey(p.surovina))
                         {
                             ruka[r.hrac].Add(p.surovina, r.stavba.zisk);
                         }
                         else
                         {
                             ruka[r.hrac][p.surovina] += r.stavba.zisk;
-                        }
+                        }*/
                     }
                 }
             }

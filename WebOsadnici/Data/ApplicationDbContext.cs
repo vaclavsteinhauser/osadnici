@@ -43,20 +43,25 @@ namespace WebOsadnici.Data
                 .HasMany(d => d.hraci)
                 .WithMany();
             modelBuilder.Entity<Hra>()
-                .HasOne(h => h.mapka);
+                .HasOne(h => h.mapka)
+                .WithOne(m=> m.hra)
+                .HasForeignKey<Mapka>(m=>m.hraId);
+            modelBuilder.Entity<Hra>()
+                .Property(h=>h.hracNaTahu)
+                .IsRequired();
 
             modelBuilder.Entity<Mapka>()
                 .ToTable("Mapky")
                 .HasKey(h => h.Id);
             modelBuilder.Entity<Mapka>()
-                .HasMany(m => m.policka);
+                .HasMany(m => m.policka)
+                .WithOne(p=>p.mapka);
             modelBuilder.Entity<Mapka>()
-                .HasMany(m => m.cesty);
+                .HasMany(m => m.cesty)
+                .WithOne();
             modelBuilder.Entity<Mapka>()
-                .HasMany(m => m.rozcesti);
-            modelBuilder.Entity<Mapka>()
-                .HasOne(m => m.hra);
-            
+                .HasMany(m => m.rozcesti)
+                .WithOne();
             
             modelBuilder.Entity<Pole>()
                 .ToTable("Policka")
@@ -67,8 +72,6 @@ namespace WebOsadnici.Data
             modelBuilder.Entity<Pole>()
                 .Property(p => p.poziceY)
                 .IsRequired();
-            modelBuilder.Entity<Pole>()
-                .HasOne(p => p.hra);
             modelBuilder.Entity<Pole>()
                 .HasOne(p => p.surovina);
             modelBuilder.Entity<Pole>()
@@ -91,8 +94,6 @@ namespace WebOsadnici.Data
                 .IsRequired();
             modelBuilder.Entity<Rozcesti>()
                 .HasOne(r => r.hrac);
-            modelBuilder.Entity<Rozcesti>()
-                .HasMany(r => r.cesty);
             modelBuilder.Entity<Rozcesti>()
                 .Property(r => r.blokovane)
                 .IsRequired();

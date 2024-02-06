@@ -1,8 +1,10 @@
 {
   "ExpandedNodes": [
     "",
-    "\\testovaci-spousteci-projekt"
+    "\\WebOsadnici",
+    "\\WebOsadnici\\Models",
+    "\\WebOsadnici\\Models\\HerniTridy"
   ],
-  "SelectedNode": "\\testovaci-spousteci-projekt\\Program.cs",
+  "SelectedNode": "\\WebOsadnici\\Models\\HerniTridy\\Hrac.cs",
   "PreviewInSolutionExplorer": false
 }

@@ -5,7 +5,8 @@ using WebOsadnici.Models.HerniTridy;
 public class Mapka : HerniEntita
 {
     internal static readonly Size rozmeryMrizky = new Size(50, 40);
-    public Hra hra { get; set; }
+    public Hra? hra { get; set; }
+    public Guid? hraId { get; set; }
 
     public List<Pole> policka = new();
     public List<Cesta> cesty = new();
@@ -41,6 +42,7 @@ public class Mapka : HerniEntita
     public Mapka(Hra hra)
     {
         this.hra = hra;
+        hraId = hra.Id;
         Generuj();
     }
     private List<Surovina> zasobaSurovin = new List<Surovina>();
@@ -65,7 +67,7 @@ public class Mapka : HerniEntita
             Pole p;
             if (souradnice.Item1 == 12 && souradnice.Item2 == 12)
             {
-                p = new Pole(hra, Surovina.GetSurovina("Poušť"), 0, 12, 12);
+                p = new Pole(this, Surovina.GetSurovina("Poušť"), 0, 12, 12);
             }
             else
             {
@@ -75,7 +77,7 @@ public class Mapka : HerniEntita
                 r = rnd.Next() % zasobaSurovin.Count;
                 Surovina s = zasobaSurovin[r];
                 zasobaSurovin.RemoveAt(r);
-                p = new Pole(hra, s, cislo, souradnice.Item1, souradnice.Item2);
+                p = new Pole(this, s, cislo, souradnice.Item1, souradnice.Item2);
             }
             sit[souradnice.Item1, souradnice.Item2] = p;
             policka.Add(p);
@@ -121,11 +123,11 @@ public class Mapka : HerniEntita
             foreach(Rozcesti r in p.rozcesti)
             {
                 if (r == null) throw new Exception("spatne se vygenerovaly rozcesti");
-                if(!rozcesti.Contains(r)) rozcesti.Add(r);
+                if(r !=null && !rozcesti.Contains(r)) rozcesti.Add(r);
             }
-            for (int i = 0; i < p.rozcesti.Length; i++)
+            for (int i = 0; i < p.rozcesti.Count; i++)
             {
-                vytvorCestu(p.rozcesti[i], p.rozcesti[(i+1)%p.rozcesti.Length]);
+                vytvorCestu(p.rozcesti[i], p.rozcesti[(i+1)%p.rozcesti.Count]);
             }
         }
         Console.WriteLine();
@@ -135,7 +137,7 @@ public class Mapka : HerniEntita
         bool zbytecna=false;
         foreach(Cesta c in cesty)
         {
-            if(c.konce.Contains(a) && c.konce.Contains(b)) zbytecna = true;
+            if(a!=null && b!=null && c.konce.Contains(a) && c.konce.Contains(b)) zbytecna = true;
         }
         if (!zbytecna)
         {
@@ -146,9 +148,9 @@ public class Mapka : HerniEntita
                 natoceni = 2;
             else natoceni = 1;
             Cesta c = new Cesta((a.poziceX + b.poziceX) / 2, (a.poziceY + b.poziceY) / 2, natoceni);
+            c.konce.Add(a);
+            c.konce.Add(b);
             cesty.Add(c);
-            a.cesty.Add(c);
-            b.cesty.Add(c);
         }
     }
     private void poparujPolicka(Pole vstupni, Pole cizi, int indexVstupni, int indexCizi)

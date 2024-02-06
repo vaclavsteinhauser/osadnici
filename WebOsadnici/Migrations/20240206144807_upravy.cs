@@ -47,13 +47,25 @@ namespace WebOsadnici.Migrations
                     PhoneNumber = table.Column<string>(type: "longtext", nullable: true),
                     PhoneNumberConfirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     TwoFactorEnabled = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: true),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetime", nullable: true),
                     LockoutEnabled = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     AccessFailedCount = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Hraci", x => x.Id);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Hry",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Hry", x => x.Id);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -198,29 +210,6 @@ namespace WebOsadnici.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Cesty",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    MapkaId = table.Column<Guid>(type: "char(36)", nullable: true),
-                    RozcestiId = table.Column<Guid>(type: "char(36)", nullable: true),
-                    hracId = table.Column<string>(type: "varchar(255)", nullable: true),
-                    natoceni = table.Column<int>(type: "int", nullable: false),
-                    poziceX = table.Column<int>(type: "int", nullable: false),
-                    poziceY = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Cesty", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Cesty_Hraci_hracId",
-                        column: x => x.hracId,
-                        principalTable: "Hraci",
-                        principalColumn: "Id");
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "HraHrac",
                 columns: table => new
                 {
@@ -236,19 +225,12 @@ namespace WebOsadnici.Migrations
                         principalTable: "Hraci",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Hry",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    mapkaId1 = table.Column<Guid>(type: "char(36)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Hry", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_HraHrac_Hry_HraId",
+                        column: x => x.HraId,
+                        principalTable: "Hry",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -257,7 +239,7 @@ namespace WebOsadnici.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    hraId = table.Column<Guid>(type: "char(36)", nullable: false)
+                    hraId = table.Column<Guid>(type: "char(36)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -266,8 +248,34 @@ namespace WebOsadnici.Migrations
                         name: "FK_Mapky_Hry_hraId",
                         column: x => x.hraId,
                         principalTable: "Hry",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Cesty",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    MapkaId = table.Column<Guid>(type: "char(36)", nullable: true),
+                    hracId = table.Column<string>(type: "varchar(255)", nullable: true),
+                    natoceni = table.Column<int>(type: "int", nullable: false),
+                    poziceX = table.Column<int>(type: "int", nullable: false),
+                    poziceY = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cesty", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Cesty_Hraci_hracId",
+                        column: x => x.hracId,
+                        principalTable: "Hraci",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Cesty_Mapky_MapkaId",
+                        column: x => x.MapkaId,
+                        principalTable: "Mapky",
+                        principalColumn: "Id");
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -276,10 +284,9 @@ namespace WebOsadnici.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    MapkaId = table.Column<Guid>(type: "char(36)", nullable: true),
                     blokovane = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     cislo = table.Column<int>(type: "int", nullable: false),
-                    hraId = table.Column<Guid>(type: "char(36)", nullable: true),
+                    mapkaId = table.Column<Guid>(type: "char(36)", nullable: true),
                     poziceX = table.Column<int>(type: "int", nullable: false),
                     poziceY = table.Column<int>(type: "int", nullable: false),
                     surovinaId = table.Column<Guid>(type: "char(36)", nullable: true)
@@ -288,13 +295,8 @@ namespace WebOsadnici.Migrations
                 {
                     table.PrimaryKey("PK_Policka", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Policka_Hry_hraId",
-                        column: x => x.hraId,
-                        principalTable: "Hry",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Policka_Mapky_MapkaId",
-                        column: x => x.MapkaId,
+                        name: "FK_Policka_Mapky_mapkaId",
+                        column: x => x.mapkaId,
                         principalTable: "Mapky",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -387,11 +389,6 @@ namespace WebOsadnici.Migrations
                 column: "MapkaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Cesty_RozcestiId",
-                table: "Cesty",
-                column: "RozcestiId");
-
-            migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 table: "Hraci",
                 column: "NormalizedEmail");
@@ -408,24 +405,15 @@ namespace WebOsadnici.Migrations
                 column: "hraciId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Hry_mapkaId1",
-                table: "Hry",
-                column: "mapkaId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Mapky_hraId",
                 table: "Mapky",
-                column: "hraId");
+                column: "hraId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Policka_hraId",
+                name: "IX_Policka_mapkaId",
                 table: "Policka",
-                column: "hraId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Policka_MapkaId",
-                table: "Policka",
-                column: "MapkaId");
+                column: "mapkaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Policka_surovinaId",
@@ -456,68 +444,11 @@ namespace WebOsadnici.Migrations
                 name: "IX_Rozcesti_stavbaId",
                 table: "Rozcesti",
                 column: "stavbaId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Cesty_Mapky_MapkaId",
-                table: "Cesty",
-                column: "MapkaId",
-                principalTable: "Mapky",
-                principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Cesty_Rozcesti_RozcestiId",
-                table: "Cesty",
-                column: "RozcestiId",
-                principalTable: "Rozcesti",
-                principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_HraHrac_Hry_HraId",
-                table: "HraHrac",
-                column: "HraId",
-                principalTable: "Hry",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Hry_Mapky_mapkaId1",
-                table: "Hry",
-                column: "mapkaId1",
-                principalTable: "Mapky",
-                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Cesty_Hraci_hracId",
-                table: "Cesty");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Rozcesti_Hraci_hracId",
-                table: "Rozcesti");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Cesty_Mapky_MapkaId",
-                table: "Cesty");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Hry_Mapky_mapkaId1",
-                table: "Hry");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Policka_Mapky_MapkaId",
-                table: "Policka");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Rozcesti_Mapky_MapkaId",
-                table: "Rozcesti");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Cesty_Rozcesti_RozcestiId",
-                table: "Cesty");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -537,16 +468,10 @@ namespace WebOsadnici.Migrations
                 name: "HraHrac");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "Hraci");
-
-            migrationBuilder.DropTable(
-                name: "Mapky");
-
-            migrationBuilder.DropTable(
                 name: "Rozcesti");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "Cesty");
@@ -558,10 +483,16 @@ namespace WebOsadnici.Migrations
                 name: "Stavby");
 
             migrationBuilder.DropTable(
-                name: "Hry");
+                name: "Hraci");
+
+            migrationBuilder.DropTable(
+                name: "Mapky");
 
             migrationBuilder.DropTable(
                 name: "Suroviny");
+
+            migrationBuilder.DropTable(
+                name: "Hry");
         }
     }
 }

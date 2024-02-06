@@ -16,7 +16,7 @@ namespace WebOsadnici.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.9")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Cesta", b =>
@@ -26,9 +26,6 @@ namespace WebOsadnici.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<Guid?>("MapkaId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid?>("RozcestiId")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("hracId")
@@ -47,8 +44,6 @@ namespace WebOsadnici.Migrations
 
                     b.HasIndex("MapkaId");
 
-                    b.HasIndex("RozcestiId");
-
                     b.HasIndex("hracId");
 
                     b.ToTable("Cesty", (string)null);
@@ -60,12 +55,7 @@ namespace WebOsadnici.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("mapkaId1")
-                        .HasColumnType("char(36)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("mapkaId1");
 
                     b.ToTable("Hry", (string)null);
                 });
@@ -108,7 +98,7 @@ namespace WebOsadnici.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime");
 
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
@@ -158,12 +148,13 @@ namespace WebOsadnici.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("hraId")
+                    b.Property<Guid?>("hraId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("hraId");
+                    b.HasIndex("hraId")
+                        .IsUnique();
 
                     b.ToTable("Mapky", (string)null);
                 });
@@ -306,16 +297,13 @@ namespace WebOsadnici.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("MapkaId")
-                        .HasColumnType("char(36)");
-
                     b.Property<bool>("blokovane")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<int>("cislo")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("hraId")
+                    b.Property<Guid?>("mapkaId")
                         .HasColumnType("char(36)");
 
                     b.Property<int>("poziceX")
@@ -329,9 +317,7 @@ namespace WebOsadnici.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MapkaId");
-
-                    b.HasIndex("hraId");
+                    b.HasIndex("mapkaId");
 
                     b.HasIndex("surovinaId");
 
@@ -430,24 +416,11 @@ namespace WebOsadnici.Migrations
                         .WithMany("cesty")
                         .HasForeignKey("MapkaId");
 
-                    b.HasOne("Rozcesti", null)
-                        .WithMany("cesty")
-                        .HasForeignKey("RozcestiId");
-
                     b.HasOne("Hrac", "hrac")
                         .WithMany()
                         .HasForeignKey("hracId");
 
                     b.Navigation("hrac");
-                });
-
-            modelBuilder.Entity("Hra", b =>
-                {
-                    b.HasOne("Mapka", "mapka")
-                        .WithMany()
-                        .HasForeignKey("mapkaId1");
-
-                    b.Navigation("mapka");
                 });
 
             modelBuilder.Entity("HraHrac", b =>
@@ -468,10 +441,8 @@ namespace WebOsadnici.Migrations
             modelBuilder.Entity("Mapka", b =>
                 {
                     b.HasOne("Hra", "hra")
-                        .WithMany()
-                        .HasForeignKey("hraId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithOne("mapka")
+                        .HasForeignKey("Mapka", "hraId");
 
                     b.Navigation("hra");
                 });
@@ -529,19 +500,15 @@ namespace WebOsadnici.Migrations
 
             modelBuilder.Entity("Pole", b =>
                 {
-                    b.HasOne("Mapka", null)
+                    b.HasOne("Mapka", "mapka")
                         .WithMany("policka")
-                        .HasForeignKey("MapkaId");
-
-                    b.HasOne("Hra", "hra")
-                        .WithMany()
-                        .HasForeignKey("hraId");
+                        .HasForeignKey("mapkaId");
 
                     b.HasOne("Surovina", "surovina")
                         .WithMany()
                         .HasForeignKey("surovinaId");
 
-                    b.Navigation("hra");
+                    b.Navigation("mapka");
 
                     b.Navigation("surovina");
                 });
@@ -578,6 +545,11 @@ namespace WebOsadnici.Migrations
                     b.Navigation("konce");
                 });
 
+            modelBuilder.Entity("Hra", b =>
+                {
+                    b.Navigation("mapka");
+                });
+
             modelBuilder.Entity("Mapka", b =>
                 {
                     b.Navigation("cesty");
@@ -590,11 +562,6 @@ namespace WebOsadnici.Migrations
             modelBuilder.Entity("Pole", b =>
                 {
                     b.Navigation("rozcesti");
-                });
-
-            modelBuilder.Entity("Rozcesti", b =>
-                {
-                    b.Navigation("cesty");
                 });
 #pragma warning restore 612, 618
         }

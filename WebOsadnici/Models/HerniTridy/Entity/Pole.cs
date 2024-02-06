@@ -5,15 +5,15 @@ public class Pole : HerniEntita
 {
     public static readonly Size velikost = new Size(4, 6);
     public int poziceX,poziceY;
-    internal Hra hra;
+    internal Mapka mapka;
     public Surovina surovina;
     internal Int32 cislo;
     internal bool blokovane;
-    internal readonly Rozcesti[] rozcesti=new Rozcesti[6];
+    internal readonly List<Rozcesti> rozcesti=new List<Rozcesti>(6) { null, null, null, null, null, null };
     public Pole() { }
-    public Pole(Hra hra, Surovina surovina, int cislo,int sloupec, int radek, bool blokovane=false)
+    public Pole(Mapka mapka, Surovina surovina, int cislo,int sloupec, int radek, bool blokovane=false)
     {
-        this.hra = hra;
+        this.mapka = mapka;
         this.surovina = surovina;
         this.cislo = cislo;
         this.poziceX = sloupec;

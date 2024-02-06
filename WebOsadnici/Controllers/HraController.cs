@@ -28,21 +28,29 @@ namespace WebOsadnici.Controllers
             {
                 h.PridejHrace(user);
             }
-
-            _dbContext.hry.Add(h);
+            var x = h;
+            _dbContext.Add(x);
             _dbContext.SaveChanges();
             return View(h);
         }
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
-            Hra[] h=_dbContext.hry.Include(h=>h.hraci).Include(h=>h.mapka).Where(h => h.hraci.Contains(user)).ToArray();
+            Hra[] h=Hra.NactiHry(_dbContext)
+                .Where(h => h.hraci.Contains(user)).ToArray();
             return View(h);
         }
         [Route("Hra/Prubeh/{id}")]
         public async Task<IActionResult> Prubeh(Guid id)
         {
-            Hra h = _dbContext.hry.Where(h=>h.Id==id).FirstOrDefault();
+            Hra h = _dbContext.hry
+                .Include(h=>h.mapka)
+                .Include (h=>h.hraci)
+                .Include(h => h.mapka.rozcesti)
+                .Include(h => h.mapka.policka)
+                .Include(h => h.mapka.cesty)
+                .Where(h=>h.Id==id)
+                .FirstOrDefault();
             
             return View(h);
         }
