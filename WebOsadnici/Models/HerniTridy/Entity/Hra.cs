@@ -3,18 +3,10 @@ using System.Drawing;
 using WebOsadnici.Controllers;
 using WebOsadnici.Data;
 using WebOsadnici.Models.HerniTridy;
-
+public enum StavHry { Vytvorena, rozestavovani, probiha, skoncila}
 public class Hra : HerniEntita
 {
-    public static IQueryable<Hra> NactiHry(ApplicationDbContext context)
-    {
-        return context.hry
-                .Include(h => h.hraci)
-                .Include(h => h.mapka)
-                .Include(h => h.mapka.cesty)
-                .Include(h => h.mapka.rozcesti)
-                .Include(h => h.mapka.policka);
-    }
+    public StavHry stavHry = StavHry.Vytvorena;
     public Hra() { }
     public Hra(DbSet<Surovina> suroviny, DbSet<Stavba> stavby)
     {
@@ -51,9 +43,11 @@ public class Hra : HerniEntita
         {
             hra = this,
             barva = barva,
-            hrac = h
+            hrac = h,
+            poradi = hraci.Count
         };
         stavy.Add(s);
+        _dbContext.Add(s);
     }
     private void ZacniTah()
     {

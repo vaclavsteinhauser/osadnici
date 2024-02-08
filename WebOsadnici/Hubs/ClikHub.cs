@@ -14,7 +14,7 @@ namespace WebOsadnici.Hubs
         public async Task KliknutiNaCestu(string connectionId, string Id)
         {
             // Zpracování id nadřazeného svg elementu, například odeslání zpět klientovi
-
+            await Clients.Client(connectionId).SendAsync("NastavBarvu", Id, "red");
             await Clients.Client(connectionId).SendAsync("CestaKlikOdpoved", "Cesta: "+Id);
         }
         public async Task KliknutiNaPolicko(string connectionId, string Id)

@@ -14,7 +14,7 @@
                     width='{sirka}px'
                     height='{vyska}px'
                     xmlns='http://www.w3.org/2000/svg' alt='{p.surovina.Nazev}'>
-                <polygon class='policko' id='{p.Id}' points='{sirka / 2},0 {sirka},{vyska / 3} {sirka},{2 * vyska / 3} {sirka / 2},{vyska} 0,{2 * vyska / 3} 0,{vyska / 3}'  style='fill:{p.surovina.BackColor}; pointer-events: auto;'  />
+                <polygon class='policko' id='{p.Id}' points='{sirka / 2},0 {sirka},{vyska / 3} {sirka},{2 * vyska / 3} {sirka / 2},{vyska} 0,{2 * vyska / 3} 0,{vyska / 3}'  style='pointer-events: auto;' fill='{ p.surovina.BackColor}' />
                 <clipPath id='hexMask'>
                     <polygon points='{sirka / 2},0 {sirka},{vyska / 3} {sirka},{2 * vyska / 3} {sirka / 2},{vyska} 0,{2 * vyska / 3} 0,{vyska / 3}' style='pointer-events: none;' />
                 </clipPath>
@@ -42,7 +42,7 @@
                     width='{sirka}px'
                     height='{vyska}px'
                     xmlns='http://www.w3.org/2000/svg' alt='cesta'>
-                <polygon class='cesta' id='{c.Id}' points='{polygon}'  style='fill:black; pointer-events: auto;'  />
+                <polygon class='cesta' id='{c.Id}' points='{polygon}'  style='pointer-events: auto;' fill='black'  />
             </svg>";
     }
     public string VykresleniRozcesti(Rozcesti r)
@@ -59,7 +59,7 @@
                 width='{sirka}px'
                 height='{vyska}px'
                 xmlns='http://www.w3.org/2000/svg' alt='{nazev} rozcesti'>
-            <circle class='rozcesti' id='{r.Id}' cx='{sirka / 2}' cy='{vyska / 2}' r='{Math.Min(sirka, vyska) / 4}' stroke='black' stroke-width='3' fill='black' style='pointer-events: auto;' />
+            <circle class='rozcesti' id='{r.Id}' cx='{sirka / 2}' cy='{vyska / 2}' r='{Math.Min(sirka, vyska) / 4}' fill='black' style='pointer-events: auto;' />
             <image xlink:href='' width='{Math.Min(sirka, vyska) * 0.7}' height='{Math.Min(sirka, vyska) * 0.7}' x='{sirka / 2 - (Math.Min(sirka, vyska) * 0.35)}' y='{vyska / 2 - (Math.Min(sirka, vyska) * 0.35)}' display='none' />
             </svg>";
     }

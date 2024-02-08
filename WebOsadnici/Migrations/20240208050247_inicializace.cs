@@ -7,7 +7,7 @@ using MySql.EntityFrameworkCore.Metadata;
 namespace WebOsadnici.Migrations
 {
     /// <inheritdoc />
-    public partial class nova : Migration
+    public partial class inicializace : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -62,7 +62,8 @@ namespace WebOsadnici.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    hracNaTahu = table.Column<int>(type: "int", nullable: false)
+                    hracNaTahu = table.Column<int>(type: "int", nullable: false),
+                    stavHry = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -260,6 +261,7 @@ namespace WebOsadnici.Migrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
                     hraId = table.Column<Guid>(type: "char(36)", nullable: false),
                     hracId = table.Column<string>(type: "varchar(255)", nullable: false),
+                    poradi = table.Column<int>(type: "int", nullable: false),
                     barva = table.Column<string>(type: "longtext", nullable: false)
                 },
                 constraints: table =>

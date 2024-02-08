@@ -81,6 +81,9 @@ namespace WebOsadnici.Migrations
                     b.Property<int>("hracNaTahu")
                         .HasColumnType("int");
 
+                    b.Property<int>("stavHry")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("Hry", (string)null);
@@ -411,6 +414,9 @@ namespace WebOsadnici.Migrations
                     b.Property<string>("hracId")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
+
+                    b.Property<int>("poradi")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

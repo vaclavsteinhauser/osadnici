@@ -25,10 +25,10 @@ namespace WebOsadnici.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            ViewBag.moje = Hra.NactiHry(_dbContext)
-                .Where(h => h.hraci.Contains(user)).ToArray();
-            ViewBag.nezacate = Hra.NactiHry(_dbContext)
-                .Where(h => !h.hraci.Contains(user) && h.hracNaTahu==-1).ToArray();
+            var hry = _dbContext.hry
+                .Include(h => h.hraci);
+            ViewBag.moje = hry.Where(h => h.hraci.Contains(user)).ToArray();
+            ViewBag.nezacate = hry.Where(h => !h.hraci.Contains(user) && h.hracNaTahu==-1).ToArray();
             return View();
         }
         public async Task<IActionResult> Nova()

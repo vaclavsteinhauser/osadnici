@@ -6,6 +6,7 @@ public class StavHrace : HerniEntita
     public Hra hra {  get; set; }
     public Hrac hrac { get; set; }
 
+    public int poradi {  get; set; }
     public Color barva { get; set; }
 
     public List<AkcniKarta> AkcniKarty { get; } = new List<AkcniKarta>();

@@ -11,8 +11,8 @@ using WebOsadnici.Data;
 namespace WebOsadnici.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240207164827_nova")]
-    partial class nova
+    [Migration("20240208050247_inicializace")]
+    partial class inicializace
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -82,6 +82,9 @@ namespace WebOsadnici.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<int>("hracNaTahu")
+                        .HasColumnType("int");
+
+                    b.Property<int>("stavHry")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -414,6 +417,9 @@ namespace WebOsadnici.Migrations
                     b.Property<string>("hracId")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
+
+                    b.Property<int>("poradi")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
