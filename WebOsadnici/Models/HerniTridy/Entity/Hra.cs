@@ -14,7 +14,8 @@ public class Hra : HerniEntita
     }
     public List<Hrac> hraci=new List<Hrac>();
     public List<StavHrace> stavy = new List<StavHrace>();
-    public int hracNaTahu = -1;
+    public int hracNaTahu = 1;
+    public StavHrace naTahu() => stavy.Where(s => s.poradi == hracNaTahu).Single();
     public Mapka? mapka;
 
     private Random kostka=new Random();
@@ -49,11 +50,11 @@ public class Hra : HerniEntita
         stavy.Add(s);
         _dbContext.Add(s);
     }
-    private void ZacniTah()
+    public void ZacniTah()
     {
-        hracNaTahu += 1;
+        hracNaTahu = hracNaTahu%stavy.Count+1;
         HodKostkou();
-        foreach (var p in mapka.policka) {
+        /*foreach (var p in mapka.policka) {
             if (p.cislo == hodnotaKostek)
             {
                 foreach (var r in p.rozcesti) {
@@ -63,7 +64,7 @@ public class Hra : HerniEntita
                     }
                 }
             }
-        }
+        }*/
 
     }
 }

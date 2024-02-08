@@ -28,7 +28,7 @@ namespace WebOsadnici.Controllers
             var hry = _dbContext.hry
                 .Include(h => h.hraci);
             ViewBag.moje = hry.Where(h => h.hraci.Contains(user)).ToArray();
-            ViewBag.nezacate = hry.Where(h => !h.hraci.Contains(user) && h.hracNaTahu==-1).ToArray();
+            ViewBag.nezacate = hry.Where(h => !h.hraci.Contains(user) && h.stavHry==StavHry.Vytvorena).ToArray();
             return View();
         }
         public async Task<IActionResult> Nova()
