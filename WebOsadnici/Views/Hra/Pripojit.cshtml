@@ -1,0 +1,44 @@
+﻿@model Hra
+@{
+    ViewData["Title"] = "Seznam her";
+}
+<div class="text-center">
+    <h1>Připojení do hry: @Model.Id</h1>
+    @if (Model.hraci.Count != 0)
+    {
+        <p>Už se připojili hráči:</p>
+        <ol>
+            @foreach (StavHrace s in Model.stavy)
+            {
+                <li style="color: @s.barva.Name;">@s.hrac.UserName</li>
+            }
+        </ol>
+    }
+    <form asp-controller="Hra" asp-action="AddStavHrace" method="post">
+        <label>Vyberte barvu:</label>
+        <input type="hidden" name="Id" value="@Model.Id" />
+        <select name="barva" id="barva">
+            @if (!Model.JeObsazenaBarva("Red"))
+            {
+                <option value="Red">Červená</option>
+            }
+            @if (!Model.JeObsazenaBarva("Blue"))
+            {
+                <option value="Blue">Modrá</option>
+            }
+                
+            @if (!Model.JeObsazenaBarva("Green"))
+            {
+                <option value="Green">Zelená</option>
+            }
+            
+            @if (!Model.JeObsazenaBarva("Yellow"))
+            {
+                <option value="Yellow">Žlutá</option>
+            }
+            
+        </select>
+
+        <button type="submit">Odeslat</button>
+    </form>
+</div>

@@ -19,6 +19,29 @@ namespace WebOsadnici.Migrations
                 .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("AkcniKarta", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Nazev")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid?>("StavHraceId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("pocet")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StavHraceId");
+
+                    b.ToTable("AkcniKarty", (string)null);
+                });
+
             modelBuilder.Entity("Cesta", b =>
                 {
                     b.Property<Guid>("Id")
@@ -54,6 +77,9 @@ namespace WebOsadnici.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
+
+                    b.Property<int>("hracNaTahu")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -369,6 +395,32 @@ namespace WebOsadnici.Migrations
                     b.ToTable("Rozcesti", (string)null);
                 });
 
+            modelBuilder.Entity("StavHrace", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("barva")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("hraId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("hracId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("hraId");
+
+                    b.HasIndex("hracId");
+
+                    b.ToTable("StavyHracu", (string)null);
+                });
+
             modelBuilder.Entity("Stavba", b =>
                 {
                     b.Property<Guid>("Id")
@@ -408,6 +460,37 @@ namespace WebOsadnici.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Suroviny", (string)null);
+                });
+
+            modelBuilder.Entity("SurovinaKarta", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("StavHraceId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("pocet")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("surovinaId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StavHraceId");
+
+                    b.HasIndex("surovinaId");
+
+                    b.ToTable("SurovinaKarty", (string)null);
+                });
+
+            modelBuilder.Entity("AkcniKarta", b =>
+                {
+                    b.HasOne("StavHrace", null)
+                        .WithMany("AkcniKarty")
+                        .HasForeignKey("StavHraceId");
                 });
 
             modelBuilder.Entity("Cesta", b =>
@@ -540,6 +623,38 @@ namespace WebOsadnici.Migrations
                     b.Navigation("stavba");
                 });
 
+            modelBuilder.Entity("StavHrace", b =>
+                {
+                    b.HasOne("Hra", "hra")
+                        .WithMany("stavy")
+                        .HasForeignKey("hraId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Hrac", "hrac")
+                        .WithMany()
+                        .HasForeignKey("hracId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("hra");
+
+                    b.Navigation("hrac");
+                });
+
+            modelBuilder.Entity("SurovinaKarta", b =>
+                {
+                    b.HasOne("StavHrace", null)
+                        .WithMany("SurovinaKarty")
+                        .HasForeignKey("StavHraceId");
+
+                    b.HasOne("Surovina", "surovina")
+                        .WithMany()
+                        .HasForeignKey("surovinaId");
+
+                    b.Navigation("surovina");
+                });
+
             modelBuilder.Entity("Cesta", b =>
                 {
                     b.Navigation("konce");
@@ -548,6 +663,8 @@ namespace WebOsadnici.Migrations
             modelBuilder.Entity("Hra", b =>
                 {
                     b.Navigation("mapka");
+
+                    b.Navigation("stavy");
                 });
 
             modelBuilder.Entity("Mapka", b =>
@@ -562,6 +679,13 @@ namespace WebOsadnici.Migrations
             modelBuilder.Entity("Pole", b =>
                 {
                     b.Navigation("rozcesti");
+                });
+
+            modelBuilder.Entity("StavHrace", b =>
+                {
+                    b.Navigation("AkcniKarty");
+
+                    b.Navigation("SurovinaKarty");
                 });
 #pragma warning restore 612, 618
         }

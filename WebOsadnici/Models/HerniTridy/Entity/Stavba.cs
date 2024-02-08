@@ -9,9 +9,5 @@ public class Stavba : HerniEntita
         this.Nazev = Nazev;
         this.zisk = zisk;
     }
-    internal static readonly List<Stavba> stavbyList = 
-        new() { 
-            new Stavba("Vesnice",1),
-            new Stavba("Město",2)
-        };
+    
 }

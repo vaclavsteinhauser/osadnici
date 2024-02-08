@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Drawing;
+using WebOsadnici.Controllers;
 using WebOsadnici.Data;
 using WebOsadnici.Models.HerniTridy;
 
@@ -13,12 +15,13 @@ public class Hra : HerniEntita
                 .Include(h => h.mapka.rozcesti)
                 .Include(h => h.mapka.policka);
     }
-    public Hra()
+    public Hra() { }
+    public Hra(DbSet<Surovina> suroviny, DbSet<Stavba> stavby)
     {
-        mapka = new Mapka(this);
+        mapka = new Mapka(this,suroviny,stavby);
     }
     public List<Hrac> hraci=new List<Hrac>();
-    //public readonly Dictionary<Hrac, Dictionary<Surovina,int>> ruka = new();
+    public List<StavHrace> stavy = new List<StavHrace>();
     public int hracNaTahu = -1;
     public Mapka? mapka;
 
@@ -32,11 +35,25 @@ public class Hra : HerniEntita
             hodnotaKostek += (int)(kostka.Next() % 6) + 1;
         }
     }
-    internal void PridejHrace(Hrac h)
+    public bool JeObsazenaBarva(String b)
+    {
+        foreach(StavHrace s in stavy)
+        {
+            if (b.Equals(s.barva.Name))
+                return true;
+        }
+        return false;
+    }
+    internal void PridejHrace(Hrac h, Color barva, ApplicationDbContext _dbContext)
     {
         hraci.Add(h);
-        //ruka.Add(h, new Dictionary<Surovina, int>());
-        
+        StavHrace s = new StavHrace()
+        {
+            hra = this,
+            barva = barva,
+            hrac = h
+        };
+        stavy.Add(s);
     }
     private void ZacniTah()
     {
@@ -48,14 +65,7 @@ public class Hra : HerniEntita
                 foreach (var r in p.rozcesti) {
                     if (r.stavba != null)
                     {
-                        /*if (!ruka[r.hrac].ContainsKey(p.surovina))
-                        {
-                            ruka[r.hrac].Add(p.surovina, r.stavba.zisk);
-                        }
-                        else
-                        {
-                            ruka[r.hrac][p.surovina] += r.stavba.zisk;
-                        }*/
+                        stavy.Where(s => s.hrac == r.hrac).First().PridejSurovinu(p.surovina, r.stavba.zisk);
                     }
                 }
             }

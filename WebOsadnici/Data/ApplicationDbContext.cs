@@ -49,6 +49,28 @@ namespace WebOsadnici.Data
             modelBuilder.Entity<Hra>()
                 .Property(h=>h.hracNaTahu)
                 .IsRequired();
+            modelBuilder.Entity<Hra>()
+                .HasMany(d => d.stavy)
+                .WithOne(d=> d.hra);
+
+            modelBuilder.Entity<AkcniKarta>()
+                .ToTable("AkcniKarty")
+                .HasKey(h => h.Id);
+            modelBuilder.Entity<AkcniKarta>()
+                .Property(d => d.Nazev)
+                .IsRequired();
+            modelBuilder.Entity<AkcniKarta>()
+                .Property(d=>d.pocet)
+                .IsRequired();
+
+            modelBuilder.Entity<SurovinaKarta>()
+                .ToTable("SurovinaKarty")
+                .HasKey(d => d.Id);
+            modelBuilder.Entity<SurovinaKarta>()
+                .HasOne<Surovina>(d=>d.surovina);
+            modelBuilder.Entity<SurovinaKarta>()
+                .Property(d=>d.pocet)
+                .IsRequired();
 
             modelBuilder.Entity<Mapka>()
                 .ToTable("Mapky")
@@ -109,6 +131,28 @@ namespace WebOsadnici.Data
             modelBuilder.Entity<Stavba>()
                 .Property(s => s.zisk);
 
+            modelBuilder.Entity<StavHrace>()
+                .ToTable("StavyHracu")
+                .HasKey(h => h.Id);
+            modelBuilder.Entity<StavHrace>()
+                .HasOne(s => s.hra)
+                .WithMany(h => h.stavy);
+            modelBuilder.Entity<StavHrace>()
+                .HasOne(s => s.hrac);
+            modelBuilder.Entity<StavHrace>()
+                .Property(s => s.barva)
+                .HasConversion(
+                color => color.Name,
+                name => Color.FromName(name)
+                );
+            
+            modelBuilder.Entity<StavHrace>()
+                .HasMany<SurovinaKarta>(s => s.SurovinaKarty)
+                .WithOne();
+            modelBuilder.Entity<StavHrace>()
+                .HasMany<AkcniKarta>(s => s.AkcniKarty)
+                .WithOne();
+
             modelBuilder.Entity<Surovina>()
                 .ToTable("Suroviny")
                 .HasKey(h => h.Id);
@@ -125,10 +169,13 @@ namespace WebOsadnici.Data
         public DbSet<Cesta> cesty { get; set; }
         public DbSet<Hrac> hraci { get; set; }
         public DbSet<Hra> hry { get; set; }
+        public DbSet<AkcniKarta> akcnikarty { get; set; }
+        public DbSet<SurovinaKarta> surovinakarty { get; set; }
         public DbSet<Mapka> mapky { get; set; }
         public DbSet<Pole> policka { get; set; }
         public DbSet<Rozcesti> rozcesti { get; set; }
         public DbSet<Stavba> stavby { get; set; }
+        public DbSet<StavHrace> stavy { get; set; }
         public DbSet<Surovina> suroviny { get; set; }
         
     }

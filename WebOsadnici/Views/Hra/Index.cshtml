@@ -1,15 +1,20 @@
-﻿@model Hra[]
-@{
-    ViewData["Title"] = "Home Page";
+﻿@{
+    ViewData["Title"] = "Seznam her";
 }
 <div class="text-center">
-    <table>
-        @foreach(var h in Model)
+    <h1>Dostupné hry:</h1>
+    <h2>Moje rozehrané hry:</h2>
+    <ol>
+        @foreach(Hra h in ViewBag.moje)
         {
-            <tr>
-                <td><a href="Hra/Prubeh/@h.Id">@h.Id</a></td>
-                
-            </tr>
+            <li><a asp-area="" asp-controller="Hra" asp-action="Prubeh" asp-route-id="@h.Id">@h.Id</a></li>
         }
-    </table>
+    </ol>
+    <h2>Hry kam se můžu připojit:</h2>
+    <ol>
+        @foreach (Hra h in ViewBag.nezacate)
+        {
+            <li><a asp-area="" asp-controller="Hra" asp-action="Pripojit" asp-route-id="@h.Id">@h.Id</a></li>
+        }
+    </ol>
 </div>

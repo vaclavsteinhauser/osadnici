@@ -1,10 +1,12 @@
-﻿using Org.BouncyCastle.Security;
+﻿using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Security;
 using System.Drawing;
+using WebOsadnici.Data;
 using WebOsadnici.Models.HerniTridy;
 
 public class Mapka : HerniEntita
 {
-    internal static readonly Size rozmeryMrizky = new Size(50, 40);
+    internal static readonly Size rozmeryMrizky = new Size(40, 35);
     public Hra? hra { get; set; }
     public Guid? hraId { get; set; }
 
@@ -39,8 +41,10 @@ public class Mapka : HerniEntita
     static private string[] nazvySurovin = { "Dřevo", "Dřevo", "Dřevo", "Dřevo", "Cihla", "Cihla", "Cihla", "Ovce", "Ovce", "Ovce", "Ovce", "Obilí", "Obilí", "Obilí", "Obilí", "Kámen", "Kámen", "Kámen" };
     static private int[] cislaPolicek = { 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
     public Mapka() { }
-    public Mapka(Hra hra)
+    public Mapka(Hra hra, DbSet<Surovina> suroviny, DbSet<Stavba> stavby)
     {
+        VytvorSuroviny(suroviny);
+        VytvorStavby(stavby);
         this.hra = hra;
         hraId = hra.Id;
         Generuj();
@@ -48,12 +52,105 @@ public class Mapka : HerniEntita
     private List<Surovina> zasobaSurovin = new List<Surovina>();
     private List<int> zasobaCisel = new List<int>();
     private Random rnd = new Random();
+    Dictionary<String,Surovina> suroviny = new();
+    Dictionary<String,Stavba> stavby = new();
 
+    private void VytvorSuroviny(DbSet<Surovina> _suroviny)
+    {
+        Surovina s = _suroviny.Where(s => s.Nazev.Equals("Dřevo")).FirstOrDefault();
+        if (s == null)
+        {
+            s = new Surovina()
+            {
+                Nazev = "Dřevo",
+                ImageUrl = "drevo.svg",
+                BackColor = "Sienna"
+            };
+            _suroviny.Add(s);
+        }
+        suroviny.Add(s.Nazev, s);
+        s = _suroviny.Where(s => s.Nazev.Equals("Cihla")).FirstOrDefault();
+        if (s == null)
+        {
+            s = new Surovina()
+            {
+                Nazev = "Cihla",
+                ImageUrl = "cihla.svg",
+                BackColor = "Firebrick"
+            };
+            _suroviny.Add(s);
+        }
+        suroviny.Add(s.Nazev, s);
+        s = _suroviny.Where(s => s.Nazev.Equals("Obilí")).FirstOrDefault();
+        if (s == null)
+        {
+            s = new Surovina()
+            {
+                Nazev = "Obilí",
+                ImageUrl = "obili.svg",
+                BackColor = "Gold"
+            };
+            _suroviny.Add(s);
+        }
+        suroviny.Add(s.Nazev, s);
+        s = _suroviny.Where(s => s.Nazev.Equals("Ovce")).FirstOrDefault();
+        if (s == null)
+        {
+            s = new Surovina()
+            {
+                Nazev = "Ovce",
+                ImageUrl = "ovce.svg",
+                BackColor = "Limegreen"
+            };
+            _suroviny.Add(s);
+        }
+        suroviny.Add(s.Nazev, s);
+        s = _suroviny.Where(s => s.Nazev.Equals("Kámen")).FirstOrDefault();
+        if (s == null)
+        {
+            s = new Surovina()
+            {
+                Nazev = "Kámen",
+                ImageUrl = "kamen.svg",
+                BackColor = "Gray"
+            };
+            _suroviny.Add(s);
+        }
+        suroviny.Add(s.Nazev, s);
+        s = _suroviny.Where(s => s.Nazev.Equals("Poušť")).FirstOrDefault();
+        if (s == null)
+        {
+            s = new Surovina()
+            {
+                Nazev = "Poušť",
+                ImageUrl = "poust.svg",
+                BackColor = "Yellow"
+            };
+            _suroviny.Add(s);
+        }
+        suroviny.Add(s.Nazev, s);
+    }
+    private void VytvorStavby(DbSet<Stavba> _stavby) { 
+        Stavba v= _stavby.Where(s => s.Nazev.Equals("Vesnice")).FirstOrDefault();
+        if (v == null)
+        {
+            v = new Stavba("Vesnice", 1);
+            _stavby.Add(v);
+        }
+        stavby.Add(v.Nazev, v);
+        v = _stavby.Where(s => s.Nazev.Equals("Město")).FirstOrDefault();
+        if (v == null)
+        {
+            v = new Stavba("Město", 2);
+            _stavby.Add(v);
+        }
+        stavby.Add(v.Nazev, v);
+    }
     private void Generuj()
     {
         foreach (var s in nazvySurovin)
         {
-            zasobaSurovin.Add(Surovina.GetSurovina(s));
+            zasobaSurovin.Add(suroviny[s]);
         }
         foreach (var i in cislaPolicek)
         {
@@ -67,7 +164,7 @@ public class Mapka : HerniEntita
             Pole p;
             if (souradnice.Item1 == 12 && souradnice.Item2 == 12)
             {
-                p = new Pole(this, Surovina.GetSurovina("Poušť"), 0, 12, 12);
+                p = new Pole(this, suroviny["Poušť"], 0, 12, 12);
             }
             else
             {

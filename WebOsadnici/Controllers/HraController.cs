@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
+using System.Drawing;
 using WebOsadnici.Data;
-using WebOsadnici.Models;
 
 namespace WebOsadnici.Controllers
 {
@@ -19,39 +18,84 @@ namespace WebOsadnici.Controllers
             _logger = logger;
             _userManager = userManager;
         }
-        [Route("Hra/Nova")]
-        public async Task<IActionResult> Prubeh()
-        {
-            Hra h = new Hra();
-            var user = await _userManager.GetUserAsync(User);
-            if (user != null)
-            {
-                h.PridejHrace(user);
-            }
-            var x = h;
-            _dbContext.Add(x);
-            _dbContext.SaveChanges();
-            return View(h);
-        }
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
-            Hra[] h=Hra.NactiHry(_dbContext)
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            ViewBag.moje = Hra.NactiHry(_dbContext)
                 .Where(h => h.hraci.Contains(user)).ToArray();
+            ViewBag.nezacate = Hra.NactiHry(_dbContext)
+                .Where(h => !h.hraci.Contains(user) && h.hracNaTahu==-1).ToArray();
+            return View();
+        }
+        public async Task<IActionResult> Nova()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            Hra h = new Hra(_dbContext.suroviny, _dbContext.stavby);
+            _dbContext.Add(h);
+            _dbContext.SaveChanges();
+            return RedirectToAction("Pripojit",new { id=h.Id });
+        }
+        public async Task<IActionResult> Pripojit(Guid id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            Hra h = _dbContext.hry
+                .Where(h => h.Id == id)
+                .Include(h => h.hraci)
+                .Include(h => h.stavy)
+                .Single();
             return View(h);
         }
-        [Route("Hra/Prubeh/{id}")]
+
+        [HttpPost]
+        public async Task<IActionResult> AddStavHrace(IFormCollection form)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            string barva = form["barva"];
+            Guid hraId = Guid.Parse(form["Id"]);
+            Hra h = _dbContext.hry
+                .Where(h => h.Id == hraId)
+                .Include(h => h.hraci)
+                .Include(h => h.stavy)
+                .Single();
+            h.PridejHrace(user,Color.FromName(barva),_dbContext);
+            _dbContext.SaveChanges();
+            // Přesměrování na akci Prubeh na stejném controlleru
+            return RedirectToAction("Prubeh", new {id = hraId});
+        }
+
         public async Task<IActionResult> Prubeh(Guid id)
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             Hra h = _dbContext.hry
+                .Where(h => h.Id == id)
                 .Include(h=>h.mapka)
                 .Include (h=>h.hraci)
+                .Include(h=>h.stavy)
                 .Include(h => h.mapka.rozcesti)
                 .Include(h => h.mapka.policka)
+                    .ThenInclude(p=>p.surovina)
                 .Include(h => h.mapka.cesty)
-                .Where(h=>h.Id==id)
-                .FirstOrDefault();
-            
+                .Single();
+            if (!h.hraci.Contains(user))
+            {
+                return RedirectToAction("Index", "Hra");
+            }
             return View(h);
         }
     }
