@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using WebOsadnici.Data;
 
 namespace WebOsadnici.Hubs
@@ -41,7 +42,6 @@ namespace WebOsadnici.Hubs
         }
         public async Task KliknutiNaPolicko(string connectionId, string Id, string HraId)
         {
-            // Zpracování id nadřazeného svg elementu, například odeslání zpět klientovi
 
         }
         public async Task KliknutiNaRozcesti(string connectionId, string Id, string HraId)

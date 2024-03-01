@@ -57,7 +57,8 @@ namespace WebOsadnici.Data
                 .HasMany(d => d.stavy)
                 .WithOne(d=> d.hra);
             modelBuilder.Entity<Hra>()
-                .Property(h => h.stavHry);
+                .Property(h => h.stavHry)
+                .IsRequired();
 
             modelBuilder.Entity<AkcniKarta>()
                 .ToTable("AkcniKarty")
@@ -154,7 +155,8 @@ namespace WebOsadnici.Data
                 name => Color.FromName(name)
                 );
             modelBuilder.Entity<StavHrace>()
-                .Property(s => s.poradi);
+                .Property(s => s.poradi)
+                .IsRequired();
             
             modelBuilder.Entity<StavHrace>()
                 .HasMany<SurovinaKarta>(s => s.SurovinaKarty)

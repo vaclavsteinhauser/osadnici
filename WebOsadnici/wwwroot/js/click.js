@@ -22,6 +22,7 @@ connection.start().then(function () {
     var cesty = document.getElementsByClassName("cesta");
     Array.from(cesty).forEach(function (cesta) {
         cesta.addEventListener("click", function (event) {
+            var hraid = document.getElementById("hra").innerText;
             var clickedId = cesta.id;
 
             connection.invoke("KliknutiNaCestu", connection.connectionId, clickedId,HraId)
@@ -35,6 +36,7 @@ connection.start().then(function () {
     var policka = document.getElementsByClassName("policko");
     Array.from(policka).forEach(function (policko) {
         policko.addEventListener("click", function (event) {
+            var hraid = document.getElementById("hra").innerText;
             var clickedId = policko.id;
 
             connection.invoke("KliknutiNaPolicko", connection.connectionId, clickedId,HraId)
@@ -48,6 +50,7 @@ connection.start().then(function () {
     var rozcesti = document.getElementsByClassName("rozcesti");
     Array.from(rozcesti).forEach(function (rozcest) {
         rozcest.addEventListener("click", function (event) {
+            var hraid = document.getElementById("hra").innerText;
             var clickedId = rozcest.id;
 
             connection.invoke("KliknutiNaRozcesti", connection.connectionId, clickedId,HraId)

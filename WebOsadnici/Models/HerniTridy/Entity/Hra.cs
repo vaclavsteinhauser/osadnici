@@ -155,7 +155,8 @@ public class Hra : HerniEntita
             poradi=stavy.Count,
             hra = this,
             barva = barva,
-            hrac = h
+            hrac = h,
+            poradi = hraci.Count
         };
         _dbContext.Update(this);
         _dbContext.Add(s);
@@ -189,9 +190,9 @@ public class Hra : HerniEntita
     }
     private void ZacniDalsiTah()
     {
-        hracNaTahu += 1;
+        hracNaTahu = hracNaTahu%stavy.Count+1;
         HodKostkou();
-        foreach (var p in mapka.policka) {
+        /*foreach (var p in mapka.policka) {
             if (p.cislo == hodnotaKostek)
             {
                 foreach (var r in p.rozcesti) {
