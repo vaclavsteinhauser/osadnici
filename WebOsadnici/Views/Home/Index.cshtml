@@ -1,10 +1,82 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<Hrac> SignInManager
+@inject UserManager<Hrac> UserManager
+@{
     ViewData["Title"] = "Home Page";
 }
-
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-    <a href="Hra">hra</a>
-    <a href="Hra/Nova">Nová hra</a>
+@if (SignInManager.IsSignedIn(User))
+{
+        <div class="nadpis">
+        <h1>Dostupné hry:</h1>
+        <a class="button" href="Hra/Nova">Nová hra</a>
+        </div>
+        <section>
+            <header>
+                <h2>Moje rozehrané hry:</h2>
+            </header>
+            <ul class="list-her">
+                @foreach (Hra h in ViewBag.moje)
+                { 
+                <li>
+                    <a asp-area="" asp-controller="Hra" asp-action="Prubeh" asp-route-id="@h.Id">
+                        <div class="list-hra-detail">
+                            <img src="https://fastly.picsum.photos/id/17/2500/1667.jpg?hmac=HD-JrnNUZjFiP2UZQvWcKrgLoC_pc_ouUSWv8kHsJJY"
+                                 alt="obrazek">
+                            <div class="list-polozka-text">
+                                    @foreach (Hrac hrac in h.hraci)
+                                    {
+                                        string trida;
+                                        @if (hrac == h.AktualniHrac())
+                                        {
+                                            trida = "list-hra-aktualni";
+                                        }
+                                        else
+                                        {
+                                            trida = "list-hra-ostatni";
+                                        }
+
+                                        <div class="@trida">
+                                            @hrac.UserName
+                                        </div>
+                                    }
+                            </div>
+                        </div>
+                    </a>
+                </li>
+                }
+            </ul>
+        </section>
+        <section>
+            <header>
+                <h2>Hry kam se můžu připojit:</h2>
+            </header>
+            <ul class="list-her">
+                @foreach (Hra h in ViewBag.nezacate)
+                {
+                    <li>
+                        <a asp-area="" asp-controller="Hra" asp-action="Pripojit" asp-route-id="@h.Id">
+                            <div class="list-hra-detail">
+                                <img src="https://fastly.picsum.photos/id/17/2500/1667.jpg?hmac=HD-JrnNUZjFiP2UZQvWcKrgLoC_pc_ouUSWv8kHsJJY"
+                                     alt="obrazek">
+                                <div class="list-polozka-text">
+                                    @foreach (Hrac hrac in h.hraci)
+                                    {
+                                        <div class="list-hra-ostatni">
+                                            @hrac.UserName
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </section>
+    
+}
+else
+{
+    <p>Nejsi přihlášený + obrázek</p>
+}
 </div>

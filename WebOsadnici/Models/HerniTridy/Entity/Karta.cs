@@ -6,6 +6,7 @@ public class Karta : HerniEntita
 public class AkcniKarta : Karta
 {
     public String Nazev;
+    public String ImageUrl;
 }
 public class SurovinaKarta : Karta
 {

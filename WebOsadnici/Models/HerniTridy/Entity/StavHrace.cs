@@ -3,13 +3,18 @@ using WebOsadnici.Controllers;
 using WebOsadnici.Models.HerniTridy;
 public class StavHrace : HerniEntita
 {
+    //spojení se hrou a hráčem
     public Hra hra {  get; set; }
     public Hrac hrac { get; set; }
-
     public Color barva { get; set; }
+    public int poradi;
 
     public List<AkcniKarta> AkcniKarty { get; } = new List<AkcniKarta>();
     public List<SurovinaKarta> SurovinaKarty { get; } = new List<SurovinaKarta>();
+    public bool JeNaTahu()
+    {
+        return hra.hracNaTahu == poradi;
+    }
     public void PridejSurovinu(Surovina s, int pocet=1)
     {
         foreach(var karta in SurovinaKarty)
@@ -20,9 +25,6 @@ public class StavHrace : HerniEntita
                 return;
             }
         }
-        SurovinaKarta sk = new SurovinaKarta() { surovina = s, pocet = pocet };
-        SurovinaKarty.Add(sk);
-
     }
     public void PridejAkcniKartu(AkcniKarta k)
     {

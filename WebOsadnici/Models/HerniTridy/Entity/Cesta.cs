@@ -6,7 +6,8 @@ public class Cesta : HerniEntita
     internal static readonly Size velikost = new Size(2,2);
     internal readonly int poziceX, poziceY;
     internal Hrac? hrac;
-    internal readonly List<Rozcesti> konce= new();
+    internal readonly List<Rozcesti> rozcesti= new();
+    
     //jak natocena ma byt pri vykreslovani cesta
     //0 - |
     //1 - /

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using WebOsadnici.Data;
 using WebOsadnici.Hubs;
@@ -9,12 +10,14 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySQL(connectionString));
+    options.UseMySQL(connectionString,o => o.CommandTimeout(60)));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
 
 builder.Services.AddDefaultIdentity<Hrac>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
+    options.SignIn.RequireConfirmedEmail = false;
     options.Password.RequireDigit = false;
     options.Password.RequireLowercase = false;
     options.Password.RequireUppercase = false;
@@ -44,7 +47,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication();
+//app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
@@ -53,4 +56,5 @@ app.MapControllerRoute(
 app.MapRazorPages();
 app.MapHub<ClickHub>("/clickHub");
 
+Hra.HubContext= app.Services.GetRequiredService<IHubContext<ClickHub>>();
 app.Run();

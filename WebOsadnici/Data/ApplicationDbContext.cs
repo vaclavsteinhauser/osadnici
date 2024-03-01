@@ -11,6 +11,10 @@ namespace WebOsadnici.Data
             : base(options)
         {
         }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.EnableSensitiveDataLogging();
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -28,7 +32,7 @@ namespace WebOsadnici.Data
                 .Property(c => c.natoceni)
                 .IsRequired();
             modelBuilder.Entity<Cesta>()
-                .HasMany<Rozcesti>(c => c.konce);
+                .HasMany<Rozcesti>(c => c.rozcesti);
             modelBuilder.Entity<Cesta>()
                 .HasOne<Hrac>(c => c.hrac);
             
@@ -52,6 +56,8 @@ namespace WebOsadnici.Data
             modelBuilder.Entity<Hra>()
                 .HasMany(d => d.stavy)
                 .WithOne(d=> d.hra);
+            modelBuilder.Entity<Hra>()
+                .Property(h => h.stavHry);
 
             modelBuilder.Entity<AkcniKarta>()
                 .ToTable("AkcniKarty")
@@ -130,6 +136,8 @@ namespace WebOsadnici.Data
                 .IsRequired();
             modelBuilder.Entity<Stavba>()
                 .Property(s => s.zisk);
+            modelBuilder.Entity<Stavba>()
+                .Property(s => s.ImageUrl);
 
             modelBuilder.Entity<StavHrace>()
                 .ToTable("StavyHracu")
@@ -145,6 +153,8 @@ namespace WebOsadnici.Data
                 color => color.Name,
                 name => Color.FromName(name)
                 );
+            modelBuilder.Entity<StavHrace>()
+                .Property(s => s.poradi);
             
             modelBuilder.Entity<StavHrace>()
                 .HasMany<SurovinaKarta>(s => s.SurovinaKarty)

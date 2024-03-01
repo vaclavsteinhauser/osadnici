@@ -81,6 +81,9 @@ namespace WebOsadnici.Migrations
                     b.Property<int>("hracNaTahu")
                         .HasColumnType("int");
 
+                    b.Property<int>("stavHry")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("Hry", (string)null);
@@ -412,6 +415,9 @@ namespace WebOsadnici.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
+                    b.Property<int>("poradi")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("hraId");
@@ -426,6 +432,10 @@ namespace WebOsadnici.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Nazev")
                         .IsRequired()
@@ -599,7 +609,7 @@ namespace WebOsadnici.Migrations
             modelBuilder.Entity("Rozcesti", b =>
                 {
                     b.HasOne("Cesta", null)
-                        .WithMany("konce")
+                        .WithMany("rozcesti")
                         .HasForeignKey("CestaId");
 
                     b.HasOne("Mapka", null)
@@ -657,7 +667,7 @@ namespace WebOsadnici.Migrations
 
             modelBuilder.Entity("Cesta", b =>
                 {
-                    b.Navigation("konce");
+                    b.Navigation("rozcesti");
                 });
 
             modelBuilder.Entity("Hra", b =>

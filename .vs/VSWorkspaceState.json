@@ -3,8 +3,9 @@
     "",
     "\\WebOsadnici",
     "\\WebOsadnici\\Models",
-    "\\WebOsadnici\\Models\\HerniTridy"
+    "\\WebOsadnici\\Models\\HerniTridy",
+    "\\WebOsadnici\\Models\\HerniTridy\\Entity"
   ],
-  "SelectedNode": "\\WebOsadnici\\Models\\HerniTridy\\Hrac.cs",
+  "SelectedNode": "\\WebOsadnici\\Models\\HerniTridy\\Entity\\Cesta.cs",
   "PreviewInSolutionExplorer": false
 }

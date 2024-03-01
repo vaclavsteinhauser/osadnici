@@ -1,102 +1,102 @@
-﻿@functions {
-    public string VykresleniPolicka(Pole p)
-    {
-        int odsazeniX = (p.poziceX - (Pole.velikost.Width / 2)) * Mapka.rozmeryMrizky.Width;
-        int odsazeniY = (p.poziceY - (Pole.velikost.Height / 2)) * Mapka.rozmeryMrizky.Height;
-        int vyska = Pole.velikost.Height * Mapka.rozmeryMrizky.Height;
-        int sirka = Pole.velikost.Width * Mapka.rozmeryMrizky.Width;
-        string cislo=(p.cislo!=0) ? $@"<circle cx='{sirka / 2}' cy='{vyska / 2}' r='{Math.Min(sirka, vyska) / 8}' fill='white' stroke='black' stroke-width='2' style='pointer-events: none;' />
-                <text x='{sirka / 2}' y='{vyska / 2}' text-anchor='middle' alignment-baseline='middle' fill='black' font-weight='bold' font-size='{Math.Min(sirka, vyska) / 6}' style='pointer-events: none;'>{p.cislo}</text>" : "";
-        return $@"
-            <svg style='position: absolute; pointer-events: none;
-                    top: {odsazeniY}px;
-                    left: {odsazeniX}px;'
-                    width='{sirka}px'
-                    height='{vyska}px'
-                    xmlns='http://www.w3.org/2000/svg' alt='{p.surovina.Nazev}'>
-                <polygon class='policko' id='{p.Id}' points='{sirka / 2},0 {sirka},{vyska / 3} {sirka},{2 * vyska / 3} {sirka / 2},{vyska} 0,{2 * vyska / 3} 0,{vyska / 3}'  style='fill:{p.surovina.BackColor}; pointer-events: auto;'  />
-                <clipPath id='hexMask'>
-                    <polygon points='{sirka / 2},0 {sirka},{vyska / 3} {sirka},{2 * vyska / 3} {sirka / 2},{vyska} 0,{2 * vyska / 3} 0,{vyska / 3}' style='pointer-events: none;' />
-                </clipPath>
-                <image xlink:href='../../{p.surovina.ImageUrl}' width='80%' height='80%' x='10%' y='10%' clip-path='url(#hexMask)' style='pointer-events: none;' />
-            {cislo}
-            </svg>";
-    }
-    public string VykresleniCesty(Cesta c)
-    {
-        int odsazeniX = (c.poziceX - (Cesta.velikost.Width / 2)) * Mapka.rozmeryMrizky.Width;
-        int odsazeniY = (c.poziceY - (Cesta.velikost.Height / 2)) * Mapka.rozmeryMrizky.Height;
-        int vyska = Cesta.velikost.Height * Mapka.rozmeryMrizky.Height;
-        int sirka = Cesta.velikost.Width * Mapka.rozmeryMrizky.Width;
-        String polygon;
-        switch (c.natoceni)
-        {
-            case 0: polygon = $"{13 * sirka / 30},0 {17 * sirka / 30},0 {17 * sirka / 30},{vyska} {13 * sirka / 30},{vyska}"; break;
-            case 1: polygon = $"0,0 {1 * sirka / 10},0 {sirka},{9 * vyska / 10} {sirka},{vyska} {9 * sirka / 10},{vyska} 0,{1 * vyska / 10}"; break;
-            default: polygon = $"{9 * sirka / 10},0 {sirka},0 {sirka},{1 * vyska / 10} {1 * sirka / 10},{vyska} 0,{vyska} 0,{9 * vyska / 10}"; break;
-        }
-        return $@"
-            <svg style='position: absolute; pointer-events: none;
-                    top: {odsazeniY}px;
-                    left: {odsazeniX}px;'
-                    width='{sirka}px'
-                    height='{vyska}px'
-                    xmlns='http://www.w3.org/2000/svg' alt='cesta'>
-                <polygon class='cesta' id='{c.Id}' points='{polygon}'  style='fill:black; pointer-events: auto;'  />
-            </svg>";
-    }
-    public string VykresleniRozcesti(Rozcesti r)
-    {
-        int odsazeniX = (r.poziceX * Mapka.rozmeryMrizky.Width - (Rozcesti.velikost.Width * Mapka.rozmeryMrizky.Width / 2));
-        int odsazeniY = (r.poziceY * Mapka.rozmeryMrizky.Height - (Rozcesti.velikost.Height * Mapka.rozmeryMrizky.Height / 2));
-        int vyska = Rozcesti.velikost.Height * Mapka.rozmeryMrizky.Height;
-        int sirka = Rozcesti.velikost.Width * Mapka.rozmeryMrizky.Width;
-        string nazev = (r.hrac == null) ? "Prazdne" : r.hrac.Name;
-        return $@"
-            <svg style='position: absolute; pointer-events: none;
-                top: {odsazeniY}px;
-                left: {odsazeniX}px;'
-                width='{sirka}px'
-                height='{vyska}px'
-                xmlns='http://www.w3.org/2000/svg' alt='{nazev} rozcesti'>
-            <circle class='rozcesti' id='{r.Id}' cx='{sirka / 2}' cy='{vyska / 2}' r='{Math.Min(sirka, vyska) / 4}' stroke='black' stroke-width='3' fill='black' style='pointer-events: auto;' />
-            <image xlink:href='' width='{Math.Min(sirka, vyska) * 0.7}' height='{Math.Min(sirka, vyska) * 0.7}' x='{sirka / 2 - (Math.Min(sirka, vyska) * 0.35)}' y='{vyska / 2 - (Math.Min(sirka, vyska) * 0.35)}' display='none' />
-            </svg>";
-    }
-}
-@model Hra
-@{
+﻿@{
     ViewData["Title"] = "Pruběh hry";
 }
+<span id="id-hry" hidden>@ViewBag.hra.Id</span>
+<span id="id-hrace" hidden>@ViewBag.hrac.Id</span>
 <div id="main-container">
-    <div id="side-panel">
-
-        <p>Už se připojili hráči:</p>
-        <ol>
-            @foreach (StavHrace s in Model.stavy)
+    <div class="ovladaci_panel" id="tlacitkovy-panel">
+        <div id="instrukce">
+            @if (ViewBag.hra.stavHry != StavHry.Vytvorena)
             {
-                <li style="color: @s.barva.Name;">@s.hrac.UserName</li>
+                if (ViewBag.hra.AktualniHrac() == ViewBag.Hrac)
+                {
+                    <p>>Vyber akci</p>
+                }
+                else
+                {
+                    <p>Nejsi na tahu, můžeš jen souhlasit se směnami.</p>
+                }
             }
-        </ol>
-        <p id="text">text</p>
-        <p id="kliknutacesta">cesta</p>
-        <p id="kliknutepolicko">policko</p>
-        <p id="kliknuterozcesti">rozcesti</p>
+            else
+            {
+                if (ViewBag.hra.hraci.Count > 1 && ViewBag.hrac == ViewBag.hra.hraci[0])
+                {
+                    <p>Klikni na "Začít hru" nebo počkej na další hráče</p>
+                }
+                else
+                {
+                    <p>Čekej až první hráč začne hru, nebo se připojí maximální počet hráčů.</p>
+                }
+            }
+        </div>
+        <div>
+            <h2>Nákup</h2>
+            <span id="panel_stavby">
+                @foreach(Stavba s in ViewBag.stavby)
+                {
+                    <div class="stavba" id=@s.Nazev>
+                        @s.Nazev
+                        <img src="../../@s.ImageUrl" \ />
+                    </div>
+                }
+                <div class="stavba" id="cesta">
+                    Cesta
+                    <img src="../../cesta.svg" \ />
+                </div>
+                <div class="stavba" id="akcni_karta">
+                    Akční karta
+                    <img src="../../akcni_karta.svg" \ />
+                </div>
+            </span>
+        </div>
+        <div>
+            AkcniKarty
+        </div>
+        <div id="panel_tlacitka">
+            @if (ViewBag.hra.stavHry != StavHry.Vytvorena)
+            {
+                if (ViewBag.hra.AktualniHrac() == ViewBag.Hrac)
+                {
+                    <button id="tlacitko_smena">Nabídnout směnu</button>
+                    <button id="tlacitko_dalsi">Ukončit tah</button>
+                }
+                else
+                {
+                    <button id="tlacitko_smena" disabled>Nabídnout směnu</button>
+                    <button id="tlacitko_dalsi" disabled>Ukončit tah</button>
+                }
+                
+            }
+            else
+            {
+                <button id="tlacitko_smena" disabled>Nabídnout směnu</button>
+                if (ViewBag.hra.hraci.Count > 1 && ViewBag.hrac == ViewBag.hra.hraci[0])
+                {
+                    <button id="tlacitko_dalsi">Začít hru</button>
+                }
+                else
+                {
+                    <button id="tlacitko_dalsi" disabled>Začít hru</button>
+                }
+            }
+        </div>
+        
 
     </div>
-    <div id="map-container">
-        @foreach (var policko in Model.mapka.policka)
-        {
-            @Html.Raw(VykresleniPolicka(policko))
-        }
-        @foreach (var cesta in Model.mapka.cesty)
-        {
-            @Html.Raw(VykresleniCesty(cesta))
-        }
-        @foreach (var rozcesti in Model.mapka.rozcesti)
-        {
-            @Html.Raw(VykresleniRozcesti(rozcesti))
-        }
+    <div id="map-container" style="width: @(Mapka.rozmeryMrizky.Width*@Pole.velikost.Width*6)px">
+        <partial name="Mapka" />
+    </div>
+    <div class="ovladaci_panel" id="stavovy-panel">
+
+        <div>
+            Stavybodu
+        </div>
+        <div>
+            surovinove karty
+        </div>
+        <div id="panel_smeny">
+            smeny
+        </div>
     </div>
 </div>
 <script src="~/js/signalr/dist/browser/signalr.js"></script>

@@ -1,44 +1,48 @@
-﻿@model Hra
-@{
-    ViewData["Title"] = "Seznam her";
+﻿@{
+    ViewData["Title"] = "Připojení do hry";
 }
-<div class="text-center">
-    <h1>Připojení do hry: @Model.Id</h1>
-    @if (Model.hraci.Count != 0)
-    {
-        <p>Už se připojili hráči:</p>
-        <ol>
-            @foreach (StavHrace s in Model.stavy)
-            {
-                <li style="color: @s.barva.Name;">@s.hrac.UserName</li>
-            }
-        </ol>
-    }
-    <form asp-controller="Hra" asp-action="AddStavHrace" method="post">
-        <label>Vyberte barvu:</label>
-        <input type="hidden" name="Id" value="@Model.Id" />
-        <select name="barva" id="barva">
-            @if (!Model.JeObsazenaBarva("Red"))
-            {
-                <option value="Red">Červená</option>
-            }
-            @if (!Model.JeObsazenaBarva("Blue"))
-            {
-                <option value="Blue">Modrá</option>
-            }
-                
-            @if (!Model.JeObsazenaBarva("Green"))
-            {
-                <option value="Green">Zelená</option>
-            }
-            
-            @if (!Model.JeObsazenaBarva("Yellow"))
-            {
-                <option value="Yellow">Žlutá</option>
-            }
-            
-        </select>
+<div id="main-container">
+    <div id="side-panel">
+        <h1>Připojení do hry:</h1>
+        @if (ViewBag.hra.hraci.Count != 0)
+        {
+            <p>Už se připojili hráči:</p>
+            <ol>
+                @foreach (StavHrace s in ViewBag.hra.stavy)
+                {
+                    <li style="color: @s.barva.Name;">@s.hrac.UserName</li>
+                }
+            </ol>
+        }
+        <form asp-controller="Hra" asp-action="AddStavHrace" method="post">
+            <label>Vyberte si svoji barvu:</label>
+            <input type="hidden" name="Id" value="@ViewBag.hra.Id" />
+            <select name="barva" id="barva">
+                @if (!ViewBag.hra.JeObsazenaBarva("Red"))
+                {
+                    <option value="Red">Červená</option>
+                }
+                @if (!ViewBag.hra.JeObsazenaBarva("Blue"))
+                {
+                    <option value="Blue">Modrá</option>
+                }
 
-        <button type="submit">Odeslat</button>
-    </form>
+                @if (!ViewBag.hra.JeObsazenaBarva("Green"))
+                {
+                    <option value="Green">Zelená</option>
+                }
+
+                @if (!ViewBag.hra.JeObsazenaBarva("Yellow"))
+                {
+                    <option value="Yellow">Žlutá</option>
+                }
+
+            </select>
+
+            <button type="submit">Odeslat</button>
+        </form>
+    </div>
+    <div id="map-container" style="width: @(Mapka.rozmeryMrizky.Width*@Pole.velikost.Width*6)px">
+        <partial name="Mapka" />
+    </div>
 </div>
