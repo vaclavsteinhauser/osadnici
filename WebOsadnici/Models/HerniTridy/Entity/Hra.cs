@@ -155,8 +155,7 @@ public class Hra : HerniEntita
             poradi=stavy.Count,
             hra = this,
             barva = barva,
-            hrac = h,
-            poradi = hraci.Count
+            hrac = h
         };
         _dbContext.Update(this);
         _dbContext.Add(s);
@@ -202,7 +201,7 @@ public class Hra : HerniEntita
                     }
                 }
             }
-        }
+        }*/
 
     }
     public void KliknutiNaPolicko(Guid idPolicka, string _connectionId)
