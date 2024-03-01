@@ -11,8 +11,8 @@ using WebOsadnici.Data;
 namespace WebOsadnici.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240301135310_stavhry")]
-    partial class stavhry
+    [Migration("20240301203014_inicializace")]
+    partial class inicializace
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -417,6 +417,9 @@ namespace WebOsadnici.Migrations
                     b.Property<string>("hracId")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
+
+                    b.Property<int>("poradi")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

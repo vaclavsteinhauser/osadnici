@@ -7,11 +7,7 @@ using MySql.EntityFrameworkCore.Metadata;
 namespace WebOsadnici.Migrations
 {
     /// <inheritdoc />
-<<<<<<<< HEAD:WebOsadnici/Migrations/20240229215815_initial.cs
-    public partial class initial : Migration
-========
     public partial class inicializace : Migration
->>>>>>>> 5651729783d79b3917e3959b7bd321d0ce6d82ec:WebOsadnici/Migrations/20240208050247_inicializace.cs
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -266,8 +262,8 @@ namespace WebOsadnici.Migrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
                     hraId = table.Column<Guid>(type: "char(36)", nullable: false),
                     hracId = table.Column<string>(type: "varchar(255)", nullable: false),
-                    poradi = table.Column<int>(type: "int", nullable: false),
-                    barva = table.Column<string>(type: "longtext", nullable: false)
+                    barva = table.Column<string>(type: "longtext", nullable: false),
+                    poradi = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
