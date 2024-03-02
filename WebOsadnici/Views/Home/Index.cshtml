@@ -4,12 +4,13 @@
 @{
     ViewData["Title"] = "Home Page";
 }
+
 <div class="text-center">
-@if (SignInManager.IsSignedIn(User))
-{
+    @if (SignInManager.IsSignedIn(User))
+    {
         <div class="nadpis">
-        <h1>Dostupné hry:</h1>
-        <a class="button" href="Hra/Nova">Nová hra</a>
+            <h1>Dostupné hry:</h1>
+            <a class="button" href="Hra/Nova">Nová hra</a>
         </div>
         <section>
             <header>
@@ -17,13 +18,13 @@
             </header>
             <ul class="list-her">
                 @foreach (Hra h in ViewBag.moje)
-                { 
-                <li>
-                    <a asp-area="" asp-controller="Hra" asp-action="Prubeh" asp-route-id="@h.Id">
-                        <div class="list-hra-detail">
-                            <img src="https://fastly.picsum.photos/id/17/2500/1667.jpg?hmac=HD-JrnNUZjFiP2UZQvWcKrgLoC_pc_ouUSWv8kHsJJY"
-                                 alt="obrazek">
-                            <div class="list-polozka-text">
+                {
+                    <li>
+                        <a class="hra" asp-area="" asp-controller="Hra" asp-action="Prubeh" asp-route-id="@h.Id">
+                            <div class="list-hra-detail">
+                                <img src="https://fastly.picsum.photos/id/17/2500/1667.jpg?hmac=HD-JrnNUZjFiP2UZQvWcKrgLoC_pc_ouUSWv8kHsJJY"
+                                     alt="obrazek">
+                                <div class="list-polozka-text">
                                     @foreach (Hrac hrac in h.hraci)
                                     {
                                         string trida;
@@ -40,10 +41,10 @@
                                             @hrac.UserName
                                         </div>
                                     }
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                </li>
+                        </a>
+                    </li>
                 }
             </ul>
         </section>
@@ -55,7 +56,7 @@
                 @foreach (Hra h in ViewBag.nezacate)
                 {
                     <li>
-                        <a asp-area="" asp-controller="Hra" asp-action="Pripojit" asp-route-id="@h.Id">
+                        <a class="hra" asp-area="" asp-controller="Hra" asp-action="Pripojit" asp-route-id="@h.Id">
                             <div class="list-hra-detail">
                                 <img src="https://fastly.picsum.photos/id/17/2500/1667.jpg?hmac=HD-JrnNUZjFiP2UZQvWcKrgLoC_pc_ouUSWv8kHsJJY"
                                      alt="obrazek">
@@ -73,10 +74,15 @@
                 }
             </ul>
         </section>
-    
-}
-else
-{
-    <p>Nejsi přihlášený + obrázek</p>
-}
+
+    }
+    else
+    {
+        <p>Nejsi přihlášený + obrázek</p>
+    }
+</div>
+
+<script src="~/js/nacitani.js"></script>
+<div id="loading-message" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 10px; z-index: 9999; border: 1px solid black;">
+    Probíhá načítání hry... Čekejte prosím
 </div>

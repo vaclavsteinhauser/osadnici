@@ -1,9 +1,22 @@
 ﻿@{
     ViewData["Title"] = "Pruběh hry";
 }
+<script>
+    // Počkat na načtení celé stránky
+    window.addEventListener('load', function () {
+        // Počkat ještě krátkou dobu, než se skryje zpráva o načítání (např. 1 sekunda)
+        setTimeout(function () {
+            // Skrýt zprávu o načítání a zobrazit obsah stránky
+            document.getElementById('loading-message').style.display = 'none';
+            document.getElementById('main-container').style.display = 'flex';
+        }, 1000); // 1000 ms = 1 sekunda
+    });
+</script>
 <span id="id-hry" hidden>@ViewBag.hra.Id</span>
 <span id="id-hrace" hidden>@ViewBag.hrac.Id</span>
-<div id="main-container">
+<p id="loading-message">Vykreslování... Prosím čekejte.</p>
+<div id="main-container" style="display: none;">
+    
     <div class="ovladaci_panel" id="tlacitkovy-panel">
         <div id="instrukce">
             @if (ViewBag.hra.stavHry != StavHry.Vytvorena)
@@ -19,9 +32,16 @@
             }
             else
             {
-                if (ViewBag.hra.hraci.Count > 1 && ViewBag.hrac == ViewBag.hra.hraci[0])
+                if (ViewBag.hrac.Id == ViewBag.hra.hraci[0].Id)
                 {
-                    <p>Klikni na "Začít hru" nebo počkej na další hráče</p>
+                    if (ViewBag.hra.hraci.Count > 1)
+                    {
+                        <p>Klikni na "Začít hru" nebo počkej na další hráče</p>
+                    }
+                    else
+                    {
+                        <p>Počkej na další hráče.</p>
+                    }
                 }
                 else
                 {
@@ -83,7 +103,7 @@
         
 
     </div>
-    <div id="map-container" style="width: @(Mapka.rozmeryMrizky.Width*@Pole.velikost.Width*6)px">
+    <div id="map-container" style="width: @(Mapka.RozmeryMrizky.Width*@Pole.Velikost.Width*6)px">
         <partial name="Mapka" />
     </div>
     <div class="ovladaci_panel" id="stavovy-panel">

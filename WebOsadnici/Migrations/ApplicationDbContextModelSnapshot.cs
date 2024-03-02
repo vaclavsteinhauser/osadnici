@@ -16,7 +16,10 @@ namespace WebOsadnici.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.1")
+                .HasAnnotation("ProductVersion", "7.0.16")
+                .HasAnnotation("Proxies:ChangeTracking", true)
+                .HasAnnotation("Proxies:CheckEquality", true)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("AkcniKarta", b =>
@@ -25,15 +28,19 @@ namespace WebOsadnici.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Nazev")
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int>("Pocet")
+                        .HasColumnType("int");
+
                     b.Property<Guid?>("StavHraceId")
                         .HasColumnType("char(36)");
-
-                    b.Property<int>("pocet")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -70,6 +77,21 @@ namespace WebOsadnici.Migrations
                     b.HasIndex("hracId");
 
                     b.ToTable("Cesty", (string)null);
+                });
+
+            modelBuilder.Entity("CestaRozcesti", b =>
+                {
+                    b.Property<Guid>("CestaId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("rozcestiId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("CestaId", "rozcestiId");
+
+                    b.HasIndex("rozcestiId");
+
+                    b.ToTable("CestaRozcesti");
                 });
 
             modelBuilder.Entity("Hra", b =>
@@ -127,7 +149,7 @@ namespace WebOsadnici.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
@@ -177,12 +199,12 @@ namespace WebOsadnici.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("hraId")
+                    b.Property<Guid?>("HraId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("hraId")
+                    b.HasIndex("HraId")
                         .IsUnique();
 
                     b.ToTable("Mapky", (string)null);
@@ -326,31 +348,46 @@ namespace WebOsadnici.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<bool>("blokovane")
+                    b.Property<bool>("Blokovane")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int>("cislo")
+                    b.Property<int>("Cislo")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("mapkaId")
+                    b.Property<Guid?>("MapkaId")
                         .HasColumnType("char(36)");
 
-                    b.Property<int>("poziceX")
+                    b.Property<int>("PoziceX")
                         .HasColumnType("int");
 
-                    b.Property<int>("poziceY")
+                    b.Property<int>("PoziceY")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("surovinaId")
+                    b.Property<Guid?>("SurovinaId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("mapkaId");
+                    b.HasIndex("MapkaId");
 
-                    b.HasIndex("surovinaId");
+                    b.HasIndex("SurovinaId");
 
                     b.ToTable("Policka", (string)null);
+                });
+
+            modelBuilder.Entity("PoleRozcesti", b =>
+                {
+                    b.Property<Guid>("PoleId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("RozcestiId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("PoleId", "RozcestiId");
+
+                    b.HasIndex("RozcestiId");
+
+                    b.ToTable("PoleRozcesti");
                 });
 
             modelBuilder.Entity("Rozcesti", b =>
@@ -359,41 +396,31 @@ namespace WebOsadnici.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("CestaId")
-                        .HasColumnType("char(36)");
+                    b.Property<bool>("Blokovane")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("HracId")
+                        .HasColumnType("varchar(255)");
 
                     b.Property<Guid?>("MapkaId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("PoleId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<bool>("blokovane")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("hracId")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("poziceX")
+                    b.Property<int>("PoziceX")
                         .HasColumnType("int");
 
-                    b.Property<int>("poziceY")
+                    b.Property<int>("PoziceY")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("stavbaId")
+                    b.Property<Guid?>("StavbaId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CestaId");
+                    b.HasIndex("HracId");
 
                     b.HasIndex("MapkaId");
 
-                    b.HasIndex("PoleId");
-
-                    b.HasIndex("hracId");
-
-                    b.HasIndex("stavbaId");
+                    b.HasIndex("StavbaId");
 
                     b.ToTable("Rozcesti", (string)null);
                 });
@@ -441,7 +468,7 @@ namespace WebOsadnici.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("zisk")
+                    b.Property<int>("Zisk")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -478,20 +505,20 @@ namespace WebOsadnici.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<int>("Pocet")
+                        .HasColumnType("int");
+
                     b.Property<Guid?>("StavHraceId")
                         .HasColumnType("char(36)");
 
-                    b.Property<int>("pocet")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("surovinaId")
+                    b.Property<Guid>("SurovinaId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("StavHraceId");
 
-                    b.HasIndex("surovinaId");
+                    b.HasIndex("SurovinaId");
 
                     b.ToTable("SurovinaKarty", (string)null);
                 });
@@ -506,7 +533,7 @@ namespace WebOsadnici.Migrations
             modelBuilder.Entity("Cesta", b =>
                 {
                     b.HasOne("Mapka", null)
-                        .WithMany("cesty")
+                        .WithMany("Cesty")
                         .HasForeignKey("MapkaId");
 
                     b.HasOne("Hrac", "hrac")
@@ -514,6 +541,21 @@ namespace WebOsadnici.Migrations
                         .HasForeignKey("hracId");
 
                     b.Navigation("hrac");
+                });
+
+            modelBuilder.Entity("CestaRozcesti", b =>
+                {
+                    b.HasOne("Cesta", null)
+                        .WithMany()
+                        .HasForeignKey("CestaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Rozcesti", null)
+                        .WithMany()
+                        .HasForeignKey("rozcestiId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HraHrac", b =>
@@ -533,11 +575,11 @@ namespace WebOsadnici.Migrations
 
             modelBuilder.Entity("Mapka", b =>
                 {
-                    b.HasOne("Hra", "hra")
+                    b.HasOne("Hra", "Hra")
                         .WithOne("mapka")
-                        .HasForeignKey("Mapka", "hraId");
+                        .HasForeignKey("Mapka", "HraId");
 
-                    b.Navigation("hra");
+                    b.Navigation("Hra");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -593,44 +635,49 @@ namespace WebOsadnici.Migrations
 
             modelBuilder.Entity("Pole", b =>
                 {
-                    b.HasOne("Mapka", "mapka")
-                        .WithMany("policka")
-                        .HasForeignKey("mapkaId");
+                    b.HasOne("Mapka", null)
+                        .WithMany("Policka")
+                        .HasForeignKey("MapkaId");
 
-                    b.HasOne("Surovina", "surovina")
+                    b.HasOne("Surovina", "Surovina")
                         .WithMany()
-                        .HasForeignKey("surovinaId");
+                        .HasForeignKey("SurovinaId");
 
-                    b.Navigation("mapka");
+                    b.Navigation("Surovina");
+                });
 
-                    b.Navigation("surovina");
+            modelBuilder.Entity("PoleRozcesti", b =>
+                {
+                    b.HasOne("Pole", null)
+                        .WithMany()
+                        .HasForeignKey("PoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Rozcesti", null)
+                        .WithMany()
+                        .HasForeignKey("RozcestiId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Rozcesti", b =>
                 {
-                    b.HasOne("Cesta", null)
-                        .WithMany("rozcesti")
-                        .HasForeignKey("CestaId");
+                    b.HasOne("Hrac", "Hrac")
+                        .WithMany()
+                        .HasForeignKey("HracId");
 
                     b.HasOne("Mapka", null)
-                        .WithMany("rozcesti")
+                        .WithMany("Rozcesti")
                         .HasForeignKey("MapkaId");
 
-                    b.HasOne("Pole", null)
-                        .WithMany("rozcesti")
-                        .HasForeignKey("PoleId");
-
-                    b.HasOne("Hrac", "hrac")
+                    b.HasOne("Stavba", "Stavba")
                         .WithMany()
-                        .HasForeignKey("hracId");
+                        .HasForeignKey("StavbaId");
 
-                    b.HasOne("Stavba", "stavba")
-                        .WithMany()
-                        .HasForeignKey("stavbaId");
+                    b.Navigation("Hrac");
 
-                    b.Navigation("hrac");
-
-                    b.Navigation("stavba");
+                    b.Navigation("Stavba");
                 });
 
             modelBuilder.Entity("StavHrace", b =>
@@ -658,16 +705,13 @@ namespace WebOsadnici.Migrations
                         .WithMany("SurovinaKarty")
                         .HasForeignKey("StavHraceId");
 
-                    b.HasOne("Surovina", "surovina")
+                    b.HasOne("Surovina", "Surovina")
                         .WithMany()
-                        .HasForeignKey("surovinaId");
+                        .HasForeignKey("SurovinaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("surovina");
-                });
-
-            modelBuilder.Entity("Cesta", b =>
-                {
-                    b.Navigation("rozcesti");
+                    b.Navigation("Surovina");
                 });
 
             modelBuilder.Entity("Hra", b =>
@@ -679,16 +723,11 @@ namespace WebOsadnici.Migrations
 
             modelBuilder.Entity("Mapka", b =>
                 {
-                    b.Navigation("cesty");
+                    b.Navigation("Cesty");
 
-                    b.Navigation("policka");
+                    b.Navigation("Policka");
 
-                    b.Navigation("rozcesti");
-                });
-
-            modelBuilder.Entity("Pole", b =>
-                {
-                    b.Navigation("rozcesti");
+                    b.Navigation("Rozcesti");
                 });
 
             modelBuilder.Entity("StavHrace", b =>

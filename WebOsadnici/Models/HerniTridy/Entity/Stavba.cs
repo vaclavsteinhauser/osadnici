@@ -1,30 +1,99 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebOsadnici.Models.HerniTridy;
 
+/// <summary>
+/// Reprezentuje stavbu v aplikaci.
+/// </summary>
 public class Stavba : HerniEntita
 {
-    internal string Nazev;
-    internal int zisk;
-    internal string ImageUrl;
-    public Stavba(string Nazev,int zisk, string imageUrl)
+    private string _nazev;
+    private int _zisk;
+    private string _imageUrl;
+
+    /// <summary>
+    /// Název stavby.
+    /// </summary>
+    internal virtual string Nazev
     {
-        this.Nazev = Nazev;
-        this.zisk = zisk;
+        get => _nazev;
+        set
+        {
+            if (_nazev != value)
+            {
+                OnPropertyChanging(nameof(Nazev));
+                _nazev = value;
+                OnPropertyChanged(nameof(Nazev));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Zisk z dané stavby.
+    /// </summary>
+    internal virtual int Zisk
+    {
+        get => _zisk;
+        set
+        {
+            if (_zisk != value)
+            {
+                OnPropertyChanging(nameof(Zisk));
+                _zisk = value;
+                OnPropertyChanged(nameof(Zisk));
+            }
+        }
+    }
+
+    /// <summary>
+    /// URL obrázku stavby.
+    /// </summary>
+    internal virtual string ImageUrl
+    {
+        get => _imageUrl;
+        set
+        {
+            if (_imageUrl != value)
+            {
+                OnPropertyChanging(nameof(ImageUrl));
+                _imageUrl = value;
+                OnPropertyChanged(nameof(ImageUrl));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Konstruktor pro vytvoření instance stavby.
+    /// </summary>
+    /// <param name="nazev">Název stavby.</param>
+    /// <param name="zisk">Zisk z dané stavby.</param>
+    /// <param name="imageUrl">URL obrázku stavby.</param>
+    public Stavba(string nazev, int zisk, string imageUrl)
+    {
+        Nazev = nazev;
+        Zisk = zisk;
         ImageUrl = imageUrl;
     }
-    internal static async Task VytvorStavby(DbSet<Stavba> _stavby)
+    public Stavba() {}
+
+    /// <summary>
+    /// Metoda pro vytvoření výchozích staveb, pokud ještě neexistují.
+    /// </summary>
+    internal static async Task VytvorStavby(DbSet<Stavba> stavby)
     {
-        Stavba v = _stavby.Where(s => s.Nazev.Equals("Vesnice")).SingleOrDefault();
-        if (v == null)
+        // Pokud ještě neexistuje vesnice, vytvoříme ji.
+        Stavba vesnice = await stavby.Where(s => s.Nazev.Equals("Vesnice")).SingleOrDefaultAsync();
+        if (vesnice == null)
         {
-            v = new Stavba("Vesnice", 1, "vesnicka.svg");
-            _stavby.AddAsync(v);
+            vesnice = new Stavba("Vesnice", 1, "vesnicka.svg");
+            await stavby.AddAsync(vesnice);
         }
-        v = _stavby.Where(s => s.Nazev.Equals("Město")).SingleOrDefault();
-        if (v == null)
+
+        // Pokud ještě neexistuje město, vytvoříme ho.
+        Stavba mesto = await stavby.Where(s => s.Nazev.Equals("Město")).SingleOrDefaultAsync();
+        if (mesto == null)
         {
-            v = new Stavba("Město", 2, "mesto.svg");
-            _stavby.AddAsync(v);
+            mesto = new Stavba("Město", 2, "mesto.svg");
+            await stavby.AddAsync(mesto);
         }
     }
 }

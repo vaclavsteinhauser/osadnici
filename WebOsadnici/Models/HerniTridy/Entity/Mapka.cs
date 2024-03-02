@@ -1,22 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Security;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using WebOsadnici.Data;
 using WebOsadnici.Models.HerniTridy;
 
+/// <summary>
+/// Reprezentuje herní mapu s políčky, cestami a rozcestími.
+/// </summary>
 public class Mapka : HerniEntita
 {
-    internal static readonly Size rozmeryMrizky = new Size(30, 25);
-    public Hra? hra { get; set; }
-    public Guid? hraId { get; set; }
+    internal static readonly Size RozmeryMrizky = new Size(30, 25);
 
-    public List<Pole> policka = new();
-    public List<Cesta> cesty = new();
-    public List<Rozcesti> rozcesti = new();
-
-    //Na mřížce si vyznačím stredy políček, item 1 je posun po X ose a item2 po ose Y pocitam od horního levého rohu
-    static private (int,int)[] polohyPolicek = 
-        { 
+    private Hra? _hra;
+    private Guid? _hraId;
+    private ObservableCollection<Pole> _policka = new();
+    private ObservableCollection<Cesta> _cesty = new();
+    private ObservableCollection<Rozcesti> _rozcesti = new();
+    private Dictionary<String, Surovina> suroviny = new();
+    private Dictionary<String, Stavba> stavby = new();
+    static private (int, int)[] polohyPolicek =
+            { 
             (8, 4 ), 
             (12, 4 ), 
             (16, 4 ), 
@@ -37,28 +44,125 @@ public class Mapka : HerniEntita
             (12, 20 ),
             (16, 20 ) 
         };
-    Pole[,] sit = new Pole[25, 25]; 
+    Pole[,] sit = new Pole[25, 25];
     static private string[] nazvySurovin = { "Dřevo", "Dřevo", "Dřevo", "Dřevo", "Cihla", "Cihla", "Cihla", "Ovce", "Ovce", "Ovce", "Ovce", "Obilí", "Obilí", "Obilí", "Obilí", "Kámen", "Kámen", "Kámen" };
     static private int[] cislaPolicek = { 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
-    public Mapka() { }
-    public async Task Inicializace(Hra hra, ApplicationDbContext _dbContext)
-    {
-        await Surovina.VytvorSuroviny(_dbContext.suroviny);
-        await Stavba.VytvorStavby(_dbContext.stavby);
-        await _dbContext.SaveChangesAsync();
-        foreach (Surovina s in _dbContext.suroviny) this.suroviny.Add(s.Nazev, s);
-        foreach (Stavba s in _dbContext.stavby) this.stavby.Add(s.Nazev, s);
-        this.hra = hra;
-        hraId = hra.Id;
-        Generuj();
-    }
     private List<Surovina> zasobaSurovin = new List<Surovina>();
     private List<int> zasobaCisel = new List<int>();
     private Random rnd = new Random();
-    internal readonly Dictionary<String,Surovina> suroviny = new();
-    internal readonly Dictionary<String,Stavba> stavby = new();
+    public Mapka() { }
+    /// <summary>
+    /// Kolekce všech políček na mapě.
+    /// </summary>
+    public virtual ObservableCollection<Pole> Policka
+        {
+            get => _policka;
+            protected set
+            {
+                if (_policka != value)
+                {
+                    OnPropertyChanging(nameof(Policka));
+                    _policka = value;
+                    OnPropertyChanged(nameof(Policka));
+                }
+            }
+        }
 
-    
+    /// <summary>
+    /// Kolekce všech cest na mapě.
+    /// </summary>
+    public virtual ObservableCollection<Cesta> Cesty
+    {
+        get => _cesty;
+        protected set
+        {
+            if (_cesty != value)
+            {
+                OnPropertyChanging(nameof(Cesty));
+                _cesty = value;
+                OnPropertyChanged(nameof(Cesty));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Kolekce všech rozcestí na mapě.
+    /// </summary>
+    public virtual ObservableCollection<Rozcesti> Rozcesti
+    {
+        get => _rozcesti;
+        protected set
+        {
+            if (_rozcesti != value)
+            {
+                OnPropertyChanging(nameof(Rozcesti));
+                _rozcesti = value;
+                OnPropertyChanged(nameof(Rozcesti));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Reference na herní hru, ke které je mapa přiřazena.
+    /// </summary>
+    public virtual Hra? Hra
+    {
+        get => _hra;
+        protected set
+        {
+            if (_hra != value)
+            {
+                OnPropertyChanging(nameof(Hra));
+                _hra = value;
+                OnPropertyChanged(nameof(Hra));
+            }
+        }
+    }
+
+    /// <summary>
+    /// ID herní hry, ke které je mapa přiřazena.
+    /// </summary>
+    public virtual Guid? HraId
+    {
+        get => _hraId;
+        protected set
+        {
+            if (_hraId != value)
+            {
+                OnPropertyChanging(nameof(HraId));
+                _hraId = value;
+                OnPropertyChanged(nameof(HraId));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Inicializuje herní mapu s danou hrou.
+    /// </summary>
+    /// <param name="hra">Hra, ke které je mapa přiřazena.</param>
+    /// <param name="_dbContext">Instance databázového kontextu.</param>
+    public async Task Inicializace(Hra hra, ApplicationDbContext _dbContext)
+    {
+        // Vytvoření surovin a staveb
+        await Surovina.VytvorSuroviny(_dbContext.suroviny);
+        await Stavba.VytvorStavby(_dbContext.stavby);
+        await _dbContext.SaveChangesAsync();
+
+        // Přidání surovin a staveb do mapy
+        foreach (Surovina s in _dbContext.suroviny.ToArray())
+        {
+            suroviny.Add(s.Nazev, s);
+        }
+        foreach (Stavba s in _dbContext.stavby.ToArray())
+        {
+            stavby.Add(s.Nazev, s);
+        }
+
+        // Přiřazení herní hry a inicializace mapy
+        Hra = hra;
+        HraId = hra.Id;
+        Generuj();
+    }
     
     private void Generuj()
     {
@@ -71,14 +175,12 @@ public class Mapka : HerniEntita
             zasobaCisel.Add(i);
         }
 
-
         foreach ((int, int) souradnice in polohyPolicek)
         {
-
             Pole p;
             if (souradnice.Item1 == 12 && souradnice.Item2 == 12)
             {
-                p = new Pole(this, suroviny["Poušť"], 0, 12, 12);
+                p = new Pole(suroviny["Poušť"], 0, 12, 12);
             }
             else
             {
@@ -88,102 +190,103 @@ public class Mapka : HerniEntita
                 r = rnd.Next() % zasobaSurovin.Count;
                 Surovina s = zasobaSurovin[r];
                 zasobaSurovin.RemoveAt(r);
-                p = new Pole(this, s, cislo, souradnice.Item1, souradnice.Item2);
+                p = new Pole(s, cislo, souradnice.Item1, souradnice.Item2);
             }
             sit[souradnice.Item1, souradnice.Item2] = p;
-            policka.Add(p);
+            Policka.Add(p);
         }
 
-        foreach (Pole p in policka)
+        foreach (Pole p in Policka)
         {
-            //Zkontroluje a popáruje rozcestí s políčky nalevo nahoru, případně nové vytvoří pokračuje pak po smeru ručiček
+            //Zkontroluje a popáruje rozcestí s políčky nalevo nahoru, případně nové vytvoří pokračuje pak po směru ručiček
             //Rozcestí u políčka jsou očíslované, 0 je nahoře a pak po směru ručiček
-            if (p.poziceY >= 4 && p.poziceX >= 2)
+            if (p.PoziceY >= 4 && p.PoziceX >= 2)
             {
-                poparujPolicka(p, sit[p.poziceX - 2, p.poziceY - 4], 5, 3);
-                poparujPolicka(p, sit[p.poziceX - 2, p.poziceY - 4], 0, 2);
+                poparujPolicka(p, sit[p.PoziceX - 2, p.PoziceY - 4], 5, 3);
+                poparujPolicka(p, sit[p.PoziceX - 2, p.PoziceY - 4], 0, 2);
             }
-            if (p.poziceY >= 4 && p.poziceX < sit.GetLength(0)-2)
+            if (p.PoziceY >= 4 && p.PoziceX < sit.GetLength(0) - 2)
             {
-                poparujPolicka(p, sit[p.poziceX + 2, p.poziceY - 4], 0, 4);
-                poparujPolicka(p, sit[p.poziceX + 2, p.poziceY - 4], 1, 3);
+                poparujPolicka(p, sit[p.PoziceX + 2, p.PoziceY - 4], 0, 4);
+                poparujPolicka(p, sit[p.PoziceX + 2, p.PoziceY - 4], 1, 3);
             }
-            if (p.poziceX < sit.GetLength(0) - 4)
+            if (p.PoziceX < sit.GetLength(0) - 4)
             {
-                poparujPolicka(p, sit[p.poziceX + 4, p.poziceY], 1, 5);
-                poparujPolicka(p, sit[p.poziceX + 4, p.poziceY], 2, 4);
+                poparujPolicka(p, sit[p.PoziceX + 4, p.PoziceY], 1, 5);
+                poparujPolicka(p, sit[p.PoziceX + 4, p.PoziceY], 2, 4);
             }
-            if (p.poziceY < sit.GetLength(1) - 4 && p.poziceX < sit.GetLength(0) - 2)
+            if (p.PoziceY < sit.GetLength(1) - 4 && p.PoziceX < sit.GetLength(0) - 2)
             {
-                poparujPolicka(p, sit[p.poziceX + 2, p.poziceY + 4], 2, 0);
-                poparujPolicka(p, sit[p.poziceX + 2, p.poziceY + 4], 3, 5);
+                poparujPolicka(p, sit[p.PoziceX + 2, p.PoziceY + 4], 2, 0);
+                poparujPolicka(p, sit[p.PoziceX + 2, p.PoziceY + 4], 3, 5);
             }
-            if (p.poziceY < sit.GetLength(1) - 4 && p.poziceX >= 2)
+            if (p.PoziceY < sit.GetLength(1) - 4 && p.PoziceX >= 2)
             {
-                poparujPolicka(p, sit[p.poziceX - 2, p.poziceY + 4], 3, 1);
-                poparujPolicka(p, sit[p.poziceX - 2, p.poziceY + 4], 4, 0);
+                poparujPolicka(p, sit[p.PoziceX - 2, p.PoziceY + 4], 3, 1);
+                poparujPolicka(p, sit[p.PoziceX - 2, p.PoziceY + 4], 4, 0);
             }
-            if (p.poziceY >= 4)
+            if (p.PoziceY >= 4)
             {
-                poparujPolicka(p, sit[p.poziceX - 4, p.poziceY], 4, 2);
-                poparujPolicka(p, sit[p.poziceX - 4, p.poziceY], 5, 1);
+                poparujPolicka(p, sit[p.PoziceX - 4, p.PoziceY], 4, 2);
+                poparujPolicka(p, sit[p.PoziceX - 4, p.PoziceY], 5, 1);
             }
         }
-        foreach (Pole p in policka)
+        foreach (Pole p in Policka)
         {
-            foreach(Rozcesti r in p.rozcesti)
+            foreach (Rozcesti r in p.Rozcesti)
             {
                 if (r == null) throw new Exception("spatne se vygenerovaly rozcesti");
-                if(r !=null && !rozcesti.Contains(r)) rozcesti.Add(r);
+                if (r != null && !Rozcesti.Contains(r)) Rozcesti.Add(r);
             }
-            for (int i = 0; i < p.rozcesti.Count; i++)
+            for (int i = 0; i < p.Rozcesti.Count; i++)
             {
-                vytvorCestu(p.rozcesti[i], p.rozcesti[(i+1)%p.rozcesti.Count]);
+                vytvorCestu(p.Rozcesti[i], p.Rozcesti[(i + 1) % p.Rozcesti.Count]);
             }
         }
-        Console.WriteLine();
     }
+
     private void vytvorCestu(Rozcesti a, Rozcesti b)
     {
-        bool zbytecna=false;
-        foreach(Cesta c in cesty)
+        bool zbytecna = false;
+        foreach (Cesta c in Cesty)
         {
-            if(a!=null && b!=null && c.rozcesti.Contains(a) && c.rozcesti.Contains(b)) zbytecna = true;
+            if (a != null && b != null && c.rozcesti.Contains(a) && c.rozcesti.Contains(b)) zbytecna = true;
         }
         if (!zbytecna)
         {
             int natoceni;
-            if (a.poziceX == b.poziceX)
+            if (a.PoziceX == b.PoziceX)
                 natoceni = 0;
-            else if ((a.poziceX > b.poziceX && a.poziceY < b.poziceY) || (a.poziceX < b.poziceX && a.poziceY > b.poziceY))
+            else if ((a.PoziceX > b.PoziceX && a.PoziceY < b.PoziceY) || (a.PoziceX < b.PoziceX && a.PoziceY > b.PoziceY))
                 natoceni = 2;
             else natoceni = 1;
-            Cesta c = new Cesta((a.poziceX + b.poziceX) / 2, (a.poziceY + b.poziceY) / 2, natoceni);
+            Cesta c = new Cesta((a.PoziceX + b.PoziceX) / 2, (a.PoziceY + b.PoziceY) / 2, natoceni);
             c.rozcesti.Add(a);
             c.rozcesti.Add(b);
-            cesty.Add(c);
+            Cesty.Add(c);
         }
     }
+
     private void poparujPolicka(Pole vstupni, Pole cizi, int indexVstupni, int indexCizi)
     {
-        if (cizi != null && cizi.rozcesti[indexCizi] != null)
+        if (cizi != null && cizi.Rozcesti[indexCizi] != null)
         {
-                vstupni.rozcesti[indexVstupni] = cizi.rozcesti[indexCizi];
+            vstupni.Rozcesti[indexVstupni] = cizi.Rozcesti[indexCizi];
         }
-        if (vstupni.rozcesti[indexVstupni] == null)
+        if (vstupni.Rozcesti[indexVstupni] == null)
         {
             Size umisteni;
             switch (indexVstupni)
             {
-                case 0: umisteni = new Size(vstupni.poziceX, vstupni.poziceY - 3); break;
-                case 1: umisteni = new Size(vstupni.poziceX + 2, vstupni.poziceY - 1); break;
-                case 2: umisteni = new Size(vstupni.poziceX + 2, vstupni.poziceY + 1); break;
-                case 3: umisteni = new Size(vstupni.poziceX, vstupni.poziceY + 3); break;
-                case 4: umisteni = new Size(vstupni.poziceX - 2, vstupni.poziceY + 1); break;
-                default: umisteni = new Size(vstupni.poziceX - 2, vstupni.poziceY - 1); break;
+                case 0: umisteni = new Size(vstupni.PoziceX, vstupni.PoziceY - 3); break;
+                case 1: umisteni = new Size(vstupni.PoziceX + 2, vstupni.PoziceY - 1); break;
+                case 2: umisteni = new Size(vstupni.PoziceX + 2, vstupni.PoziceY + 1); break;
+                case 3: umisteni = new Size(vstupni.PoziceX, vstupni.PoziceY + 3); break;
+                case 4: umisteni = new Size(vstupni.PoziceX - 2, vstupni.PoziceY + 1); break;
+                default: umisteni = new Size(vstupni.PoziceX - 2, vstupni.PoziceY - 1); break;
 
             }
-            vstupni.rozcesti[indexVstupni] = new Rozcesti(umisteni.Width,umisteni.Height);
+            vstupni.Rozcesti[indexVstupni] = new Rozcesti(umisteni.Width, umisteni.Height);
         }
     }
 }

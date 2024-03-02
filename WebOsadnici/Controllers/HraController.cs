@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Drawing;
+using System.Linq;
+using System.Threading.Tasks;
 using WebOsadnici.Data;
 
 namespace WebOsadnici.Controllers
@@ -14,75 +17,96 @@ namespace WebOsadnici.Controllers
 
         public HraController(ILogger<HraController> logger, ApplicationDbContext dbContext, UserManager<Hrac> userManager)
         {
-            _dbContext = dbContext;
-            _logger = logger;
-            _userManager = userManager;
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         }
+
+        // GET: Hra
         public IActionResult Index()
         {
-            return RedirectToAction("Index","Home");
+            return RedirectToAction("Index", "Home");
         }
-        
+
+        // GET: Hra/Nova
         public async Task<IActionResult> Nova()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetUserAsync();
             if (user == null)
             {
                 return RedirectToAction("Index", "Home");
             }
-            Hra h = new Hra();
-            await h.Inicializace(_dbContext);
-            Hra.NactiHru(h);
-            _dbContext.Add(h);
 
-            _dbContext.SaveChanges();
-            return RedirectToAction("Pripojit",new { id=h.Id });
+            var hra = new Hra();
+            await hra.Inicializace(_dbContext);
+            _dbContext.Add(hra);
+            await _dbContext.SaveChangesAsync();
+
+            return RedirectToAction("Pripojit", new { id = hra.Id });
         }
+
+        // GET: Hra/Pripojit?id={id}
         public async Task<IActionResult> Pripojit(Guid id)
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetUserAsync();
             if (user == null)
             {
                 return RedirectToAction("Index", "Home");
             }
-            Hra h = Hra.NactiHru(id, _dbContext);
-            ViewBag.hra = h;
+
+            var hra = await Hra.NactiHru(id, _dbContext);
+            if (hra == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            ViewBag.hra = hra;
             return View();
         }
 
+        // POST: Hra/AddStavHrace
         [HttpPost]
         public async Task<IActionResult> AddStavHrace(IFormCollection form)
         {
-            var user = await _userManager.GetUserAsync(User);
-            string barva = form["barva"];
-            Guid hraId = Guid.Parse(form["Id"]);
-            Hra h = Hra.NactiHru(hraId, _dbContext);
-            if (h == null)
+            var user = await GetUserAsync();
+            var barva = form["barva"];
+            var hraId = Guid.Parse(form["Id"]);
+            var hra = await Hra.NactiHru(hraId, _dbContext);
+            if (hra == null)
             {
                 return RedirectToAction("Index", "Home");
             }
-            await h.PridejHrace(user,Color.FromName(barva),_dbContext);
 
-            // Přesměrování na akci Prubeh na stejném controlleru
-            return RedirectToAction("Prubeh", new {id = hraId});
+            await hra.PridejHrace(user, Color.FromName(barva), _dbContext);
+
+            return RedirectToAction("Prubeh", new { id = hraId });
         }
 
+        // GET: Hra/Prubeh?id={id}
         public async Task<IActionResult> Prubeh(Guid id)
         {
-            Hrac user = await _userManager.GetUserAsync(User);
+            var user = await GetUserAsync();
             if (user == null)
             {
                 return RedirectToAction("Index", "Home");
             }
-            Hra h = Hra.NactiHru(id, _dbContext);
-            if (h==null || !h.hraci.Contains(user))
+
+            var hra = await Hra.NactiHru(id, _dbContext);
+            if (hra == null || !hra.hraci.Contains(user))
             {
                 return RedirectToAction("Index", "Hra");
             }
-            ViewBag.hra = h;
+
+            ViewBag.hra = hra;
             ViewBag.hrac = user;
-            ViewBag.stavby = _dbContext.stavby.ToArray();
+            ViewBag.stavby = await _dbContext.stavby.ToArrayAsync();
             return View();
+        }
+
+        // Helper method to get the current user asynchronously
+        private async Task<Hrac> GetUserAsync()
+        {
+            return await _userManager.GetUserAsync(User);
         }
     }
 }
