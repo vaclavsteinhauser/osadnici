@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using System.Drawing;
+using WebOsadnici.Models.HerniTridy;
 
 namespace WebOsadnici.Data
 {
@@ -27,6 +27,13 @@ namespace WebOsadnici.Data
             base.OnModelCreating(modelBuilder);
 
             // Konfigurace entit
+            // Aktivita
+            modelBuilder.Entity<Aktivita>().ToTable("Aktivity");
+            modelBuilder.Entity<Aktivita>().HasKey(a => a.Id);
+            modelBuilder.Entity<Aktivita>().Property(a => a.Akce).IsRequired();
+            modelBuilder.Entity<Aktivita>().Property(a => a.CisloAktivity).IsRequired();
+            modelBuilder.Entity<Aktivita>().Property(a => a.Probiha).IsRequired();
+            modelBuilder.Entity<Aktivita>().HasOne<Hrac>(a => a.Hrac).WithMany();
 
             // Cesta
             modelBuilder.Entity<Cesta>().ToTable("Cesty");
@@ -44,11 +51,12 @@ namespace WebOsadnici.Data
             // Hra
             modelBuilder.Entity<Hra>().ToTable("Hry");
             modelBuilder.Entity<Hra>().HasKey(h => h.Id);
-            modelBuilder.Entity<Hra>().HasMany(d => d.hraci).WithMany();
             modelBuilder.Entity<Hra>().HasOne(h => h.mapka).WithOne(m => m.Hra).HasForeignKey<Mapka>(m => m.HraId);
             modelBuilder.Entity<Hra>().Property(h => h.hracNaTahu).IsRequired();
             modelBuilder.Entity<Hra>().HasMany(d => d.stavy).WithOne(d => d.hra);
             modelBuilder.Entity<Hra>().Property(h => h.stavHry).IsRequired();
+            modelBuilder.Entity<Hra>().HasMany(h => h.bufferAktivit).WithOne();
+            modelBuilder.Entity<Hra>().HasMany(h => h.aktivniSmeny).WithOne();
 
             // AkcniKarta
             modelBuilder.Entity<AkcniKarta>().ToTable("AkcniKarty");
@@ -65,9 +73,12 @@ namespace WebOsadnici.Data
             // Mapka
             modelBuilder.Entity<Mapka>().ToTable("Mapky");
             modelBuilder.Entity<Mapka>().HasKey(h => h.Id);
-            modelBuilder.Entity<Mapka>().HasMany(m => m.Policka).WithOne();
-            modelBuilder.Entity<Mapka>().HasMany(m => m.Cesty).WithOne();
-            modelBuilder.Entity<Mapka>().HasMany(m => m.Rozcesti).WithOne();
+            modelBuilder.Entity<Mapka>().HasMany(m => m.Policka).WithOne(p=>p.Mapka);
+            modelBuilder.Entity<Mapka>().HasMany(m => m.Cesty).WithOne(c=>c.Mapka);
+            modelBuilder.Entity<Mapka>().HasMany(m => m.Rozcesti).WithOne(r=>r.Mapka);
+            modelBuilder.Entity<Mapka>().HasMany(m => m.Stavby).WithMany();
+            modelBuilder.Entity<Mapka>().HasMany(m => m.Suroviny).WithMany();
+
 
             // Pole
             modelBuilder.Entity<Pole>().ToTable("Policka");
@@ -85,15 +96,23 @@ namespace WebOsadnici.Data
             modelBuilder.Entity<Rozcesti>().Property(r => r.PoziceX).IsRequired();
             modelBuilder.Entity<Rozcesti>().Property(r => r.PoziceY).IsRequired();
             modelBuilder.Entity<Rozcesti>().HasOne(r => r.Hrac).WithMany();
-            modelBuilder.Entity<Rozcesti>().Property(r => r.Blokovane).IsRequired();
             modelBuilder.Entity<Rozcesti>().HasOne(r => r.Stavba).WithMany();
+
+            //Smena
+            modelBuilder.Entity<Smena>().ToTable("Smeny");
+            modelBuilder.Entity<Smena>().HasKey(h => h.Id);
+            modelBuilder.Entity<Smena>().HasOne(s => s.nabizejici).WithMany();
+            modelBuilder.Entity<Smena>().HasMany(s => s.nabidka).WithMany();
+            modelBuilder.Entity<Smena>().HasMany(s => s.poptavka).WithMany();
 
             // Stavba
             modelBuilder.Entity<Stavba>().ToTable("Stavby");
             modelBuilder.Entity<Stavba>().HasKey(h => h.Id);
             modelBuilder.Entity<Stavba>().Property(s => s.Nazev).IsRequired();
-            modelBuilder.Entity<Stavba>().Property(s => s.Zisk);
-            modelBuilder.Entity<Stavba>().Property(s => s.ImageUrl);
+            modelBuilder.Entity<Stavba>().Property(s => s.Zisk).IsRequired();
+            modelBuilder.Entity<Stavba>().Property(s => s.ImageUrl).IsRequired();
+            modelBuilder.Entity<Stavba>().HasMany(s => s.Cena).WithOne();
+            modelBuilder.Entity<Stavba>().Property(s => s.Body).IsRequired();
 
             // StavHrace
             modelBuilder.Entity<StavHrace>().ToTable("StavyHracu");
@@ -105,9 +124,13 @@ namespace WebOsadnici.Data
                 name => Color.FromName(name)
             );
             modelBuilder.Entity<StavHrace>().Property(s => s.poradi).IsRequired();
+            modelBuilder.Entity<StavHrace>().Property(s => s.nejdelsiCesta).IsRequired();
+            modelBuilder.Entity<StavHrace>().Property(s => s.nejvetsiVojsko).IsRequired();
+            modelBuilder.Entity<StavHrace>().Property(s => s.zahranychRytiru).IsRequired();
 
-            modelBuilder.Entity<StavHrace>().HasMany<SurovinaKarta>(s => s.SurovinaKarty).WithOne();
+            modelBuilder.Entity<StavHrace>().HasMany<SurovinaKarta>(s => s.SurovinaKarty).WithMany();
             modelBuilder.Entity<StavHrace>().HasMany<AkcniKarta>(s => s.AkcniKarty).WithOne();
+            modelBuilder.Entity<StavHrace>().HasMany<BodovaKarta>(s => s.BodoveKarty).WithOne();
 
             // Surovina
             modelBuilder.Entity<Surovina>().ToTable("Suroviny");
@@ -118,6 +141,7 @@ namespace WebOsadnici.Data
         }
 
         // DbSets pro každou entitu
+        public DbSet<Aktivita> aktivity { get; set; }
         public DbSet<Cesta> cesty { get; set; }
         public DbSet<Hrac> hraci { get; set; }
         public DbSet<Hra> hry { get; set; }
@@ -126,6 +150,7 @@ namespace WebOsadnici.Data
         public DbSet<Mapka> mapky { get; set; }
         public DbSet<Pole> policka { get; set; }
         public DbSet<Rozcesti> rozcesti { get; set; }
+        public DbSet<Smena> smeny { get; set; }
         public DbSet<Stavba> stavby { get; set; }
         public DbSet<StavHrace> stavy { get; set; }
         public DbSet<Surovina> suroviny { get; set; }

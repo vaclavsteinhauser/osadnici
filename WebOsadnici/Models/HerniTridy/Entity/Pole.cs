@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Drawing;
-using WebOsadnici.Models.HerniTridy;
+
+namespace WebOsadnici.Models.HerniTridy;
 
 /// <summary>
 /// Reprezentuje herní pole v aplikaci.
@@ -9,6 +10,7 @@ public class Pole : HerniEntita
 {
     // Velikost herního pole
     public static readonly Size Velikost = new Size(4, 6);
+    public virtual Mapka? Mapka { get; set; }
 
     private int _poziceX;
     private int _poziceY;
@@ -127,8 +129,9 @@ public class Pole : HerniEntita
     /// <param name="sloupec">X-ová pozice pole.</param>
     /// <param name="radek">Y-ová pozice pole.</param>
     /// <param name="blokovane">Určuje, zda je pole blokováno.</param>
-    public Pole(Surovina surovina, int cislo, int sloupec, int radek, bool blokovane = false)
+    public Pole(Mapka m,Surovina surovina, int cislo, int sloupec, int radek, bool blokovane = false)
     {
+        Mapka = m;
         Surovina = surovina;
         Cislo = cislo;
         PoziceX = sloupec;
@@ -136,4 +139,28 @@ public class Pole : HerniEntita
         Blokovane = blokovane;
     }
     public Pole() { }
+
+    public string VykresleniHTML(Hra h)
+    {
+        int odsazeniX = (PoziceX - (Pole.Velikost.Width / 2)) * Mapka.RozmeryMrizky.Width;
+        int odsazeniY = (PoziceY - (Pole.Velikost.Height / 2)) * Mapka.RozmeryMrizky.Height;
+        int vyska = Pole.Velikost.Height * Mapka.RozmeryMrizky.Height;
+        int sirka = Pole.Velikost.Width * Mapka.RozmeryMrizky.Width;
+        string cislo = (Cislo != 0) ? $@"<circle cx='{sirka / 2}' cy='{vyska / 2}' r='{Math.Min(sirka, vyska) / 8}' fill='white' stroke='black' stroke-width='2' style='pointer-events: none;' />
+                <text x='{sirka / 2}' y='{vyska / 2}' text-anchor='middle' alignment-baseline='middle' fill='black' font-weight='bold' font-size='{Math.Min(sirka, vyska) / 6}' style='pointer-events: none;'>{Cislo}</text>" : "";
+        return $@"
+            <svg style='position: absolute; pointer-events: none;
+                    top: {odsazeniY}px;
+                    left: {odsazeniX}px;'
+                    width='{sirka}px'
+                    height='{vyska}px'
+                    xmlns='http://www.w3.org/2000/svg' alt='{Surovina.Nazev}'>
+                <polygon class='policko' id='{Id}' points='{sirka / 2},0 {sirka},{vyska / 3} {sirka},{2 * vyska / 3} {sirka / 2},{vyska} 0,{2 * vyska / 3} 0,{vyska / 3}'  style='fill:{Surovina.BackColor}; pointer-events: auto;'  />
+                <clipPath id='hexMask'>
+                    <polygon points='{sirka / 2},0 {sirka},{vyska / 3} {sirka},{2 * vyska / 3} {sirka / 2},{vyska} 0,{2 * vyska / 3} 0,{vyska / 3}' style='pointer-events: none;' />
+                </clipPath>
+                <image xlink:href='../../{Surovina.ImageUrl}' width='80%' height='80%' x='10%' y='10%' clip-path='url(#hexMask)' style='pointer-events: none;' />
+    {cislo}
+            </svg>";
+    }
 }

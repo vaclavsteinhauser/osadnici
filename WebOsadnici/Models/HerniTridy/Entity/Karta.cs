@@ -1,4 +1,4 @@
-﻿using WebOsadnici.Models.HerniTridy;
+﻿namespace WebOsadnici.Models.HerniTridy;
 
 /// <summary>
 /// Abstraktní třída reprezentující herní kartu.
@@ -30,6 +30,14 @@ public class Karta : HerniEntita
 /// </summary>
 public class AkcniKarta : Karta
 {
+    public static string[] nazvy = new string[] { "Rytíř", "Monopol", "Vynález", "Stavba silnic" };
+    public static Dictionary<string,string> obrazky = new Dictionary<string, string>()
+    {
+        {"Rytíř","rytir.svg" },
+        {"Monopol","monopol.svg" },
+        {"Vynález","vynalez.svg" },
+        {"Stavba silnic","stavba_silnic.svg" }
+    };
     private string _nazev;
     private string _imageUrl;
 
@@ -66,6 +74,79 @@ public class AkcniKarta : Karta
             }
         }
     }
+
+    public void Zahraj(Hra hra, Hrac hrac)
+    {
+        switch (Nazev)
+        {
+            case "Rytíř":
+                hra.PridejAktivitu(new Aktivita()
+                {
+                    Hrac=hrac,
+                    Akce=Instrukce.PresunZlodeje
+                });
+                break;
+            case "Monopol":
+                hra.PridejAktivitu(new Aktivita()
+                {
+                    Hrac=hrac,
+                    Akce=Instrukce.VyberSurovinu
+                });
+                break;
+            case "Vynález":
+                hra.PridejAktivitu(new Aktivita()
+                {
+                    Hrac=hrac,
+                    Akce=Instrukce.VyberSurovinu
+                });
+                hra.PridejAktivitu(new Aktivita()
+                {
+                    Hrac = hrac,
+                    Akce = Instrukce.VyberSurovinu
+                });
+                break;
+            case "Stavba silnic":
+                hra.PridejAktivitu(new Aktivita()
+                {
+                    Hrac = hrac,
+                    Akce = Instrukce.StavbaCesty
+                });
+                hra.PridejAktivitu(new Aktivita()
+                {
+                    Hrac = hrac,
+                    Akce = Instrukce.StavbaCesty
+                });
+                break;
+        }
+    }
+}
+public class BodovaKarta : AkcniKarta
+{
+    public static string[] nazvy = new string[] { "Nejdelší cesta", "Největší vojsko", "Akční body" };
+    public static Dictionary<string, string> obrazky = new Dictionary<string, string>()
+    {
+        {"Nejdelší cesta","cesta.svg" },
+        {"Největší vojsko","rytir.svg" },
+        {"Akční body","vynalez.svg" }
+    };
+    private int _body;
+
+    /// <summary>
+    /// Počet bodů, které karta přináší.
+    /// </summary>
+    public virtual int Body
+    {
+        get => _body;
+        set
+        {
+            if (_body != value)
+            {
+                OnPropertyChanging(nameof(Body));
+                _body = value;
+                OnPropertyChanged(nameof(Body));
+            }
+        }
+    }                                                                                         
 }
 
 /// <summary>

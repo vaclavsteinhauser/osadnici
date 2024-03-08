@@ -1,4 +1,5 @@
-﻿@{
+﻿@using WebOsadnici.Models.HerniTridy
+@{
     ViewData["Title"] = "Pruběh hry";
 }
 <script>
@@ -18,62 +19,26 @@
 <div id="main-container" style="display: none;">
     
     <div class="ovladaci_panel" id="tlacitkovy-panel">
-        <div id="instrukce">
-            @if (ViewBag.hra.stavHry != StavHry.Vytvorena)
-            {
-                if (ViewBag.hra.AktualniHrac() == ViewBag.Hrac)
-                {
-                    <p>>Vyber akci</p>
-                }
-                else
-                {
-                    <p>Nejsi na tahu, můžeš jen souhlasit se směnami.</p>
-                }
-            }
-            else
-            {
-                if (ViewBag.hrac.Id == ViewBag.hra.hraci[0].Id)
-                {
-                    if (ViewBag.hra.hraci.Count > 1)
-                    {
-                        <p>Klikni na "Začít hru" nebo počkej na další hráče</p>
-                    }
-                    else
-                    {
-                        <p>Počkej na další hráče.</p>
-                    }
-                }
-                else
-                {
-                    <p>Čekej až první hráč začne hru, nebo se připojí maximální počet hráčů.</p>
-                }
-            }
-        </div>
         <div>
-            <h2>Nákup</h2>
-            <span id="panel_stavby">
-                @foreach(Stavba s in ViewBag.stavby)
-                {
-                    <div class="stavba" id=@s.Nazev>
-                        @s.Nazev
-                        <img src="../../@s.ImageUrl" \ />
-                    </div>
-                }
-                <div class="stavba" id="cesta">
-                    Cesta
-                    <img src="../../cesta.svg" \ />
-                </div>
-                <div class="stavba" id="akcni_karta">
-                    Akční karta
-                    <img src="../../akcni_karta.svg" \ />
-                </div>
+            <h2>Instrukce</h2>
+            <span id="instrukce">
+                @ViewBag.hra.DejInstrukci(ViewBag.hrac.Id)
             </span>
         </div>
         <div>
-            AkcniKarty
+            <h2>Nákup</h2>
+            <span id="nakup">
+                @Html.Raw(ViewBag.hra.DejNakupHTML(ViewBag.hrac))
+            </span>
+        </div>
+        <div>
+            <h2>Akční karty</h2>
+            <span id="akcni-karty" class="horizontalne">
+                @Html.Raw(ViewBag.hra.DejAkcniKartyHTML(ViewBag.hrac))
+            </span>
         </div>
         <div id="panel_tlacitka">
-            @if (ViewBag.hra.stavHry != StavHry.Vytvorena)
+            @if (ViewBag.hra.stavHry != StavHry.Nezacala)
             {
                 if (ViewBag.hra.AktualniHrac() == ViewBag.Hrac)
                 {
@@ -109,13 +74,28 @@
     <div class="ovladaci_panel" id="stavovy-panel">
 
         <div>
-            Stavybodu
+            <h2>Body hráčů</h2>
+            <span id="Body" class="horizontalne">
+                @Html.Raw(@ViewBag.hra.DejBodyHTML())
+            </span>
         </div>
         <div>
-            surovinove karty
+            <h2>Extra body</h2>
+            <span id="BodoveKarty" class="horizontalne">
+                @Html.Raw(@ViewBag.hra.DejBodoveKartyHTML(ViewBag.hrac))
+            </span>
+        </div>
+        <div>
+            <h2>Suroviny</h2>
+            <span id="Suroviny" class="horizontalne">
+                @Html.Raw(@ViewBag.hra.DejSurovinoveKartyHTML(ViewBag.hrac))
+            </span>
         </div>
         <div id="panel_smeny">
-            smeny
+            <h2>Nabízené směny</h2>
+            <span id="Smeny" class="vertikalne">
+                @Html.Raw(@ViewBag.hra.DejSmenyHTML(ViewBag.hrac))
+            </span>
         </div>
     </div>
 </div>

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using WebOsadnici.Data;
 using WebOsadnici.Models;
+using WebOsadnici.Models.HerniTridy;
 
 namespace WebOsadnici.Controllers
 {
@@ -27,11 +28,11 @@ namespace WebOsadnici.Controllers
             if (user != null)
             {
                 ViewBag.moje = await _dbContext.hry
-                    .Where(h => h.hraci.Any(hrac => hrac.Id == user.Id))
+                    .Where(h => h.stavy.Any(s => s.hrac.Id == user.Id))
                     .ToArrayAsync();
 
                 ViewBag.nezacate = await _dbContext.hry
-                    .Where(h => !h.hraci.Any(hrac => hrac.Id == user.Id) && h.stavHry == StavHry.Vytvorena)
+                    .Where(h => !h.stavy.Any(s => s.hrac.Id == user.Id) && h.stavHry == StavHry.Nezacala)
                     .ToArrayAsync();
             }
             return View();

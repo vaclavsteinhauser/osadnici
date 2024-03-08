@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Drawing;
-using System.Linq;
-using System.Threading.Tasks;
 using WebOsadnici.Data;
+using WebOsadnici.Models.HerniTridy;
 
 namespace WebOsadnici.Controllers
 {
@@ -77,7 +75,7 @@ namespace WebOsadnici.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            await hra.PridejHrace(user, Color.FromName(barva), _dbContext);
+            await hra.PridejHrace(user, Color.FromName(barva));
 
             return RedirectToAction("Prubeh", new { id = hraId });
         }

@@ -1,8 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
-using WebOsadnici.Controllers;
-using WebOsadnici.Models.HerniTridy;
+
+namespace WebOsadnici.Models.HerniTridy;
 
 /// <summary>
 /// Reprezentuje stav hráče v aplikaci.
@@ -13,8 +13,9 @@ public class StavHrace : HerniEntita, INotifyPropertyChanged, INotifyPropertyCha
     private Hrac _hrac;
     private Color _barva;
     private int _poradi;
-    private ObservableCollection<AkcniKarta> _akcniKarty = new();
-    private ObservableCollection<SurovinaKarta> _surovinaKarty = new();
+    private bool _nejdelsiCesta;
+    private bool _nejvetsiVojsko;
+    private int _zahranychRytiru;
 
     /// <summary>
     /// Reference na aktuální hru, ve které se hráč nachází.
@@ -85,38 +86,70 @@ public class StavHrace : HerniEntita, INotifyPropertyChanged, INotifyPropertyCha
     }
 
     /// <summary>
-    /// Kolekce akčních karet hráče.
+    /// Jestli hráč vlastní nejdelší cestu.
     /// </summary>
-    public virtual ObservableCollection<AkcniKarta> AkcniKarty
+    public virtual bool nejdelsiCesta
     {
-        get => _akcniKarty;
+        get => _nejdelsiCesta;
         set
         {
-            if (_akcniKarty != value)
+            if (_nejdelsiCesta != value)
             {
-                OnPropertyChanging(nameof(AkcniKarty));
-                _akcniKarty = value;
-                OnPropertyChanged(nameof(AkcniKarty));
+                OnPropertyChanging(nameof(nejdelsiCesta));
+                _nejdelsiCesta = value;
+                OnPropertyChanged(nameof(nejdelsiCesta));
             }
         }
     }
 
     /// <summary>
-    /// Kolekce surovinových karet hráče.
+    /// Jestli hráč má největší vojsko.
     /// </summary>
-    public virtual ObservableCollection<SurovinaKarta> SurovinaKarty
+    public virtual bool nejvetsiVojsko
     {
-        get => _surovinaKarty;
+        get => _nejvetsiVojsko;
         set
         {
-            if (_surovinaKarty != value)
+            if (_nejvetsiVojsko != value)
             {
-                OnPropertyChanging(nameof(SurovinaKarty));
-                _surovinaKarty = value;
-                OnPropertyChanged(nameof(SurovinaKarty));
+                OnPropertyChanging(nameof(nejvetsiVojsko));
+                _nejvetsiVojsko = value;
+                OnPropertyChanged(nameof(nejvetsiVojsko));
             }
         }
     }
+
+    /// <summary>
+    /// Počet zahraných akčních karet Rytíř.
+    /// </summary>
+    public virtual int zahranychRytiru
+    {
+        get => _zahranychRytiru;
+        set
+        {
+            if (_zahranychRytiru != value)
+            {
+                OnPropertyChanging(nameof(zahranychRytiru));
+                _zahranychRytiru = value;
+                OnPropertyChanged(nameof(zahranychRytiru));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Kolekce akčních karet hráče.
+    /// </summary>
+    public virtual ObservableCollection<AkcniKarta> AkcniKarty { get; set; }
+
+    /// <summary>
+    /// Kolekce surovinových karet hráče.
+    /// </summary>
+    public virtual ObservableCollection<SurovinaKarta> SurovinaKarty { get; set; }
+
+    /// <summary>
+    /// Kolekce bodových karet hráče.
+    /// </summary>
+    public virtual ObservableCollection<BodovaKarta> BodoveKarty { get; set; }
 
     /// <summary>
     /// Zjistí, zda je hráč aktuálně na tahu.

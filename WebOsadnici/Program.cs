@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using WebOsadnici.Data;
 using WebOsadnici.Hubs;
+using WebOsadnici.Models.HerniTridy;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySQL(connectionString,o => o.CommandTimeout(60)));
+    options.UseMySQL(connectionString, o => o.CommandTimeout(60)));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 
@@ -56,5 +56,5 @@ app.MapControllerRoute(
 app.MapRazorPages();
 app.MapHub<ClickHub>("/clickHub");
 
-Hra.HubContext= app.Services.GetRequiredService<IHubContext<ClickHub>>();
+Hra.HubContext = app.Services.GetRequiredService<IHubContext<ClickHub>>();
 app.Run();

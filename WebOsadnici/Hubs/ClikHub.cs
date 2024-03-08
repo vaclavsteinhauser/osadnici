@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using WebOsadnici.Data;
+using WebOsadnici.Models.HerniTridy;
 
 namespace WebOsadnici.Hubs
 {
@@ -59,19 +56,31 @@ namespace WebOsadnici.Hubs
         // Metoda pro obsluhu kliknutí na políčko
         public async Task KliknutiNaPolicko(string connectionId, string Id, string HracId, string HraId)
         {
-            // Implementace
+            await Clients.Client(connectionId).SendAsync("ObnovitSekci", "#Body");
         }
 
         // Metoda pro obsluhu kliknutí na rozcestí
         public async Task KliknutiNaRozcesti(string connectionId, string Id, string HracId, string HraId)
         {
             Hra hra = await Hra.NactiHru(Guid.Parse(HraId), _dbContext);
-            Hrac hrac = hra.hraci.FirstOrDefault(h => h.Id.ToString().Equals(HracId));
-            StavHrace stav = hra.stavy.FirstOrDefault(s => s.hrac == hrac);
+            Hrac hrac = hra.DejHrace(HracId);
+            StavHrace stav = hra.DejStav(hrac);
             Rozcesti rozcesti = hra.mapka.Rozcesti.FirstOrDefault(r => r.Id.ToString().Equals(Id));
             rozcesti.Hrac = stav.hrac;
-            await _dbContext.SaveChangesAsync();
-            await Clients.Client(connectionId).SendAsync("NastavBarvu", Id, stav.barva.Name);
+            rozcesti.Stavba = hra.mapka.Stavby.FirstOrDefault(s => s.Nazev.Equals("Vesnice"));
+            List<Task> proved = new();
+            proved.Add(Clients.Client(connectionId).SendAsync("NastavBarvu", Id, stav.barva.Name));
+            proved.Add(Clients.Client(connectionId).SendAsync("NastavStavbu", Id, "vesnicka.svg"));
+            proved.Add(Clients.Client(connectionId).SendAsync("ObnovBody", HraId, hra.DejBodyHTML()));
+            proved.Add(_dbContext.SaveChangesAsync());
+            await Task.WhenAll(proved);
+            
+        }
+
+        // Metoda pro obsluhu kliknutí na nákup
+        public async Task KliknutiNaNakup(string connectionId, string Id, string HracId, string HraId)
+        {
+            await Clients.Client(connectionId).SendAsync("ObnovitSekci", "#Body");
         }
 
         // Metoda pro aktualizaci herní stránky pro všechny klienty

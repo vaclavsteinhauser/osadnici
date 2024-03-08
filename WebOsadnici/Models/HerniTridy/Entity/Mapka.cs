@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Drawing;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using WebOsadnici.Data;
-using WebOsadnici.Models.HerniTridy;
 
+namespace WebOsadnici.Models.HerniTridy;
 /// <summary>
 /// Reprezentuje herní mapu s políčky, cestami a rozcestími.
 /// </summary>
@@ -15,18 +10,34 @@ public class Mapka : HerniEntita
 {
     internal static readonly Size RozmeryMrizky = new Size(30, 25);
 
-    private Hra? _hra;
-    private Guid? _hraId;
-    private ObservableCollection<Pole> _policka = new();
-    private ObservableCollection<Cesta> _cesty = new();
-    private ObservableCollection<Rozcesti> _rozcesti = new();
-    private Dictionary<String, Surovina> suroviny = new();
-    private Dictionary<String, Stavba> stavby = new();
+    /// <summary>
+    /// Reference na herní hru, ke které je mapa přiřazena.
+    /// </summary>
+    public virtual Hra? Hra { get; set; }
+
+    /// <summary>
+    /// ID herní hry, ke které je mapa přiřazena.
+    /// </summary>
+    public virtual Guid? HraId { get; set; }
+    /// <summary>
+    /// Kolekce všech políček na mapě.
+    /// </summary>
+    public virtual ObservableCollection<Pole> Policka { get; set; } = new();
+    /// <summary>
+    /// Kolekce všech cest na mapě.
+    /// </summary>
+    public virtual ObservableCollection<Cesta> Cesty { get; set; } = new();
+    /// <summary>
+    /// Kolekce všech rozcestí na mapě.
+    /// </summary>
+    public virtual ObservableCollection<Rozcesti> Rozcesti { get; set; } = new();
+    public virtual ObservableCollection<Surovina> Suroviny { get; set; } = new();
+    public virtual ObservableCollection<Stavba> Stavby { get; set; } = new();
     static private (int, int)[] polohyPolicek =
-            { 
-            (8, 4 ), 
-            (12, 4 ), 
-            (16, 4 ), 
+            {
+            (8, 4 ),
+            (12, 4 ),
+            (16, 4 ),
             (6, 8 ),
             (10, 8 ),
             (14, 8 ),
@@ -42,7 +53,7 @@ public class Mapka : HerniEntita
             (18, 16 ),
             (8, 20 ),
             (12, 20 ),
-            (16, 20 ) 
+            (16, 20 )
         };
     Pole[,] sit = new Pole[25, 25];
     static private string[] nazvySurovin = { "Dřevo", "Dřevo", "Dřevo", "Dřevo", "Cihla", "Cihla", "Cihla", "Ovce", "Ovce", "Ovce", "Ovce", "Obilí", "Obilí", "Obilí", "Obilí", "Kámen", "Kámen", "Kámen" };
@@ -51,90 +62,7 @@ public class Mapka : HerniEntita
     private List<int> zasobaCisel = new List<int>();
     private Random rnd = new Random();
     public Mapka() { }
-    /// <summary>
-    /// Kolekce všech políček na mapě.
-    /// </summary>
-    public virtual ObservableCollection<Pole> Policka
-        {
-            get => _policka;
-            protected set
-            {
-                if (_policka != value)
-                {
-                    OnPropertyChanging(nameof(Policka));
-                    _policka = value;
-                    OnPropertyChanged(nameof(Policka));
-                }
-            }
-        }
-
-    /// <summary>
-    /// Kolekce všech cest na mapě.
-    /// </summary>
-    public virtual ObservableCollection<Cesta> Cesty
-    {
-        get => _cesty;
-        protected set
-        {
-            if (_cesty != value)
-            {
-                OnPropertyChanging(nameof(Cesty));
-                _cesty = value;
-                OnPropertyChanged(nameof(Cesty));
-            }
-        }
-    }
-
-    /// <summary>
-    /// Kolekce všech rozcestí na mapě.
-    /// </summary>
-    public virtual ObservableCollection<Rozcesti> Rozcesti
-    {
-        get => _rozcesti;
-        protected set
-        {
-            if (_rozcesti != value)
-            {
-                OnPropertyChanging(nameof(Rozcesti));
-                _rozcesti = value;
-                OnPropertyChanged(nameof(Rozcesti));
-            }
-        }
-    }
-
-    /// <summary>
-    /// Reference na herní hru, ke které je mapa přiřazena.
-    /// </summary>
-    public virtual Hra? Hra
-    {
-        get => _hra;
-        protected set
-        {
-            if (_hra != value)
-            {
-                OnPropertyChanging(nameof(Hra));
-                _hra = value;
-                OnPropertyChanged(nameof(Hra));
-            }
-        }
-    }
-
-    /// <summary>
-    /// ID herní hry, ke které je mapa přiřazena.
-    /// </summary>
-    public virtual Guid? HraId
-    {
-        get => _hraId;
-        protected set
-        {
-            if (_hraId != value)
-            {
-                OnPropertyChanging(nameof(HraId));
-                _hraId = value;
-                OnPropertyChanged(nameof(HraId));
-            }
-        }
-    }
+    
 
     /// <summary>
     /// Inicializuje herní mapu s danou hrou.
@@ -144,18 +72,18 @@ public class Mapka : HerniEntita
     public async Task Inicializace(Hra hra, ApplicationDbContext _dbContext)
     {
         // Vytvoření surovin a staveb
-        await Surovina.VytvorSuroviny(_dbContext.suroviny);
-        await Stavba.VytvorStavby(_dbContext.stavby);
+        await Surovina.VytvorSuroviny(_dbContext);
+        await Stavba.VytvorStavby(_dbContext);
         await _dbContext.SaveChangesAsync();
 
         // Přidání surovin a staveb do mapy
         foreach (Surovina s in _dbContext.suroviny.ToArray())
         {
-            suroviny.Add(s.Nazev, s);
+            Suroviny.Add(s);
         }
         foreach (Stavba s in _dbContext.stavby.ToArray())
         {
-            stavby.Add(s.Nazev, s);
+            Stavby.Add(s);
         }
 
         // Přiřazení herní hry a inicializace mapy
@@ -163,12 +91,12 @@ public class Mapka : HerniEntita
         HraId = hra.Id;
         Generuj();
     }
-    
+
     private void Generuj()
     {
         foreach (var s in nazvySurovin)
         {
-            zasobaSurovin.Add(suroviny[s]);
+            zasobaSurovin.Add(Suroviny.FirstOrDefault(x=>x.Nazev==s));
         }
         foreach (var i in cislaPolicek)
         {
@@ -180,7 +108,7 @@ public class Mapka : HerniEntita
             Pole p;
             if (souradnice.Item1 == 12 && souradnice.Item2 == 12)
             {
-                p = new Pole(suroviny["Poušť"], 0, 12, 12);
+                p = new Pole(this,Suroviny.FirstOrDefault(x=>x.Nazev=="Poušť"), 0, 12, 12);
             }
             else
             {
@@ -190,7 +118,7 @@ public class Mapka : HerniEntita
                 r = rnd.Next() % zasobaSurovin.Count;
                 Surovina s = zasobaSurovin[r];
                 zasobaSurovin.RemoveAt(r);
-                p = new Pole(s, cislo, souradnice.Item1, souradnice.Item2);
+                p = new Pole(this,s, cislo, souradnice.Item1, souradnice.Item2);
             }
             sit[souradnice.Item1, souradnice.Item2] = p;
             Policka.Add(p);
@@ -260,7 +188,7 @@ public class Mapka : HerniEntita
             else if ((a.PoziceX > b.PoziceX && a.PoziceY < b.PoziceY) || (a.PoziceX < b.PoziceX && a.PoziceY > b.PoziceY))
                 natoceni = 2;
             else natoceni = 1;
-            Cesta c = new Cesta((a.PoziceX + b.PoziceX) / 2, (a.PoziceY + b.PoziceY) / 2, natoceni);
+            Cesta c = new Cesta(this,(a.PoziceX + b.PoziceX) / 2, (a.PoziceY + b.PoziceY) / 2, natoceni);
             c.rozcesti.Add(a);
             c.rozcesti.Add(b);
             Cesty.Add(c);
@@ -286,7 +214,7 @@ public class Mapka : HerniEntita
                 default: umisteni = new Size(vstupni.PoziceX - 2, vstupni.PoziceY - 1); break;
 
             }
-            vstupni.Rozcesti[indexVstupni] = new Rozcesti(umisteni.Width, umisteni.Height);
+            vstupni.Rozcesti[indexVstupni] = new Rozcesti(this,umisteni.Width, umisteni.Height);
         }
     }
 }

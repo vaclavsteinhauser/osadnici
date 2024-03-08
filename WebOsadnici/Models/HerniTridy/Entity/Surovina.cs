@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebOsadnici.Models.HerniTridy;
-using System.Threading.Tasks;
+using WebOsadnici.Data;
+
+namespace WebOsadnici.Models.HerniTridy;
 
 /// <summary>
 /// Reprezentuje surovinu v aplikaci.
@@ -68,7 +69,7 @@ public class Surovina : HerniEntita
     /// Vytvoří suroviny a přidá je do databáze, pokud neexistují.
     /// </summary>
     /// <param name="_suroviny">Databáze surovin.</param>
-    internal static async Task VytvorSuroviny(DbSet<Surovina> _suroviny)
+    internal static async Task VytvorSuroviny(ApplicationDbContext _dbContext)
     {
         string[] nazvy = { "Dřevo", "Cihla", "Obilí", "Ovce", "Kámen", "Poušť" };
         string[] imageUrls = { "drevo.svg", "cihla.svg", "obili.svg", "ovce.svg", "kamen.svg", "poust.svg" };
@@ -76,7 +77,7 @@ public class Surovina : HerniEntita
 
         for (int i = 0; i < nazvy.Length; i++)
         {
-            Surovina s = await _suroviny.Where(s => s.Nazev.Equals(nazvy[i])).FirstOrDefaultAsync();
+            Surovina s = await _dbContext.suroviny.Where(s => s.Nazev.Equals(nazvy[i])).FirstOrDefaultAsync();
             if (s == null)
             {
                 s = new Surovina()
@@ -85,8 +86,9 @@ public class Surovina : HerniEntita
                     ImageUrl = imageUrls[i],
                     BackColor = backColors[i]
                 };
-                await _suroviny.AddAsync(s);
+                await _dbContext.suroviny.AddAsync(s);
             }
         }
+        await _dbContext.SaveChangesAsync();
     }
 }

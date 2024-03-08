@@ -10,6 +10,10 @@ a {
     color: inherit;
 }
 
+h2{
+    font-size: 1.2rem;
+}
+
 body {
     display: flex;
     flex-direction: column;
@@ -42,16 +46,17 @@ main {
 #tlacitkovy-panel {
     border-right: 5px double gray;
     border-radius: 4px;
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 #stavovy-panel {
     border-left: 5px double gray;
     border-radius: 4px;
-}
-
-.ovladaci_panel{
-    width: 25%;
+    width: 30%;
     display: flex;
-    flex-direction:column;
+    flex-direction: column;
     justify-content: space-between;
 }
 
@@ -116,8 +121,10 @@ main {
     background-color: #333;
     color: #fff;
 }
+
+
 #instrukce {
-    font-size: 20px;
+    font-size: 1.1rem;
     font-weight: bold;
     flex: 1;
 }
@@ -132,15 +139,58 @@ main {
      flex: 1;
      overflow-y: auto;
  }
- #panel_stavby {
-     display: flex;
-     overflow-x: auto;
+ #nakup {
+    display: flex;
+    flex-direction: column;
  }
- #panel_stavby img {
-     width: 60px;
-     height: 60px;
+.stavba {
+    display: grid;
+    justify-content: space-between;
+}
+ .stavba-nazev {
+     grid-column: 1;
+     grid-row: 1;
+     font-weight: bold;
  }
- .stavba {
-     display:flex;
-     flex-direction:column;
- }
+.stavba-cena {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: small;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+.stavba-cena p {
+    margin: 5px;
+}
+.stavba-obrazek {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+}
+.obrazek {
+    width: 60px;
+    height: 60px;
+}
+.karta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 2px;
+    margin: 2px;
+    background-color: #ffffff;
+}
+.horizontalne {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+}
+.vertikalne {
+    display: column;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    overflow-y: auto;
+}

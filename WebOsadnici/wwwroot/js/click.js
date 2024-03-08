@@ -50,7 +50,19 @@ connection.start().then(function () {
         rozcest.addEventListener("click", function (event) {
             var clickedId = rozcest.id;
 
-            connection.invoke("KliknutiNaRozcesti", connection.connectionId, clickedId,HracId,HraId)
+            connection.invoke("KliknutiNaRozcesti", connection.connectionId, clickedId, HracId, HraId)
+                .catch(function (err) {
+                    console.error("Invocation error:", err.toString());
+                });
+            document.getElementById("text").innerText = clickedId;
+        });
+    });
+    var rozcesti = document.getElementsByClassName("stavba");
+    Array.from(rozcesti).forEach(function (rozcest) {
+        rozcest.addEventListener("click", function (event) {
+            var clickedId = rozcest.id;
+
+            connection.invoke("KliknutiNaNakup", connection.connectionId, clickedId, HracId, HraId)
                 .catch(function (err) {
                     console.error("Invocation error:", err.toString());
                 });
@@ -76,4 +88,12 @@ connection.on("NastavStavbu", function (id, stavba) {
 });
 connection.on("NastavBarvu", function (id, barva) {
     document.getElementById(id).setAttribute("fill", barva);
+});
+connection.on("ObnovNakup", function (hraId,data) {
+    if (hraId == HraId)
+        document.getElementById("nakup").innerHTML = data;
+});
+connection.on("ObnovBody", function (hraId, data) {
+    if (hraId == HraId)
+        document.getElementById("Body").innerHTML = data;
 });
