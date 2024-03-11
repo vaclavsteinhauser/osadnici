@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing;
+using System.Globalization;
 
 namespace WebOsadnici.Models.HerniTridy;
 
@@ -138,14 +139,14 @@ public class Rozcesti : HerniEntita
         string obrazek = (Stavba == null) ? "" : "../../" + Stavba.ImageUrl;
         string zobrazit = (Stavba == null) ? "none" : "inline";
         return $@"
-            <svg style='position: absolute; pointer-events: none;
-                top: {odsazeniY}px;
-                left: {odsazeniX}px;'
-                width='{sirka}px'
-                height='{vyska}px'
-                xmlns='http://www.w3.org/2000/svg'>
-            <circle class='rozcesti' id='{Id}' cx='{sirka / 2}' cy='{vyska / 2}' r='{Math.Min(sirka, vyska) / 4}' fill='{barva}' style='pointer-events: auto;' />
-            <image xlink:href='{obrazek}' width='{Math.Min(sirka, vyska) * 0.7}' height='{Math.Min(sirka, vyska) * 0.7}' x='{sirka / 2 - (Math.Min(sirka, vyska) * 0.35)}' y='{vyska / 2 - (Math.Min(sirka, vyska) * 0.35)}' display='{zobrazit}' />
-            </svg>";
+        <svg style='position: absolute; pointer-events: none;
+            top: {odsazeniY}px;
+            left: {odsazeniX}px;'
+            width='{sirka}px'
+            height='{vyska}px'
+            xmlns='http://www.w3.org/2000/svg'>
+        <circle class='rozcesti' id='{Id}' cx='{sirka / 2}' cy='{vyska / 2}' r='{Math.Min(sirka, vyska) / 4}' fill='{barva}' style='pointer-events: auto;' onclick='klik_rozcesti(event)' />
+        <image xlink:href='{obrazek}' width='{Math.Min(sirka, vyska) * 0.7}' height='{Math.Min(sirka, vyska) * 0.7}' display='{zobrazit}' />
+        </svg>";
     }
 }

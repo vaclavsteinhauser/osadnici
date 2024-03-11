@@ -120,7 +120,7 @@ public class Cesta : HerniEntita
             case 1: polygon = $"0,0 {1 * sirka / 10},0 {sirka},{9 * vyska / 10} {sirka},{vyska} {9 * sirka / 10},{vyska} 0,{1 * vyska / 10}"; break;
             default: polygon = $"{9 * sirka / 10},0 {sirka},0 {sirka},{1 * vyska / 10} {1 * sirka / 10},{vyska} 0,{vyska} 0,{9 * vyska / 10}"; break;
         }
-        string barva = (hrac == null) ? "black" : h.DejStav(hrac).barva.ToString();
+        string barva = (hrac == null) ? "black" : h.DejStav(hrac).barva.Name;
         return $@"
             <svg style='position: absolute; pointer-events: none;
                     top: {odsazeniY}px;
@@ -128,7 +128,7 @@ public class Cesta : HerniEntita
                     width='{sirka}px'
                     height='{vyska}px'
                     xmlns='http://www.w3.org/2000/svg' alt='cesta'>
-                <polygon class='cesta' id='{Id}' points='{polygon}' fill='{barva}' style='pointer-events: auto;'  />
+                <polygon class='cesta' id='{Id}' points='{polygon}' fill='{barva}' style='pointer-events: auto;' onclick='klik_cesta(event)' />
             </svg>";
     }
 }

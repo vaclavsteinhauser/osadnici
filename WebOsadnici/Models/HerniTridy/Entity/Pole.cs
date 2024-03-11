@@ -17,7 +17,7 @@ public class Pole : HerniEntita
     private Surovina? _surovina;
     private int _cislo;
     private bool _blokovane;
-    private ObservableCollection<Rozcesti>? _rozcesti = new ObservableCollection<Rozcesti>() { null, null, null, null, null, null };
+    private ObservableCollection<Rozcesti>? _rozcesti;
 
     /// <summary>
     /// X-ová pozice pole.
@@ -137,6 +137,7 @@ public class Pole : HerniEntita
         PoziceX = sloupec;
         PoziceY = radek;
         Blokovane = blokovane;
+        Rozcesti = new ObservableCollection<Rozcesti>() { null, null, null, null, null, null };
     }
     public Pole() { }
 
@@ -146,6 +147,7 @@ public class Pole : HerniEntita
         int odsazeniY = (PoziceY - (Pole.Velikost.Height / 2)) * Mapka.RozmeryMrizky.Height;
         int vyska = Pole.Velikost.Height * Mapka.RozmeryMrizky.Height;
         int sirka = Pole.Velikost.Width * Mapka.RozmeryMrizky.Width;
+        string zobrazitZlodeje = Blokovane? "block" : "none";
         string cislo = (Cislo != 0) ? $@"<circle cx='{sirka / 2}' cy='{vyska / 2}' r='{Math.Min(sirka, vyska) / 8}' fill='white' stroke='black' stroke-width='2' style='pointer-events: none;' />
                 <text x='{sirka / 2}' y='{vyska / 2}' text-anchor='middle' alignment-baseline='middle' fill='black' font-weight='bold' font-size='{Math.Min(sirka, vyska) / 6}' style='pointer-events: none;'>{Cislo}</text>" : "";
         return $@"
@@ -155,12 +157,13 @@ public class Pole : HerniEntita
                     width='{sirka}px'
                     height='{vyska}px'
                     xmlns='http://www.w3.org/2000/svg' alt='{Surovina.Nazev}'>
-                <polygon class='policko' id='{Id}' points='{sirka / 2},0 {sirka},{vyska / 3} {sirka},{2 * vyska / 3} {sirka / 2},{vyska} 0,{2 * vyska / 3} 0,{vyska / 3}'  style='fill:{Surovina.BackColor}; pointer-events: auto;'  />
+                <polygon class='policko' id='{Id}' points='{sirka / 2},0 {sirka},{vyska / 3} {sirka},{2 * vyska / 3} {sirka / 2},{vyska} 0,{2 * vyska / 3} 0,{vyska / 3}'  style='fill:{Surovina.BackColor}; pointer-events: auto;' onclick='klik_policko(event)' />
                 <clipPath id='hexMask'>
                     <polygon points='{sirka / 2},0 {sirka},{vyska / 3} {sirka},{2 * vyska / 3} {sirka / 2},{vyska} 0,{2 * vyska / 3} 0,{vyska / 3}' style='pointer-events: none;' />
                 </clipPath>
                 <image xlink:href='../../{Surovina.ImageUrl}' width='80%' height='80%' x='10%' y='10%' clip-path='url(#hexMask)' style='pointer-events: none;' />
-    {cislo}
+                <image id='{Id}-zlodej' xlink:href='../../zlodej.svg' width='80%' height='80%' x='10%' y='10%' clip-path='url(#hexMask)' style='pointer-events: none; display:{zobrazitZlodeje};' />
+                {cislo}
             </svg>";
     }
 }

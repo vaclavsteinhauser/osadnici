@@ -57,6 +57,9 @@ namespace WebOsadnici.Data
             modelBuilder.Entity<Hra>().Property(h => h.stavHry).IsRequired();
             modelBuilder.Entity<Hra>().HasMany(h => h.bufferAktivit).WithOne();
             modelBuilder.Entity<Hra>().HasMany(h => h.aktivniSmeny).WithOne();
+            modelBuilder.Entity<Hra>().HasMany(h => h.NerozdaneAkcniKarty).WithOne();
+            modelBuilder.Entity<Hra>().HasMany(h => h.NerozdaneBodoveKarty).WithOne();
+            modelBuilder.Entity<Hra>().Property(h => h.Hozene).IsRequired();
 
             // AkcniKarta
             modelBuilder.Entity<AkcniKarta>().ToTable("AkcniKarty");
@@ -101,7 +104,7 @@ namespace WebOsadnici.Data
             //Smena
             modelBuilder.Entity<Smena>().ToTable("Smeny");
             modelBuilder.Entity<Smena>().HasKey(h => h.Id);
-            modelBuilder.Entity<Smena>().HasOne(s => s.nabizejici).WithMany();
+            modelBuilder.Entity<Smena>().HasOne(s => s.hrac).WithMany();
             modelBuilder.Entity<Smena>().HasMany(s => s.nabidka).WithMany();
             modelBuilder.Entity<Smena>().HasMany(s => s.poptavka).WithMany();
 

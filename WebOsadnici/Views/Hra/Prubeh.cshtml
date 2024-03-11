@@ -5,12 +5,11 @@
 <script>
     // Počkat na načtení celé stránky
     window.addEventListener('load', function () {
-        // Počkat ještě krátkou dobu, než se skryje zpráva o načítání (např. 1 sekunda)
         setTimeout(function () {
             // Skrýt zprávu o načítání a zobrazit obsah stránky
             document.getElementById('loading-message').style.display = 'none';
             document.getElementById('main-container').style.display = 'flex';
-        }, 1000); // 1000 ms = 1 sekunda
+        }, 10);
     });
 </script>
 <span id="id-hry" hidden>@ViewBag.hra.Id</span>
@@ -19,9 +18,9 @@
 <div id="main-container" style="display: none;">
     
     <div class="ovladaci_panel" id="tlacitkovy-panel">
-        <div>
+        <div class="instrukce">
             <h2>Instrukce</h2>
-            <span id="instrukce">
+            <span id="instrukce" class="instrukce">
                 @ViewBag.hra.DejInstrukci(ViewBag.hrac.Id)
             </span>
         </div>
@@ -37,33 +36,8 @@
                 @Html.Raw(ViewBag.hra.DejAkcniKartyHTML(ViewBag.hrac))
             </span>
         </div>
-        <div id="panel_tlacitka">
-            @if (ViewBag.hra.stavHry != StavHry.Nezacala)
-            {
-                if (ViewBag.hra.AktualniHrac() == ViewBag.Hrac)
-                {
-                    <button id="tlacitko_smena">Nabídnout směnu</button>
-                    <button id="tlacitko_dalsi">Ukončit tah</button>
-                }
-                else
-                {
-                    <button id="tlacitko_smena" disabled>Nabídnout směnu</button>
-                    <button id="tlacitko_dalsi" disabled>Ukončit tah</button>
-                }
-                
-            }
-            else
-            {
-                <button id="tlacitko_smena" disabled>Nabídnout směnu</button>
-                if (ViewBag.hra.hraci.Count > 1 && ViewBag.hrac == ViewBag.hra.hraci[0])
-                {
-                    <button id="tlacitko_dalsi">Začít hru</button>
-                }
-                else
-                {
-                    <button id="tlacitko_dalsi" disabled>Začít hru</button>
-                }
-            }
+        <div id="tlacitka">
+            @Html.Raw(@ViewBag.hra.DejTlacitkaHTML(ViewBag.hrac))
         </div>
         
 
@@ -73,11 +47,20 @@
     </div>
     <div class="ovladaci_panel" id="stavovy-panel">
 
-        <div>
-            <h2>Body hráčů</h2>
-            <span id="Body" class="horizontalne">
-                @Html.Raw(@ViewBag.hra.DejBodyHTML())
-            </span>
+        <div class="horizontalne">
+            <div>
+                <h2>Poslední hod</h2>
+                <span class="instrukce">
+                    @ViewBag.hra.Hozene
+                </span>
+                
+            </div>
+            <div style="{flex:1;}">
+                <h2>Body hráčů</h2>
+                <span id="Body" class="horizontalne">
+                    @Html.Raw(@ViewBag.hra.DejBodyHTML())
+                </span>
+            </div>
         </div>
         <div>
             <h2>Extra body</h2>
@@ -98,6 +81,25 @@
             </span>
         </div>
     </div>
+</div>
+<div id="smena-container" class="vyskakovaci_okno">
+    <h2>Nabídka směny</h2>
+    <div>
+        <div>
+            <h3>Směna s hrou (4:1)</h3>
+            <div id="smena-s-hrou">
+                @Html.Raw(ViewBag.hra.DejSmenuHraHTML(ViewBag.hrac))
+            </div>
+        </div>
+        
+        <div>
+            <h3>Směna s hráči</h3>
+            <div id="smena-s-hraci">
+                @Html.Raw(ViewBag.hra.DejSmenuHraciHTML(ViewBag.hrac))
+            </div>
+        </div>
+    </div>
+    <p class="button" onclick="tlacitko_smena(event)"> Zrušit </p>
 </div>
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/click.js"></script>

@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing;
 
 namespace WebOsadnici.Models.HerniTridy;
@@ -151,12 +152,105 @@ public class StavHrace : HerniEntita, INotifyPropertyChanged, INotifyPropertyCha
     /// </summary>
     public virtual ObservableCollection<BodovaKarta> BodoveKarty { get; set; }
 
-    /// <summary>
-    /// Zjistí, zda je hráč aktuálně na tahu.
-    /// </summary>
-    /// <returns>True, pokud je hráč na tahu, jinak false.</returns>
-    public bool JeNaTahu()
+    [NotMapped]
+    public IEnumerable<Stavba> Stavby { get => hra.mapka.Rozcesti.Where(r => r.Hrac != null && r.Hrac.Id == hrac.Id).Select(r => r.Stavba).Where(s => s != null); }
+    [NotMapped]
+    public int body { get => Stavby.Select(s => s.Body).Sum() + BodoveKarty.Select(b => b.Body).Sum(); }
+
+    [NotMapped]
+    public bool MistaProVesnici
     {
-        return hra.hracNaTahu == poradi;
+        get
+        {
+            if (Stavby.Count() < 2)
+            {
+                return true;
+            }
+            if (Stavby.Where(s => s.Nazev == "Vesnice").Count() >= 5)
+            {
+                return false;
+            }
+            return hra.mapka.Rozcesti.Where(r => (r.Hrac == null || r.Hrac.Id == hrac.Id)
+                                                && r.Stavba == null
+                                                && r.Blokovane == false
+                                                && r.Cesty.Any(c => c.hrac != null && c.hrac.Id == hrac.Id))
+            .Count() > 0;
+        }
+    }
+
+    [NotMapped]
+    public bool MistaProMesto
+    {
+        get { 
+            if(Stavby.Where(s=>s.Nazev=="Město").Count()>=4)
+            {
+                return false;
+            }
+            return Stavby.Where(s => s.Nazev == "Vesnice").Count() > 0; 
+        }
+    }
+
+    [NotMapped]
+    public bool MistaProCestu
+    {
+        get
+        {
+            if(hra.mapka.Cesty.Where(c=>c.hrac!=null && c.hrac.Id==hrac.Id).Count()>=60)
+            {
+                return false;
+            }
+            return hra.mapka.Cesty.Where(c => c.hrac == null
+                                    && c.rozcesti.Any(r => (r.Hrac != null && r.Hrac.Id == hrac.Id)
+                                                        || r.Cesty.Any(x => x.hrac != null && x.hrac.Id == hrac.Id))).Count() > 0;
+        }
+    }
+
+    [NotMapped]
+    public IEnumerable<Rozcesti> vlastnenaRozcesti { get => hra.mapka.Rozcesti.Where(r => r.Hrac != null && r.Hrac.Id == hrac.Id); }
+
+    [NotMapped]
+    public IEnumerable<Cesta> vlastneneCesty { get => hra.mapka.Cesty.Where(c => c.hrac != null && c.hrac.Id == hrac.Id); }
+
+    [NotMapped]
+    public int nejdelsiVlastnenaCesta = 0;
+    private HashSet<Cesta> navstivene;
+    private List<Cesta> nejdelsiNalezenaCesta;
+    public int NejdelsiCesta()
+    {
+            navstivene = new HashSet<Cesta>();
+            nejdelsiNalezenaCesta = new List<Cesta>();
+            foreach (var startCesta in vlastneneCesty)
+            {
+                navstivene.Clear();
+                foreach (Rozcesti r in startCesta.rozcesti)
+                {
+                    DFS(new List<Cesta>(), startCesta, r);
+                }
+            }
+
+            return nejdelsiNalezenaCesta.Count();
+        
+    }
+
+    private void DFS(List<Cesta> aktualniCesta, Cesta nova, Rozcesti minuleRozcesti)
+    {
+        if (aktualniCesta.Count > nejdelsiNalezenaCesta.Count)
+        {
+            nejdelsiNalezenaCesta = new List<Cesta>(aktualniCesta);
+        }
+
+        navstivene.Add(nova);
+        Rozcesti konecneRozcesti= nova.rozcesti.Where(r=>r!=minuleRozcesti).First();
+        foreach (var navazujiciCesta in vlastneneCesty.Where(c=>!navstivene.Contains(c) && c.rozcesti.Contains(konecneRozcesti)))
+        {
+            if (navazujiciCesta != null)
+            {
+                aktualniCesta.Add(navazujiciCesta);
+                DFS(aktualniCesta, navazujiciCesta, konecneRozcesti);
+                aktualniCesta.Remove(navazujiciCesta);
+            }
+        }
+
+        navstivene.Remove(nova);
     }
 }

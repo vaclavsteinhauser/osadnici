@@ -66,7 +66,7 @@ main {
 }
 
 .list-hra-detail img {
-    width: 300px;
+    width: 200px;
     height: 200px;
     margin-top: 5px;
     margin-right: 5px;
@@ -107,7 +107,7 @@ main {
     padding: 10px 20px;
     background-color: #007BFF; 
     color: #ffffff;
-    border: none;
+    border: darkblue 2px solid;
     border-radius: 4px;
     font-weight: bold;
     cursor: pointer;
@@ -123,12 +123,12 @@ main {
 }
 
 
-#instrukce {
+.instrukce {
     font-size: 1.1rem;
     font-weight: bold;
     flex: 1;
 }
-#panel_tlacitka {
+#tlacitka {
     display: flex;
     flex-direction: column;
     align-content: stretch;
@@ -147,11 +147,12 @@ main {
     display: grid;
     justify-content: space-between;
 }
- .stavba-nazev {
-     grid-column: 1;
-     grid-row: 1;
-     font-weight: bold;
- }
+.stavba-nazev {
+    grid-column: 1;
+    grid-row: 1;
+    font-weight: bold;
+    pointer-events: none;
+}
 .stavba-cena {
     grid-column: 1;
     grid-row: 2;
@@ -159,13 +160,16 @@ main {
     margin: 0;
     display: flex;
     flex-wrap: wrap;
+    pointer-events: none;
 }
-.stavba-cena p {
-    margin: 5px;
-}
+    .stavba-cena p {
+        margin: 0 5px 0 5px;
+        pointer-events: none;
+    }
 .stavba-obrazek {
     grid-column: 2;
     grid-row: 1 / span 2;
+    pointer-events: none;
 }
 .obrazek {
     width: 60px;
@@ -193,4 +197,70 @@ main {
     justify-content: space-between;
     flex-wrap: nowrap;
     overflow-y: auto;
+}
+.body-hrace {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 2px;
+    margin: 2px;
+    background-color: #ffffff;
+}
+.body-hrace p {
+    margin: 0;
+}
+.vyskakovaci_okno {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 9999;
+    border: 1px solid black;
+}
+#smena-container {
+    flex-direction: column;
+    align-items: center;
+}
+#smena-container div {
+    display: flex;
+    margin: 10px;
+}
+#smena-container div div {
+    display: flex;
+    flex-direction:column;
+    border: 1px solid black;
+    border-radius: 5px;
+    margin: 10px;
+}
+#Smeny table {
+    border-collapse: collapse;
+    width: 100%;
+}
+#Smeny tr {
+    border: 1px solid black;
+}
+#smena-s-hraci-form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#smena-s-hraci-form-rozdeleni {
+    display: flex;
+    margin: 10px;
+}
+#smena-s-hraci-form-rozdeleni span {
+    margin: 10px;
+}
+.index_tlacitka {
+    display: flex;
+    justify-content: center;
+}
+.index_tlacitka a {
+    margin: 20px;
 }

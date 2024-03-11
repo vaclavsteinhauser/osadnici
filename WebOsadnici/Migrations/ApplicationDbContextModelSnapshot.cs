@@ -336,6 +336,9 @@ namespace WebOsadnici.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<Guid?>("HraId")
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -351,6 +354,8 @@ namespace WebOsadnici.Migrations
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("HraId");
 
                     b.HasIndex("StavHraceId");
 
@@ -427,6 +432,9 @@ namespace WebOsadnici.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
+
+                    b.Property<int>("Hozene")
+                        .HasColumnType("int");
 
                     b.Property<int>("hracNaTahu")
                         .HasColumnType("int");
@@ -530,7 +538,7 @@ namespace WebOsadnici.Migrations
                     b.Property<Guid?>("HraId")
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("nabizejiciId")
+                    b.Property<string>("hracId")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
@@ -538,7 +546,7 @@ namespace WebOsadnici.Migrations
 
                     b.HasIndex("HraId");
 
-                    b.HasIndex("nabizejiciId");
+                    b.HasIndex("hracId");
 
                     b.ToTable("Smeny", (string)null);
                 });
@@ -660,8 +668,13 @@ namespace WebOsadnici.Migrations
                     b.Property<int>("Body")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("HraId1")
+                        .HasColumnType("char(36)");
+
                     b.Property<Guid?>("StavHraceId1")
                         .HasColumnType("char(36)");
+
+                    b.HasIndex("HraId1");
 
                     b.HasIndex("StavHraceId1");
 
@@ -826,6 +839,10 @@ namespace WebOsadnici.Migrations
 
             modelBuilder.Entity("WebOsadnici.Models.HerniTridy.AkcniKarta", b =>
                 {
+                    b.HasOne("WebOsadnici.Models.HerniTridy.Hra", null)
+                        .WithMany("NerozdaneAkcniKarty")
+                        .HasForeignKey("HraId");
+
                     b.HasOne("WebOsadnici.Models.HerniTridy.StavHrace", null)
                         .WithMany("AkcniKarty")
                         .HasForeignKey("StavHraceId");
@@ -912,13 +929,13 @@ namespace WebOsadnici.Migrations
                         .WithMany("aktivniSmeny")
                         .HasForeignKey("HraId");
 
-                    b.HasOne("Hrac", "nabizejici")
+                    b.HasOne("Hrac", "hrac")
                         .WithMany()
-                        .HasForeignKey("nabizejiciId")
+                        .HasForeignKey("hracId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("nabizejici");
+                    b.Navigation("hrac");
                 });
 
             modelBuilder.Entity("WebOsadnici.Models.HerniTridy.StavHrace", b =>
@@ -957,6 +974,10 @@ namespace WebOsadnici.Migrations
 
             modelBuilder.Entity("WebOsadnici.Models.HerniTridy.BodovaKarta", b =>
                 {
+                    b.HasOne("WebOsadnici.Models.HerniTridy.Hra", null)
+                        .WithMany("NerozdaneBodoveKarty")
+                        .HasForeignKey("HraId1");
+
                     b.HasOne("WebOsadnici.Models.HerniTridy.StavHrace", null)
                         .WithMany("BodoveKarty")
                         .HasForeignKey("StavHraceId1");
@@ -964,6 +985,10 @@ namespace WebOsadnici.Migrations
 
             modelBuilder.Entity("WebOsadnici.Models.HerniTridy.Hra", b =>
                 {
+                    b.Navigation("NerozdaneAkcniKarty");
+
+                    b.Navigation("NerozdaneBodoveKarty");
+
                     b.Navigation("aktivniSmeny");
 
                     b.Navigation("bufferAktivit");

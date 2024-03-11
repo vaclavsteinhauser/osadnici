@@ -7,7 +7,10 @@ public enum Instrukce
     StavbaVesnice, //rucne nakup / automaticky rozestavovani
     PresunZlodeje, //automaticky hod 7 / rucne zahrani rytire
     VytvoritSmenu,
-    VyberSurovinu, //automaticky zahrani vynalez, monopol;
+    VyberPrvniSurovinu, //automaticky zahrani vynalez;
+    VyberDruhouSurovinu, //automaticky zahrani vynalez;
+    VyberHrace, //automaticky hod 7/ rucne zahrani rytire,
+    VyberSurovinuMonopol            //
 }
 public class Aktivita : HerniEntita
 {

@@ -10,12 +10,12 @@ namespace WebOsadnici.Controllers
     public class HraController : Controller
     {
         private readonly ILogger<HraController> _logger;
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory;
         private readonly UserManager<Hrac> _userManager;
 
-        public HraController(ILogger<HraController> logger, ApplicationDbContext dbContext, UserManager<Hrac> userManager)
+        public HraController(ILogger<HraController> logger, IDbContextFactory<ApplicationDbContext> dbContextFactory, UserManager<Hrac> userManager)
         {
-            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _dbContextFactory = dbContextFactory ?? throw new ArgumentNullException(nameof(dbContextFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         }
@@ -36,9 +36,8 @@ namespace WebOsadnici.Controllers
             }
 
             var hra = new Hra();
-            await hra.Inicializace(_dbContext);
-            _dbContext.Add(hra);
-            await _dbContext.SaveChangesAsync();
+            hra._dbContext=_dbContextFactory.CreateDbContext();
+            await hra.Inicializace();
 
             return RedirectToAction("Pripojit", new { id = hra.Id });
         }
@@ -52,7 +51,7 @@ namespace WebOsadnici.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var hra = await Hra.NactiHru(id, _dbContext);
+            var hra = await Hra.NactiHru(id, _dbContextFactory.CreateDbContext());
             if (hra == null)
             {
                 return RedirectToAction("Index", "Home");
@@ -69,10 +68,14 @@ namespace WebOsadnici.Controllers
             var user = await GetUserAsync();
             var barva = form["barva"];
             var hraId = Guid.Parse(form["Id"]);
-            var hra = await Hra.NactiHru(hraId, _dbContext);
+            var hra = await Hra.NactiHru(hraId, _dbContextFactory.CreateDbContext());
             if (hra == null)
             {
                 return RedirectToAction("Index", "Home");
+            }
+            if(hra.hraci.Contains(user))
+            {
+                return RedirectToAction("Prubeh", new { id = hraId });
             }
 
             await hra.PridejHrace(user, Color.FromName(barva));
@@ -89,7 +92,7 @@ namespace WebOsadnici.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var hra = await Hra.NactiHru(id, _dbContext);
+            var hra = await Hra.NactiHru(id, _dbContextFactory.CreateDbContext());
             if (hra == null || !hra.hraci.Contains(user))
             {
                 return RedirectToAction("Index", "Hra");
@@ -97,7 +100,7 @@ namespace WebOsadnici.Controllers
 
             ViewBag.hra = hra;
             ViewBag.hrac = user;
-            ViewBag.stavby = await _dbContext.stavby.ToArrayAsync();
+            ViewBag.stavby = hra.mapka.Stavby;
             return View();
         }
 

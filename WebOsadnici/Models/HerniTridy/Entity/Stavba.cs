@@ -174,12 +174,12 @@ public class Stavba : HerniEntita
         }
 
         //Pokud ještě neexistuje Akční karta, vytvoříme ji.
-        Stavba AkcniKarta = await _dbContext.stavby.Where(s => s.Nazev.Equals("AkcniKarta")).SingleOrDefaultAsync();
+        Stavba AkcniKarta = await _dbContext.stavby.Where(s => s.Nazev.Equals("Akční karta")).SingleOrDefaultAsync();
         if (AkcniKarta == null)
         {
             AkcniKarta = new Stavba()
             {
-                Nazev = "AkcniKarta",
+                Nazev = "Akční karta",
                 Zisk = 0,
                 ImageUrl = "akcni_karta.svg",
                 Body = 0,

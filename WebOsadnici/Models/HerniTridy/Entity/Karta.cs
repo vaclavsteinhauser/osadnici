@@ -31,6 +31,7 @@ public class Karta : HerniEntita
 public class AkcniKarta : Karta
 {
     public static string[] nazvy = new string[] { "Rytíř", "Monopol", "Vynález", "Stavba silnic" };
+    public static int[] pocty = new int[] { 14, 2, 2, 2 };
     public static Dictionary<string,string> obrazky = new Dictionary<string, string>()
     {
         {"Rytíř","rytir.svg" },
@@ -80,6 +81,8 @@ public class AkcniKarta : Karta
         switch (Nazev)
         {
             case "Rytíř":
+                hra.DejStav(hrac).zahranychRytiru++;
+                hra.PrepocitejNejvicRytiru();
                 hra.PridejAktivitu(new Aktivita()
                 {
                     Hrac=hrac,
@@ -90,19 +93,19 @@ public class AkcniKarta : Karta
                 hra.PridejAktivitu(new Aktivita()
                 {
                     Hrac=hrac,
-                    Akce=Instrukce.VyberSurovinu
+                    Akce=Instrukce.VyberSurovinuMonopol
                 });
                 break;
             case "Vynález":
                 hra.PridejAktivitu(new Aktivita()
                 {
                     Hrac=hrac,
-                    Akce=Instrukce.VyberSurovinu
+                    Akce=Instrukce.VyberPrvniSurovinu
                 });
                 hra.PridejAktivitu(new Aktivita()
                 {
                     Hrac = hrac,
-                    Akce = Instrukce.VyberSurovinu
+                    Akce = Instrukce.VyberDruhouSurovinu
                 });
                 break;
             case "Stavba silnic":
@@ -171,5 +174,9 @@ public class SurovinaKarta : Karta
                 OnPropertyChanged(nameof(Surovina));
             }
         }
+    }
+    public override string ToString()
+    {
+        return $"{Pocet}x {Surovina.Nazev}";
     }
 }
