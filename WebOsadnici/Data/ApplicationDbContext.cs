@@ -32,7 +32,6 @@ namespace WebOsadnici.Data
             modelBuilder.Entity<Aktivita>().HasKey(a => a.Id);
             modelBuilder.Entity<Aktivita>().Property(a => a.Akce).IsRequired();
             modelBuilder.Entity<Aktivita>().Property(a => a.CisloAktivity).IsRequired();
-            modelBuilder.Entity<Aktivita>().Property(a => a.Probiha).IsRequired();
             modelBuilder.Entity<Aktivita>().HasOne<Hrac>(a => a.Hrac).WithMany();
 
             // Cesta

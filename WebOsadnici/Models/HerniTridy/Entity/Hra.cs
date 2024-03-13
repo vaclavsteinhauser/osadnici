@@ -60,7 +60,7 @@ public class Hra : HerniEntita
                         i--;
                     }
             }
-            Thread.Sleep(30 * 60 * 1000);
+            Thread.Sleep(6 * 60 * 60 * 1000);
         }
     }
     //staticky konstruktor, který zapne automatické čištěni
@@ -517,7 +517,7 @@ public class Hra : HerniEntita
         StringBuilder sb = new();
         foreach (SurovinaKarta a in DejStav(h).SurovinaKarty)
         {
-            sb.AppendLine($"<div id='{a.Id}' class='surovina-karta karta' onclick ='klik_surovina(event)'>");
+            sb.AppendLine($"<div id='{a.Id}' class='surovina-karta karta' onclick ='klik_surovina(event)' style='background-color:{a.Surovina.BackColor};'>");
             sb.AppendLine($"<span class='akcni-karta-Nazev' style='pointer-events: none;' >{a.Surovina.Nazev}</span>");
             sb.AppendLine($"<img class='akcni-karta-obrazek obrazek' src='../../{a.Surovina.ImageUrl}' style='pointer-events: none;' />");
             sb.AppendLine($"<span class='akcni-karta-pocet' style='pointer-events: none;'>{a.Pocet}</span>");

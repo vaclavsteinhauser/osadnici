@@ -17,5 +17,4 @@ public class Aktivita : HerniEntita
     public virtual Hrac Hrac { get; set; }
     public virtual Instrukce Akce { get; set; }
     public virtual int CisloAktivity { get; set; }
-    public virtual bool Probiha { get; set; }
 }
