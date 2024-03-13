@@ -36,7 +36,7 @@ namespace WebOsadnici.Controllers
             }
 
             var hra = new Hra();
-            hra._dbContext=_dbContextFactory.CreateDbContext();
+            hra._dbContext = _dbContextFactory.CreateDbContext();
             await hra.Inicializace();
 
             return RedirectToAction("Pripojit", new { id = hra.Id });
@@ -73,7 +73,7 @@ namespace WebOsadnici.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            if(hra.hraci.Contains(user))
+            if (hra.hraci.Contains(user))
             {
                 return RedirectToAction("Prubeh", new { id = hraId });
             }

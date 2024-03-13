@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using WebOsadnici.Data;
 using WebOsadnici.Hubs;
 using WebOsadnici.Models.HerniTridy;

@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel;
-
-using WebOsadnici.Models.HerniTridy;
 /// <summary>
 /// Reprezentuje hráče v aplikaci.
 /// </summary>

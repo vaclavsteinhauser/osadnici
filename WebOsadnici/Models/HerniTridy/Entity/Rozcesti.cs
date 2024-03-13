@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing;
-using System.Globalization;
 
 namespace WebOsadnici.Models.HerniTridy;
 
@@ -75,7 +74,7 @@ public class Rozcesti : HerniEntita
     [NotMapped]
     public virtual bool Blokovane
     {
-        get => Sousedi.Any(s=>s.Stavba!=null);
+        get => Sousedi.Any(s => s.Stavba != null);
     }
     ///<summary>
     /// Cesty u rozcesti
@@ -87,7 +86,7 @@ public class Rozcesti : HerniEntita
     /// Sousední rozcestí
     /// </summary>
     [NotMapped]
-    public IEnumerable<Rozcesti> Sousedi { get => Cesty.SelectMany(c=>c.rozcesti).Where(r=>r.Id!=Id); }
+    public IEnumerable<Rozcesti> Sousedi { get => Cesty.SelectMany(c => c.rozcesti).Where(r => r.Id != Id); }
 
 
 
@@ -113,7 +112,7 @@ public class Rozcesti : HerniEntita
     /// </summary>
     /// <param name="poziceX">X-ová pozice rozcestí.</param>
     /// <param name="poziceY">Y-ová pozice rozcestí.</param>
-    internal Rozcesti(Mapka m,int poziceX, int poziceY)
+    internal Rozcesti(Mapka m, int poziceX, int poziceY)
     {
         Mapka = m;
         PoziceX = poziceX;

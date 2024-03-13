@@ -129,7 +129,7 @@ public class Pole : HerniEntita
     /// <param name="sloupec">X-ová pozice pole.</param>
     /// <param name="radek">Y-ová pozice pole.</param>
     /// <param name="blokovane">Určuje, zda je pole blokováno.</param>
-    public Pole(Mapka m,Surovina surovina, int cislo, int sloupec, int radek, bool blokovane = false)
+    public Pole(Mapka m, Surovina surovina, int cislo, int sloupec, int radek, bool blokovane = false)
     {
         Mapka = m;
         Surovina = surovina;
@@ -147,7 +147,7 @@ public class Pole : HerniEntita
         int odsazeniY = (PoziceY - (Pole.Velikost.Height / 2)) * Mapka.RozmeryMrizky.Height;
         int vyska = Pole.Velikost.Height * Mapka.RozmeryMrizky.Height;
         int sirka = Pole.Velikost.Width * Mapka.RozmeryMrizky.Width;
-        string zobrazitZlodeje = Blokovane? "block" : "none";
+        string zobrazitZlodeje = Blokovane ? "block" : "none";
         string cislo = (Cislo != 0) ? $@"<circle cx='{sirka / 2}' cy='{vyska / 2}' r='{Math.Min(sirka, vyska) / 8}' fill='white' stroke='black' stroke-width='2' style='pointer-events: none;' />
                 <text x='{sirka / 2}' y='{vyska / 2}' text-anchor='middle' alignment-baseline='middle' fill='black' font-weight='bold' font-size='{Math.Min(sirka, vyska) / 6}' style='pointer-events: none;'>{Cislo}</text>" : "";
         return $@"

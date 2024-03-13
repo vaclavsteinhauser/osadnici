@@ -100,7 +100,7 @@ public class Cesta : HerniEntita
     /// <param name="poziceX">Pozice X na herní mapě.</param>
     /// <param name="poziceY">Pozice Y na herní mapě.</param>
     /// <param name="natoceni">Natáčení cesty při vykreslování.</param>
-    internal Cesta(Mapka m,int poziceX, int poziceY, int natoceni)
+    internal Cesta(Mapka m, int poziceX, int poziceY, int natoceni)
     {
         Mapka = m;
         this.poziceX = poziceX;

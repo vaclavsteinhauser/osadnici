@@ -32,7 +32,7 @@ public class AkcniKarta : Karta
 {
     public static string[] nazvy = new string[] { "Rytíř", "Monopol", "Vynález", "Stavba silnic" };
     public static int[] pocty = new int[] { 14, 2, 2, 2 };
-    public static Dictionary<string,string> obrazky = new Dictionary<string, string>()
+    public static Dictionary<string, string> obrazky = new Dictionary<string, string>()
     {
         {"Rytíř","rytir.svg" },
         {"Monopol","monopol.svg" },
@@ -85,22 +85,22 @@ public class AkcniKarta : Karta
                 hra.PrepocitejNejvicRytiru();
                 hra.PridejAktivitu(new Aktivita()
                 {
-                    Hrac=hrac,
-                    Akce=Instrukce.PresunZlodeje
+                    Hrac = hrac,
+                    Akce = Instrukce.PresunZlodeje
                 });
                 break;
             case "Monopol":
                 hra.PridejAktivitu(new Aktivita()
                 {
-                    Hrac=hrac,
-                    Akce=Instrukce.VyberSurovinuMonopol
+                    Hrac = hrac,
+                    Akce = Instrukce.VyberSurovinuMonopol
                 });
                 break;
             case "Vynález":
                 hra.PridejAktivitu(new Aktivita()
                 {
-                    Hrac=hrac,
-                    Akce=Instrukce.VyberPrvniSurovinu
+                    Hrac = hrac,
+                    Akce = Instrukce.VyberPrvniSurovinu
                 });
                 hra.PridejAktivitu(new Aktivita()
                 {
@@ -149,7 +149,7 @@ public class BodovaKarta : AkcniKarta
                 OnPropertyChanged(nameof(Body));
             }
         }
-    }                                                                                         
+    }
 }
 
 /// <summary>

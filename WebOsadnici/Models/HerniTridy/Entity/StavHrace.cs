@@ -181,12 +181,13 @@ public class StavHrace : HerniEntita, INotifyPropertyChanged, INotifyPropertyCha
     [NotMapped]
     public bool MistaProMesto
     {
-        get { 
-            if(Stavby.Where(s=>s.Nazev=="Město").Count()>=4)
+        get
+        {
+            if (Stavby.Where(s => s.Nazev == "Město").Count() >= 4)
             {
                 return false;
             }
-            return Stavby.Where(s => s.Nazev == "Vesnice").Count() > 0; 
+            return Stavby.Where(s => s.Nazev == "Vesnice").Count() > 0;
         }
     }
 
@@ -195,7 +196,7 @@ public class StavHrace : HerniEntita, INotifyPropertyChanged, INotifyPropertyCha
     {
         get
         {
-            if(hra.mapka.Cesty.Where(c=>c.hrac!=null && c.hrac.Id==hrac.Id).Count()>=60)
+            if (hra.mapka.Cesty.Where(c => c.hrac != null && c.hrac.Id == hrac.Id).Count() >= 60)
             {
                 return false;
             }
@@ -217,19 +218,19 @@ public class StavHrace : HerniEntita, INotifyPropertyChanged, INotifyPropertyCha
     private List<Cesta> nejdelsiNalezenaCesta;
     public int NejdelsiCesta()
     {
-            navstivene = new HashSet<Cesta>();
-            nejdelsiNalezenaCesta = new List<Cesta>();
-            foreach (var startCesta in vlastneneCesty)
+        navstivene = new HashSet<Cesta>();
+        nejdelsiNalezenaCesta = new List<Cesta>();
+        foreach (var startCesta in vlastneneCesty)
+        {
+            navstivene.Clear();
+            foreach (Rozcesti r in startCesta.rozcesti)
             {
-                navstivene.Clear();
-                foreach (Rozcesti r in startCesta.rozcesti)
-                {
-                    DFS(new List<Cesta>(), startCesta, r);
-                }
+                DFS(new List<Cesta>(), startCesta, r);
             }
+        }
 
-            return nejdelsiNalezenaCesta.Count();
-        
+        return nejdelsiNalezenaCesta.Count();
+
     }
 
     private void DFS(List<Cesta> aktualniCesta, Cesta nova, Rozcesti minuleRozcesti)
@@ -240,8 +241,8 @@ public class StavHrace : HerniEntita, INotifyPropertyChanged, INotifyPropertyCha
         }
 
         navstivene.Add(nova);
-        Rozcesti konecneRozcesti= nova.rozcesti.Where(r=>r!=minuleRozcesti).First();
-        foreach (var navazujiciCesta in vlastneneCesty.Where(c=>!navstivene.Contains(c) && c.rozcesti.Contains(konecneRozcesti)))
+        Rozcesti konecneRozcesti = nova.rozcesti.Where(r => r != minuleRozcesti).First();
+        foreach (var navazujiciCesta in vlastneneCesty.Where(c => !navstivene.Contains(c) && c.rozcesti.Contains(konecneRozcesti)))
         {
             if (navazujiciCesta != null)
             {

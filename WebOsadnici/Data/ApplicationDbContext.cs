@@ -76,9 +76,9 @@ namespace WebOsadnici.Data
             // Mapka
             modelBuilder.Entity<Mapka>().ToTable("Mapky");
             modelBuilder.Entity<Mapka>().HasKey(h => h.Id);
-            modelBuilder.Entity<Mapka>().HasMany(m => m.Policka).WithOne(p=>p.Mapka);
-            modelBuilder.Entity<Mapka>().HasMany(m => m.Cesty).WithOne(c=>c.Mapka);
-            modelBuilder.Entity<Mapka>().HasMany(m => m.Rozcesti).WithOne(r=>r.Mapka);
+            modelBuilder.Entity<Mapka>().HasMany(m => m.Policka).WithOne(p => p.Mapka);
+            modelBuilder.Entity<Mapka>().HasMany(m => m.Cesty).WithOne(c => c.Mapka);
+            modelBuilder.Entity<Mapka>().HasMany(m => m.Rozcesti).WithOne(r => r.Mapka);
             modelBuilder.Entity<Mapka>().HasMany(m => m.Stavby).WithMany();
             modelBuilder.Entity<Mapka>().HasMany(m => m.Suroviny).WithMany();
 

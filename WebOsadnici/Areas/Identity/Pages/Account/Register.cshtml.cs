@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
-using WebOsadnici.Models.HerniTridy;
 
 namespace WebOsadnici.Areas.Identity.Pages.Account
 {

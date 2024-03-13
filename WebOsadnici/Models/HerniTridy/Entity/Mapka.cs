@@ -62,7 +62,7 @@ public class Mapka : HerniEntita
     private List<int> zasobaCisel = new List<int>();
     private Random rnd = new Random();
     public Mapka() { }
-    
+
 
     /// <summary>
     /// Inicializuje herní mapu s danou hrou.
@@ -96,7 +96,7 @@ public class Mapka : HerniEntita
     {
         foreach (var s in nazvySurovin)
         {
-            zasobaSurovin.Add(Suroviny.FirstOrDefault(x=>x.Nazev==s));
+            zasobaSurovin.Add(Suroviny.FirstOrDefault(x => x.Nazev == s));
         }
         foreach (var i in cislaPolicek)
         {
@@ -108,7 +108,7 @@ public class Mapka : HerniEntita
             Pole p;
             if (souradnice.Item1 == 12 && souradnice.Item2 == 12)
             {
-                p = new Pole(this,Suroviny.FirstOrDefault(x=>x.Nazev=="Poušť"), 0, 12, 12);
+                p = new Pole(this, Suroviny.FirstOrDefault(x => x.Nazev == "Poušť"), 0, 12, 12);
             }
             else
             {
@@ -118,7 +118,7 @@ public class Mapka : HerniEntita
                 r = rnd.Next() % zasobaSurovin.Count;
                 Surovina s = zasobaSurovin[r];
                 zasobaSurovin.RemoveAt(r);
-                p = new Pole(this,s, cislo, souradnice.Item1, souradnice.Item2);
+                p = new Pole(this, s, cislo, souradnice.Item1, souradnice.Item2);
             }
             sit[souradnice.Item1, souradnice.Item2] = p;
             Policka.Add(p);
@@ -188,7 +188,7 @@ public class Mapka : HerniEntita
             else if ((a.PoziceX > b.PoziceX && a.PoziceY < b.PoziceY) || (a.PoziceX < b.PoziceX && a.PoziceY > b.PoziceY))
                 natoceni = 2;
             else natoceni = 1;
-            Cesta c = new Cesta(this,(a.PoziceX + b.PoziceX) / 2, (a.PoziceY + b.PoziceY) / 2, natoceni);
+            Cesta c = new Cesta(this, (a.PoziceX + b.PoziceX) / 2, (a.PoziceY + b.PoziceY) / 2, natoceni);
             c.rozcesti.Add(a);
             c.rozcesti.Add(b);
             Cesty.Add(c);
@@ -214,7 +214,7 @@ public class Mapka : HerniEntita
                 default: umisteni = new Size(vstupni.PoziceX - 2, vstupni.PoziceY - 1); break;
 
             }
-            vstupni.Rozcesti[indexVstupni] = new Rozcesti(this,umisteni.Width, umisteni.Height);
+            vstupni.Rozcesti[indexVstupni] = new Rozcesti(this, umisteni.Width, umisteni.Height);
         }
     }
 }

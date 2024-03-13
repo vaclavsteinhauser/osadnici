@@ -28,7 +28,7 @@ namespace WebOsadnici.Controllers
             if (user != null)
             {
                 ViewBag.moje = await _dbContext.hry
-                    .Where(h => h.stavy.Any(s => s.hrac.Id == user.Id) && h.stavHry != StavHry.Skoncila )
+                    .Where(h => h.stavy.Any(s => s.hrac.Id == user.Id) && h.stavHry != StavHry.Skoncila)
                     .ToArrayAsync();
 
                 ViewBag.nezacate = await _dbContext.hry

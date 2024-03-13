@@ -54,7 +54,7 @@ namespace WebOsadnici.Hubs
             StavHrace stavcizi = hra.DejStav(smena.hrac);
             foreach (var s in smena.nabidka)
             {
-                if(s.Pocet > stavcizi.SurovinaKarty.FirstOrDefault(n=>n.Surovina.Nazev == s.Surovina.Nazev).Pocet)
+                if (s.Pocet > stavcizi.SurovinaKarty.FirstOrDefault(n => n.Surovina.Nazev == s.Surovina.Nazev).Pocet)
                 {
                     await Clients.Client(connectionId).SendAsync("NastavText", "Nelze provést směnu. Cizí hráč nemá dostatek surovin.");
                     return;
@@ -99,7 +99,7 @@ namespace WebOsadnici.Hubs
             }
             SurovinaKarta vstup = stav.SurovinaKarty.FirstOrDefault(s => s.Surovina.Nazev == data["vstup"]);
             SurovinaKarta vystup = stav.SurovinaKarty.FirstOrDefault(s => s.Surovina.Nazev == data["vystup"]);
-            if(vstup==null || vstup.Pocet < 4)
+            if (vstup == null || vstup.Pocet < 4)
             {
                 await Clients.Client(connectionId).SendAsync("NastavText", $"Nelze vyměnit. Není dostatek surovin. {hra.DejInstrukci(hrac)}");
             }
@@ -119,19 +119,19 @@ namespace WebOsadnici.Hubs
         // Metoda pro obsluhu kliknutí na tlačítko pro další akci
         public async Task tlacitko_dalsi_klik(string connectionId, string HracId, string HraId)
         {
-            Hra h=await Hra.NactiHru(Guid.Parse(HraId), _dbContextFactory.CreateDbContext());
+            Hra h = await Hra.NactiHru(Guid.Parse(HraId), _dbContextFactory.CreateDbContext());
             if (h.hraci.Count < 2 || h.stavHry == StavHry.Skoncila)
             {
                 await Clients.Client(connectionId).SendAsync("NastavText", "Hra nemůže být spuštěna.");
                 return;
             }
             Hrac hrac = h.hraci.FirstOrDefault(h => h.Id.ToString().Equals(HracId));
-            if(h.stavHry==StavHry.Nezacala && hrac==h.DejHrace(0))
+            if (h.stavHry == StavHry.Nezacala && hrac == h.DejHrace(0))
             {
                 await h.ZacniHru();
                 return;
             }
-            if(hrac==h.AktualniHrac() && h.AktualniAktivita()==null)
+            if (hrac == h.AktualniHrac() && h.AktualniAktivita() == null)
             {
                 await h.DalsiHrac();
             }
@@ -154,8 +154,8 @@ namespace WebOsadnici.Hubs
             if (a.Akce == Instrukce.StavbaCesty)
             {
                 if (cesta.hrac != null ||
-                   (!cesta.rozcesti.Any(r=>r.Hrac != null && r.Hrac.Id == hrac.Id)
-                   && cesta.rozcesti.All(r=>!r.Cesty.Any(c=>c.hrac!=null && c.hrac.Id == hrac.Id))))
+                   (!cesta.rozcesti.Any(r => r.Hrac != null && r.Hrac.Id == hrac.Id)
+                   && cesta.rozcesti.All(r => !r.Cesty.Any(c => c.hrac != null && c.hrac.Id == hrac.Id))))
                 {
                     await Clients.Client(connectionId).SendAsync("NastavText", "Nelze postavit cestu.");
                     return;
@@ -165,7 +165,7 @@ namespace WebOsadnici.Hubs
                     cesta.hrac = hrac;
                     foreach (Rozcesti r in cesta.rozcesti)
                     {
-                        if(r.Hrac == null && r.Cesty.Count(c=>c.hrac!=null && c.hrac.Id==hrac.Id)>1)
+                        if (r.Hrac == null && r.Cesty.Count(c => c.hrac != null && c.hrac.Id == hrac.Id) > 1)
                         {
                             r.Hrac = hrac;
                             await Clients.Client(connectionId).SendAsync("NastavBarvu", r.Id.ToString(), stav.barva.Name);
@@ -187,9 +187,9 @@ namespace WebOsadnici.Hubs
                         await Clients.Client(connectionId).SendAsync("NastavText", hra.DejInstrukci(hrac));
                     }
                 }
-                
+
             }
-            
+
         }
 
         // Metoda pro obsluhu kliknutí na políčko
@@ -214,21 +214,21 @@ namespace WebOsadnici.Hubs
                         await Clients.All.SendAsync("ZmenZlodeje", hra.Id.ToString(), p.Id.ToString());
                         p.Blokovane = false;
                     }
-                    
+
                 }
-                    
+
                 pole.Blokovane = true;
                 await Clients.All.SendAsync("ZmenZlodeje", hra.Id.ToString(), pole.Id.ToString());
-                if(pole.Rozcesti.Any(r=>r.Hrac!=null && r.Hrac.Id!=hrac.Id))
+                if (pole.Rozcesti.Any(r => r.Hrac != null && r.Hrac.Id != hrac.Id))
                 {
                     hra.PridejAktivitu(new Aktivita()
                     {
                         Hrac = hrac,
                         Akce = Instrukce.VyberHrace
-                    }) ;
+                    });
                 }
                 hra.SmazAktivitu(a);
-                
+
                 await hra._dbContext.SaveChangesAsync();
                 await AktualizovatHru(hra.Id.ToString());
             }
@@ -284,7 +284,7 @@ namespace WebOsadnici.Hubs
             if (a.Akce == Instrukce.StavbaMesta)
             {
                 if (rozcesti.Stavba == null ||
-                    rozcesti.Stavba.Nazev !="Vesnice" ||
+                    rozcesti.Stavba.Nazev != "Vesnice" ||
                     rozcesti.Hrac.Id != hrac.Id
                     )
                 {
@@ -319,12 +319,12 @@ namespace WebOsadnici.Hubs
             Hra hra = await Hra.NactiHru(Guid.Parse(HraId), _dbContextFactory.CreateDbContext());
             Hrac hrac = hra.DejHrace(HracId);
             StavHrace stav = hra.DejStav(hrac);
-            if (hra.stavHry != StavHry.Probiha || hrac.Id!=hra.AktualniHrac().Id)
+            if (hra.stavHry != StavHry.Probiha || hrac.Id != hra.AktualniHrac().Id)
             {
                 await Clients.Client(connectionId).SendAsync("NastavText", "Nákup není možný.");
                 return;
             }
-            if(hra.AktualniAktivita()!=null)
+            if (hra.AktualniAktivita() != null)
             {
                 await Clients.Client(connectionId).SendAsync("NastavText", $"Nákup není možný:{hra.DejInstrukci(hrac)}");
                 return;
@@ -335,7 +335,7 @@ namespace WebOsadnici.Hubs
                 await Clients.Client(connectionId).SendAsync("NastavText", "Nákup není možný.");
                 return;
             }
-            foreach(var sk in kliknuta.Cena)
+            foreach (var sk in kliknuta.Cena)
             {
                 if (stav.SurovinaKarty.FirstOrDefault(s => s.Surovina == sk.Surovina).Pocet < sk.Pocet)
                 {
@@ -344,15 +344,16 @@ namespace WebOsadnici.Hubs
                 }
             }
 
-            switch (kliknuta.Nazev) {                 
+            switch (kliknuta.Nazev)
+            {
                 case "Vesnice":
-                    if(!stav.MistaProVesnici)
+                    if (!stav.MistaProVesnici)
                         await Clients.Client(connectionId).SendAsync("NastavText", "Není kam postavit.");
                     else
                     {
                         hra.PridejAktivitu(new Aktivita() { Hrac = hrac, Akce = Instrukce.StavbaVesnice });
                     }
-                    
+
                     break;
                 case "Město":
                     if (!stav.MistaProMesto)
@@ -371,7 +372,7 @@ namespace WebOsadnici.Hubs
                     }
                     break;
                 case "Akční karta":
-                    if(hra.pocetNerozdanychKaret>0)
+                    if (hra.pocetNerozdanychKaret > 0)
                     {
                         hra.DejAkcniKartu(hrac);
                     }
@@ -385,7 +386,7 @@ namespace WebOsadnici.Hubs
             {
                 stav.SurovinaKarty.FirstOrDefault(s => s.Surovina == sk.Surovina).Pocet -= sk.Pocet;
             }
-            
+
             await hra._dbContext.SaveChangesAsync();
             await Clients.Client(connectionId).SendAsync("ObnovSekci", HraId, "akcni-karty", hra.DejAkcniKartyHTML(hrac));
             await Clients.Client(connectionId).SendAsync("ObnovSekci", HraId, "Suroviny", hra.DejSurovinoveKartyHTML(hrac));
@@ -447,8 +448,8 @@ namespace WebOsadnici.Hubs
             if (a == null) return;
             if (a.Akce == Instrukce.VyberHrace)
             {
-                var blokovanepolicko= hra.mapka.Policka.FirstOrDefault(p => p.Blokovane);
-                if(blokovanepolicko.Rozcesti.Any(r=>r.Hrac!=null && r.Hrac.Id.ToString().Equals(Id)))
+                var blokovanepolicko = hra.mapka.Policka.FirstOrDefault(p => p.Blokovane);
+                if (blokovanepolicko.Rozcesti.Any(r => r.Hrac != null && r.Hrac.Id.ToString().Equals(Id)))
                 {
                     Surovina sebrana = hra.SeberSurovinu(cilovyHrac);
                     stav.SurovinaKarty.First(s => s.Surovina.Nazev == sebrana.Nazev).Pocet++;
@@ -468,7 +469,7 @@ namespace WebOsadnici.Hubs
             Hrac hrac = hra.DejHrace(HracId);
             StavHrace stav = hra.DejStav(hrac);
             AkcniKarta ak = stav.AkcniKarty.FirstOrDefault(s => s.Id.ToString().Equals(Id));
-            if (hra.stavHry != StavHry.Probiha || hrac.Id != hra.AktualniHrac().Id || hra.AktualniAktivita()!=null)
+            if (hra.stavHry != StavHry.Probiha || hrac.Id != hra.AktualniHrac().Id || hra.AktualniAktivita() != null)
             {
                 await Clients.Client(connectionId).SendAsync("NastavText", $"Zahrání není možné. {hra.DejInstrukci(hrac)}");
                 return;
@@ -480,7 +481,7 @@ namespace WebOsadnici.Hubs
                 await hra._dbContext.SaveChangesAsync();
                 await AktualizovatHru(HraId);
             }
-            
+
         }
         // Metoda pro aktualizaci herní stránky pro všechny klienty
         public async Task AktualizovatHru(string hraId)

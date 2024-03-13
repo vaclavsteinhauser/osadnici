@@ -98,10 +98,10 @@ public class Stavba : HerniEntita
                 Zisk = 1,
                 ImageUrl = "vesnicka.svg",
                 Body = 1,
-                Cena = new ObservableCollection<SurovinaKarta>() { 
-                    new SurovinaKarta() { 
-                        Surovina = _dbContext.suroviny.FirstOrDefault(s=> s.Nazev == "Dřevo"), 
-                        Pocet = 1 
+                Cena = new ObservableCollection<SurovinaKarta>() {
+                    new SurovinaKarta() {
+                        Surovina = _dbContext.suroviny.FirstOrDefault(s=> s.Nazev == "Dřevo"),
+                        Pocet = 1
                     },
                     new SurovinaKarta() {
                         Surovina = _dbContext.suroviny.FirstOrDefault(s=> s.Nazev == "Cihla"),
@@ -134,8 +134,8 @@ public class Stavba : HerniEntita
                 {
                     new SurovinaKarta()
                     {
-                        Surovina = _dbContext.suroviny.FirstOrDefault(s=> s.Nazev == "Obilí"), 
-                        Pocet = 2 
+                        Surovina = _dbContext.suroviny.FirstOrDefault(s=> s.Nazev == "Obilí"),
+                        Pocet = 2
                     },
                     new SurovinaKarta()
                     {
