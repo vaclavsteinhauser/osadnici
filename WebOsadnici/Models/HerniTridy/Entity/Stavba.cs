@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 using WebOsadnici.Data;
 
 namespace WebOsadnici.Models.HerniTridy;
@@ -17,6 +18,7 @@ public class Stavba : HerniEntita
     /// <summary>
     /// Název stavby.
     /// </summary>
+    [MaxLength(100)]
     internal virtual string Nazev
     {
         get => _nazev;
@@ -51,6 +53,7 @@ public class Stavba : HerniEntita
     /// <summary>
     /// URL obrázku stavby.
     /// </summary>
+    [MaxLength(100)]
     internal virtual string ImageUrl
     {
         get => _imageUrl;
@@ -81,7 +84,6 @@ public class Stavba : HerniEntita
             }
         }
     }
-    public Stavba() { }
 
     /// <summary>
     /// Metoda pro vytvoření výchozích staveb, pokud ještě neexistují.
@@ -92,26 +94,27 @@ public class Stavba : HerniEntita
         Stavba vesnice = await _dbContext.stavby.Where(s => s.Nazev.Equals("Vesnice")).SingleOrDefaultAsync();
         if (vesnice == null)
         {
-            vesnice = new Stavba()
+            vesnice = new Stavba
             {
                 Nazev = "Vesnice",
                 Zisk = 1,
                 ImageUrl = "vesnicka.svg",
                 Body = 1,
-                Cena = new ObservableCollection<SurovinaKarta>() {
-                    new SurovinaKarta() {
+                Cena = new ObservableCollection<SurovinaKarta>
+                {
+                    new() {
                         Surovina = _dbContext.suroviny.FirstOrDefault(s=> s.Nazev == "Dřevo"),
                         Pocet = 1
                     },
-                    new SurovinaKarta() {
+                    new() {
                         Surovina = _dbContext.suroviny.FirstOrDefault(s=> s.Nazev == "Cihla"),
                         Pocet = 1
                     },
-                    new SurovinaKarta() {
+                    new() {
                         Surovina = _dbContext.suroviny.FirstOrDefault(s=> s.Nazev == "Ovce"),
                         Pocet = 1
                     },
-                    new SurovinaKarta() {
+                    new() {
                         Surovina = _dbContext.suroviny.FirstOrDefault(s=> s.Nazev == "Obilí"),
                         Pocet = 1
                     },
@@ -124,20 +127,20 @@ public class Stavba : HerniEntita
         Stavba mesto = await _dbContext.stavby.Where(s => s.Nazev.Equals("Město")).SingleOrDefaultAsync();
         if (mesto == null)
         {
-            mesto = new Stavba()
+            mesto = new Stavba
             {
                 Nazev = "Město",
                 Zisk = 2,
                 ImageUrl = "mesto.svg",
                 Body = 2,
-                Cena = new ObservableCollection<SurovinaKarta>()
+                Cena = new ObservableCollection<SurovinaKarta>
                 {
-                    new SurovinaKarta()
+                    new()
                     {
                         Surovina = _dbContext.suroviny.FirstOrDefault(s=> s.Nazev == "Obilí"),
                         Pocet = 2
                     },
-                    new SurovinaKarta()
+                    new()
                     {
                         Surovina = _dbContext.suroviny.FirstOrDefault(s=> s.Nazev == "Kámen"),
                         Pocet = 3
@@ -150,20 +153,20 @@ public class Stavba : HerniEntita
         Stavba cesta = await _dbContext.stavby.Where(s => s.Nazev.Equals("Cesta")).SingleOrDefaultAsync();
         if (cesta == null)
         {
-            cesta = new Stavba()
+            cesta = new Stavba
             {
                 Nazev = "Cesta",
                 Zisk = 0,
                 ImageUrl = "cesta.svg",
                 Body = 0,
-                Cena = new ObservableCollection<SurovinaKarta>()
+                Cena = new ObservableCollection<SurovinaKarta>
                 {
-                    new SurovinaKarta()
+                    new()
                     {
                         Surovina = _dbContext.suroviny.FirstOrDefault(s=> s.Nazev == "Dřevo"),
                         Pocet = 1
                     },
-                    new SurovinaKarta()
+                    new()
                     {
                         Surovina = _dbContext.suroviny.FirstOrDefault(s=> s.Nazev == "Cihla"),
                         Pocet = 1
@@ -177,25 +180,25 @@ public class Stavba : HerniEntita
         Stavba AkcniKarta = await _dbContext.stavby.Where(s => s.Nazev.Equals("Akční karta")).SingleOrDefaultAsync();
         if (AkcniKarta == null)
         {
-            AkcniKarta = new Stavba()
+            AkcniKarta = new Stavba
             {
                 Nazev = "Akční karta",
                 Zisk = 0,
                 ImageUrl = "akcni_karta.svg",
                 Body = 0,
-                Cena = new ObservableCollection<SurovinaKarta>()
+                Cena = new ObservableCollection<SurovinaKarta>
                 {
-                    new SurovinaKarta()
+                    new()
                     {
                         Surovina = _dbContext.suroviny.FirstOrDefault(s=> s.Nazev == "Ovce"),
                         Pocet = 1
                     },
-                    new SurovinaKarta()
+                    new()
                     {
                         Surovina = _dbContext.suroviny.FirstOrDefault(s=> s.Nazev == "Kámen"),
                         Pocet = 1
                     },
-                    new SurovinaKarta()
+                    new()
                     {
                         Surovina = _dbContext.suroviny.FirstOrDefault(s=> s.Nazev == "Obilí"),
                         Pocet = 1

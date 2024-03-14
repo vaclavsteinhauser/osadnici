@@ -8,7 +8,7 @@ namespace WebOsadnici.Models.HerniTridy;
 /// <summary>
 /// Reprezentuje stav hráče v aplikaci.
 /// </summary>
-public class StavHrace : HerniEntita, INotifyPropertyChanged, INotifyPropertyChanging
+public class StavHrace : HerniEntita
 {
     private Hra _hra;
     private Hrac _hrac;
@@ -153,9 +153,10 @@ public class StavHrace : HerniEntita, INotifyPropertyChanged, INotifyPropertyCha
     public virtual ObservableCollection<BodovaKarta> BodoveKarty { get; set; }
 
     [NotMapped]
-    public IEnumerable<Stavba> Stavby { get => hra.mapka.Rozcesti.Where(r => r.Hrac != null && r.Hrac.Id == hrac.Id).Select(r => r.Stavba).Where(s => s != null); }
+    public IEnumerable<Stavba> Stavby => hra.mapka.Rozcesti.Where(r => r.Hrac != null && r.Hrac.Id == hrac.Id).Select(r => r.Stavba).Where(s => s != null);
+
     [NotMapped]
-    public int body { get => Stavby.Select(s => s.Body).Sum() + BodoveKarty.Select(b => b.Body).Sum(); }
+    public int body => Stavby.Select(s => s.Body).Sum() + BodoveKarty.Select(b => b.Body).Sum();
 
     [NotMapped]
     public bool MistaProVesnici
@@ -207,10 +208,7 @@ public class StavHrace : HerniEntita, INotifyPropertyChanged, INotifyPropertyCha
     }
 
     [NotMapped]
-    public IEnumerable<Rozcesti> vlastnenaRozcesti { get => hra.mapka.Rozcesti.Where(r => r.Hrac != null && r.Hrac.Id == hrac.Id); }
-
-    [NotMapped]
-    public IEnumerable<Cesta> vlastneneCesty { get => hra.mapka.Cesty.Where(c => c.hrac != null && c.hrac.Id == hrac.Id); }
+    public IEnumerable<Cesta> vlastneneCesty => hra.mapka.Cesty.Where(c => c.hrac != null && c.hrac.Id == hrac.Id);
 
     [NotMapped]
     public int nejdelsiVlastnenaCesta = 0;

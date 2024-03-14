@@ -1,4 +1,6 @@
-﻿namespace WebOsadnici.Models.HerniTridy;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace WebOsadnici.Models.HerniTridy;
 
 /// <summary>
 /// Abstraktní třída reprezentující herní kartu.
@@ -30,9 +32,9 @@ public class Karta : HerniEntita
 /// </summary>
 public class AkcniKarta : Karta
 {
-    public static string[] nazvy = new string[] { "Rytíř", "Monopol", "Vynález", "Stavba silnic" };
-    public static int[] pocty = new int[] { 14, 2, 2, 2 };
-    public static Dictionary<string, string> obrazky = new Dictionary<string, string>()
+    public static string[] nazvy = { "Rytíř", "Monopol", "Vynález", "Stavba silnic" };
+    public static int[] pocty = { 14, 2, 2, 2 };
+    public static Dictionary<string, string> obrazky = new()
     {
         {"Rytíř","rytir.svg" },
         {"Monopol","monopol.svg" },
@@ -45,6 +47,7 @@ public class AkcniKarta : Karta
     /// <summary>
     /// Název akční karty.
     /// </summary>
+    [MaxLength(100)]
     public virtual string Nazev
     {
         get => _nazev;
@@ -62,6 +65,7 @@ public class AkcniKarta : Karta
     /// <summary>
     /// URL obrázku akční karty.
     /// </summary>
+    [MaxLength(100)]
     public virtual string ImageUrl
     {
         get => _imageUrl;
@@ -83,38 +87,38 @@ public class AkcniKarta : Karta
             case "Rytíř":
                 hra.DejStav(hrac).zahranychRytiru++;
                 hra.PrepocitejNejvicRytiru();
-                hra.PridejAktivitu(new Aktivita()
+                hra.PridejAktivitu(new Aktivita
                 {
                     Hrac = hrac,
                     Akce = Instrukce.PresunZlodeje
                 });
                 break;
             case "Monopol":
-                hra.PridejAktivitu(new Aktivita()
+                hra.PridejAktivitu(new Aktivita
                 {
                     Hrac = hrac,
                     Akce = Instrukce.VyberSurovinuMonopol
                 });
                 break;
             case "Vynález":
-                hra.PridejAktivitu(new Aktivita()
+                hra.PridejAktivitu(new Aktivita
                 {
                     Hrac = hrac,
                     Akce = Instrukce.VyberPrvniSurovinu
                 });
-                hra.PridejAktivitu(new Aktivita()
+                hra.PridejAktivitu(new Aktivita
                 {
                     Hrac = hrac,
                     Akce = Instrukce.VyberDruhouSurovinu
                 });
                 break;
             case "Stavba silnic":
-                hra.PridejAktivitu(new Aktivita()
+                hra.PridejAktivitu(new Aktivita
                 {
                     Hrac = hrac,
                     Akce = Instrukce.StavbaCesty
                 });
-                hra.PridejAktivitu(new Aktivita()
+                hra.PridejAktivitu(new Aktivita
                 {
                     Hrac = hrac,
                     Akce = Instrukce.StavbaCesty
@@ -125,8 +129,8 @@ public class AkcniKarta : Karta
 }
 public class BodovaKarta : AkcniKarta
 {
-    public static string[] nazvy = new string[] { "Nejdelší cesta", "Největší vojsko", "Akční body" };
-    public static Dictionary<string, string> obrazky = new Dictionary<string, string>()
+    public static string[] nazvy = { "Nejdelší cesta", "Největší vojsko", "Akční body" };
+    public static Dictionary<string, string> obrazky = new()
     {
         {"Nejdelší cesta","cesta.svg" },
         {"Největší vojsko","rytir.svg" },

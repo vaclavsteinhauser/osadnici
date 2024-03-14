@@ -1,29 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using Microsoft.AspNetCore.Identity;
+
 /// <summary>
 /// Reprezentuje hráče v aplikaci.
 /// </summary>
 public class Hrac : IdentityUser, INotifyPropertyChanging, INotifyPropertyChanged
 {
-    private string? _name;
-
-    /// <summary>
-    /// Jméno hráče.
-    /// </summary>
-    public virtual string? Name
-    {
-        get => _name;
-        set
-        {
-            if (_name != value)
-            {
-                OnPropertyChanging(nameof(Name));
-                _name = value;
-                OnPropertyChanged(nameof(Name));
-            }
-        }
-    }
-
     /// <summary>
     /// Událost oznamující, že se vlastnost mění.
     /// </summary>

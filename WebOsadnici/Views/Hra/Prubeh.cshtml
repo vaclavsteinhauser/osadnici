@@ -37,12 +37,12 @@
             </span>
         </div>
         <div id="tlacitka">
-            @Html.Raw(@ViewBag.hra.DejTlacitkaHTML(ViewBag.hrac))
+            @Html.Raw(ViewBag.hra.DejTlacitkaHTML(ViewBag.hrac))
         </div>
         
 
     </div>
-    <div id="map-container" style="width: @(Mapka.RozmeryMrizky.Width*@Pole.Velikost.Width*6)px">
+    <div id="map-container" style="width: @(Mapka.RozmeryMrizky.Width*Pole.Velikost.Width*6)px">
         <partial name="Mapka" />
     </div>
     <div class="ovladaci_panel" id="stavovy-panel">
@@ -58,26 +58,26 @@
             <div style="{flex:1;}">
                 <h2>Body hráčů</h2>
                 <span id="Body" class="horizontalne">
-                    @Html.Raw(@ViewBag.hra.DejBodyHTML())
+                    @Html.Raw(ViewBag.hra.DejBodyHTML())
                 </span>
             </div>
         </div>
         <div>
             <h2>Extra body</h2>
             <span id="BodoveKarty" class="horizontalne">
-                @Html.Raw(@ViewBag.hra.DejBodoveKartyHTML(ViewBag.hrac))
+                @Html.Raw(ViewBag.hra.DejBodoveKartyHTML(ViewBag.hrac))
             </span>
         </div>
         <div>
             <h2>Suroviny</h2>
             <span id="Suroviny" class="horizontalne">
-                @Html.Raw(@ViewBag.hra.DejSurovinoveKartyHTML(ViewBag.hrac))
+                @Html.Raw(ViewBag.hra.DejSurovinoveKartyHTML(ViewBag.hrac))
             </span>
         </div>
         <div id="panel_smeny">
             <h2>Nabízené směny</h2>
             <span id="Smeny" class="vertikalne">
-                @Html.Raw(@ViewBag.hra.DejSmenyHTML(ViewBag.hrac))
+                @Html.Raw(ViewBag.hra.DejSmenyHTML(ViewBag.hrac))
             </span>
         </div>
     </div>

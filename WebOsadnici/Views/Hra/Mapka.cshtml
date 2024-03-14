@@ -1,7 +1,4 @@
-﻿@using WebOsadnici.Models.HerniTridy
-
-
-@foreach (var policko in ViewBag.hra.mapka.Policka)
+﻿@foreach (var policko in ViewBag.hra.mapka.Policka)
 {
     @Html.Raw(policko.VykresleniHTML(ViewBag.hra))
 }

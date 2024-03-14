@@ -4,7 +4,7 @@ using System.Drawing;
 namespace WebOsadnici.Models.HerniTridy;
 public class Cesta : HerniEntita
 {
-    internal static readonly Size velikost = new Size(2, 2);
+    internal static readonly Size velikost = new(2, 2);
     public virtual Mapka? Mapka { get; set; }
     // Pozice X cesty na herní mapě
     private int _poziceX;
@@ -109,10 +109,10 @@ public class Cesta : HerniEntita
     }
     public string VykresleniHTML(Hra h)
     {
-        int odsazeniX = (poziceX - (Cesta.velikost.Width / 2)) * Mapka.RozmeryMrizky.Width;
-        int odsazeniY = (poziceY - (Cesta.velikost.Height / 2)) * Mapka.RozmeryMrizky.Height;
-        int vyska = Cesta.velikost.Height * Mapka.RozmeryMrizky.Height;
-        int sirka = Cesta.velikost.Width * Mapka.RozmeryMrizky.Width;
+        int odsazeniX = (poziceX - (velikost.Width / 2)) * Mapka.RozmeryMrizky.Width;
+        int odsazeniY = (poziceY - (velikost.Height / 2)) * Mapka.RozmeryMrizky.Height;
+        int vyska = velikost.Height * Mapka.RozmeryMrizky.Height;
+        int sirka = velikost.Width * Mapka.RozmeryMrizky.Width;
         String polygon;
         switch (natoceni)
         {

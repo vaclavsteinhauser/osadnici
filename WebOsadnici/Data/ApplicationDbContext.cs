@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Drawing;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Drawing;
 using WebOsadnici.Models.HerniTridy;
 
 namespace WebOsadnici.Data
@@ -16,7 +16,6 @@ namespace WebOsadnici.Data
         // Konfigurace připojení k databázi
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.EnableSensitiveDataLogging(); // Povolení logování citlivých dat
             optionsBuilder.UseLazyLoadingProxies(); // Povolení lenivého načítání vazebných objektů
             optionsBuilder.UseChangeTrackingProxies(); // Povolení sledování změn v objektech
         }

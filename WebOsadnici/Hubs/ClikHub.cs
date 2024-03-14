@@ -17,7 +17,7 @@ namespace WebOsadnici.Hubs
         // Metoda pro obsluhu kliknutí na tlačítko pro změnu
         public async Task VytvorSmenuHraci(string connectionId, string HracId, string HraId, Dictionary<string, string> data)
         {
-            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), _dbContextFactory.CreateDbContext());
+            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), await _dbContextFactory.CreateDbContextAsync());
             Hrac hrac = hra.DejHrace(HracId);
             StavHrace stav = hra.DejStav(hrac);
             var nenulove = data.Where(d => !string.IsNullOrEmpty(d.Value) && int.Parse(d.Value) > 0).ToDictionary(d => d.Key, d => d.Value);
@@ -32,12 +32,12 @@ namespace WebOsadnici.Hubs
                     await Clients.Client(connectionId).SendAsync("NastavText", $"Nelze vyměnit. Není dostatek surovin. {hra.DejInstrukci(hrac)}");
                     return;
                 }
-                smena.nabidka.Add(new SurovinaKarta() { Surovina = surovina.Surovina, Pocet = int.Parse(vstup.Value) });
+                smena.nabidka.Add(new SurovinaKarta { Surovina = surovina.Surovina, Pocet = int.Parse(vstup.Value) });
             }
             foreach (var vystup in vystupni)
             {
                 var surovina = hra.mapka.Suroviny.FirstOrDefault(s => s.Nazev == vystup.Key.Substring(7));
-                smena.poptavka.Add(new SurovinaKarta() { Surovina = surovina, Pocet = int.Parse(vystup.Value) });
+                smena.poptavka.Add(new SurovinaKarta { Surovina = surovina, Pocet = int.Parse(vystup.Value) });
             }
             smena.hrac = hrac;
             hra.PridejSmenu(smena);
@@ -47,7 +47,7 @@ namespace WebOsadnici.Hubs
         // Metoda pro obsluhu kliknutí na provedeni smeny
         public async Task KliknutiNaProvedeniSmeny(string connectionId, string Id, string HracId, string HraId)
         {
-            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), _dbContextFactory.CreateDbContext());
+            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), await _dbContextFactory.CreateDbContextAsync());
             Hrac hrac = hra.DejHrace(HracId);
             Smena smena = hra.aktivniSmeny.FirstOrDefault(s => s.Id.ToString().Equals(Id));
             StavHrace stavmuj = hra.DejStav(hrac);
@@ -90,7 +90,7 @@ namespace WebOsadnici.Hubs
         // Metoda pro obsluhu kliknutí na tlačítko pro změnu
         public async Task VytvorSmenuHra(string connectionId, string HracId, string HraId, Dictionary<string, string> data)
         {
-            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), _dbContextFactory.CreateDbContext());
+            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), await _dbContextFactory.CreateDbContextAsync());
             Hrac hrac = hra.DejHrace(HracId);
             StavHrace stav = hra.DejStav(hrac);
             if (hra.stavHry != StavHry.Probiha || hrac.Id != hra.AktualniHrac().Id)
@@ -119,7 +119,7 @@ namespace WebOsadnici.Hubs
         // Metoda pro obsluhu kliknutí na tlačítko pro další akci
         public async Task tlacitko_dalsi_klik(string connectionId, string HracId, string HraId)
         {
-            Hra h = await Hra.NactiHru(Guid.Parse(HraId), _dbContextFactory.CreateDbContext());
+            Hra h = await Hra.NactiHru(Guid.Parse(HraId), await _dbContextFactory.CreateDbContextAsync());
             if (h.hraci.Count < 2 || h.stavHry == StavHry.Skoncila)
             {
                 await Clients.Client(connectionId).SendAsync("NastavText", "Hra nemůže být spuštěna.");
@@ -141,7 +141,7 @@ namespace WebOsadnici.Hubs
         // Metoda pro obsluhu kliknutí na cestu
         public async Task KliknutiNaCestu(string connectionId, string Id, string HracId, string HraId)
         {
-            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), _dbContextFactory.CreateDbContext());
+            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), await _dbContextFactory.CreateDbContextAsync());
             Hrac hrac = hra.DejHrace(HracId);
             StavHrace stav = hra.DejStav(hrac);
             Cesta cesta = hra.mapka.Cesty.FirstOrDefault(r => r.Id.ToString().Equals(Id));
@@ -154,38 +154,36 @@ namespace WebOsadnici.Hubs
             if (a.Akce == Instrukce.StavbaCesty)
             {
                 if (cesta.hrac != null ||
-                   (!cesta.rozcesti.Any(r => r.Hrac != null && r.Hrac.Id == hrac.Id)
-                   && cesta.rozcesti.All(r => !r.Cesty.Any(c => c.hrac != null && c.hrac.Id == hrac.Id))))
+                    (!cesta.rozcesti.Any(r => r.Hrac != null && r.Hrac.Id == hrac.Id)
+                     && cesta.rozcesti.All(r => !r.Cesty.Any(c => c.hrac != null && c.hrac.Id == hrac.Id))))
                 {
                     await Clients.Client(connectionId).SendAsync("NastavText", "Nelze postavit cestu.");
                     return;
                 }
+
+                cesta.hrac = hrac;
+                foreach (Rozcesti r in cesta.rozcesti)
+                {
+                    if (r.Hrac == null && r.Cesty.Count(c => c.hrac != null && c.hrac.Id == hrac.Id) > 1)
+                    {
+                        r.Hrac = hrac;
+                        await Clients.Client(connectionId).SendAsync("NastavBarvu", r.Id.ToString(), stav.barva.Name);
+                    }
+                }
+                await hra._dbContext.SaveChangesAsync();
+                hra.SmazAktivitu(a);
+                hra.PrepocitejNejdelsiCestu();
+                await hra._dbContext.SaveChangesAsync();
+                if (hra.AktualniAktivita() != null && hra.AktualniAktivita().Hrac.Id != hrac.Id)
+                {
+                    await AktualizovatHru(hra.Id.ToString());
+                }
                 else
                 {
-                    cesta.hrac = hrac;
-                    foreach (Rozcesti r in cesta.rozcesti)
-                    {
-                        if (r.Hrac == null && r.Cesty.Count(c => c.hrac != null && c.hrac.Id == hrac.Id) > 1)
-                        {
-                            r.Hrac = hrac;
-                            await Clients.Client(connectionId).SendAsync("NastavBarvu", r.Id.ToString(), stav.barva.Name);
-                        }
-                    }
-                    await hra._dbContext.SaveChangesAsync();
-                    hra.SmazAktivitu(a);
-                    hra.PrepocitejNejdelsiCestu();
-                    await hra._dbContext.SaveChangesAsync();
-                    if (hra.AktualniAktivita() != null && hra.AktualniAktivita().Hrac.Id != hrac.Id)
-                    {
-                        await AktualizovatHru(hra.Id.ToString());
-                    }
-                    else
-                    {
-                        await Clients.Client(connectionId).SendAsync("NastavBarvu", Id, stav.barva.Name);
-                        await Clients.Client(connectionId).SendAsync("ObnovSekci", HraId, "Body", hra.DejBodyHTML());
-                        await Clients.Client(connectionId).SendAsync("ObnovSekci", HraId, "BodoveKarty", hra.DejBodoveKartyHTML(hrac));
-                        await Clients.Client(connectionId).SendAsync("NastavText", hra.DejInstrukci(hrac));
-                    }
+                    await Clients.Client(connectionId).SendAsync("NastavBarvu", Id, stav.barva.Name);
+                    await Clients.Client(connectionId).SendAsync("ObnovSekci", HraId, "Body", hra.DejBodyHTML());
+                    await Clients.Client(connectionId).SendAsync("ObnovSekci", HraId, "BodoveKarty", hra.DejBodoveKartyHTML(hrac));
+                    await Clients.Client(connectionId).SendAsync("NastavText", hra.DejInstrukci(hrac));
                 }
 
             }
@@ -195,7 +193,7 @@ namespace WebOsadnici.Hubs
         // Metoda pro obsluhu kliknutí na políčko
         public async Task KliknutiNaPolicko(string connectionId, string Id, string HracId, string HraId)
         {
-            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), _dbContextFactory.CreateDbContext());
+            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), await _dbContextFactory.CreateDbContextAsync());
             Hrac hrac = hra.DejHrace(HracId);
             StavHrace stav = hra.DejStav(hrac);
             Pole pole = hra.mapka.Policka.FirstOrDefault(r => r.Id.ToString().Equals(Id));
@@ -221,7 +219,7 @@ namespace WebOsadnici.Hubs
                 await Clients.All.SendAsync("ZmenZlodeje", hra.Id.ToString(), pole.Id.ToString());
                 if (pole.Rozcesti.Any(r => r.Hrac != null && r.Hrac.Id != hrac.Id))
                 {
-                    hra.PridejAktivitu(new Aktivita()
+                    hra.PridejAktivitu(new Aktivita
                     {
                         Hrac = hrac,
                         Akce = Instrukce.VyberHrace
@@ -237,7 +235,7 @@ namespace WebOsadnici.Hubs
         // Metoda pro obsluhu kliknutí na rozcestí
         public async Task KliknutiNaRozcesti(string connectionId, string Id, string HracId, string HraId)
         {
-            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), _dbContextFactory.CreateDbContext());
+            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), await _dbContextFactory.CreateDbContextAsync());
             Hrac hrac = hra.DejHrace(HracId);
             StavHrace stav = hra.DejStav(hrac);
             Rozcesti rozcesti = hra.mapka.Rozcesti.FirstOrDefault(r => r.Id.ToString().Equals(Id));
@@ -256,28 +254,27 @@ namespace WebOsadnici.Hubs
                     await Clients.Client(connectionId).SendAsync("NastavText", "Nelze postavit vesnici na cizím.");
                     return;
                 }
-                else if (stav.Stavby.Count() >= 2 && !rozcesti.Cesty.Any(c => c.hrac != null && c.hrac.Id == hrac.Id))
+
+                if (stav.Stavby.Count() >= 2 && !rozcesti.Cesty.Any(c => c.hrac != null && c.hrac.Id == hrac.Id))
                 {
                     await Clients.Client(connectionId).SendAsync("NastavText", "Jen první dvě vesnicky jde postavit bez cesty.");
                     return;
                 }
+
+                rozcesti.Hrac = stav.hrac;
+                rozcesti.Stavba = hra.mapka.Stavby.FirstOrDefault(s => s.Nazev.Equals("Vesnice"));
+                hra.SmazAktivitu(a);
+                await hra._dbContext.SaveChangesAsync();
+                if (hra.AktualniAktivita() != null && hra.AktualniAktivita().Hrac.Id != hrac.Id)
+                {
+                    await AktualizovatHru(hra.Id.ToString());
+                }
                 else
                 {
-                    rozcesti.Hrac = stav.hrac;
-                    rozcesti.Stavba = hra.mapka.Stavby.FirstOrDefault(s => s.Nazev.Equals("Vesnice"));
-                    hra.SmazAktivitu(a);
-                    await hra._dbContext.SaveChangesAsync();
-                    if (hra.AktualniAktivita() != null && hra.AktualniAktivita().Hrac.Id != hrac.Id)
-                    {
-                        await AktualizovatHru(hra.Id.ToString());
-                    }
-                    else
-                    {
-                        await Clients.Client(connectionId).SendAsync("NastavBarvu", Id, stav.barva.Name);
-                        await Clients.Client(connectionId).SendAsync("NastavStavbu", Id, "vesnicka.svg");
-                        await Clients.Client(connectionId).SendAsync("ObnovSekci", HraId, "Body", hra.DejBodyHTML());
-                        await Clients.Client(connectionId).SendAsync("NastavText", hra.DejInstrukci(hrac));
-                    }
+                    await Clients.Client(connectionId).SendAsync("NastavBarvu", Id, stav.barva.Name);
+                    await Clients.Client(connectionId).SendAsync("NastavStavbu", Id, "vesnicka.svg");
+                    await Clients.Client(connectionId).SendAsync("ObnovSekci", HraId, "Body", hra.DejBodyHTML());
+                    await Clients.Client(connectionId).SendAsync("NastavText", hra.DejInstrukci(hrac));
                 }
                 return;
             }
@@ -286,26 +283,24 @@ namespace WebOsadnici.Hubs
                 if (rozcesti.Stavba == null ||
                     rozcesti.Stavba.Nazev != "Vesnice" ||
                     rozcesti.Hrac.Id != hrac.Id
-                    )
+                   )
                 {
                     await Clients.Client(connectionId).SendAsync("NastavText", "Nelze postavit město mimo vlastní vesnici.");
                     return;
                 }
+
+                rozcesti.Stavba = hra.mapka.Stavby.FirstOrDefault(s => s.Nazev.Equals("Město"));
+                hra.SmazAktivitu(a);
+                await hra._dbContext.SaveChangesAsync();
+                if (hra.AktualniAktivita() != null && hra.AktualniAktivita().Hrac.Id != hrac.Id)
+                {
+                    await AktualizovatHru(hra.Id.ToString());
+                }
                 else
                 {
-                    rozcesti.Stavba = hra.mapka.Stavby.FirstOrDefault(s => s.Nazev.Equals("Město"));
-                    hra.SmazAktivitu(a);
-                    await hra._dbContext.SaveChangesAsync();
-                    if (hra.AktualniAktivita() != null && hra.AktualniAktivita().Hrac.Id != hrac.Id)
-                    {
-                        await AktualizovatHru(hra.Id.ToString());
-                    }
-                    else
-                    {
-                        await Clients.Client(connectionId).SendAsync("NastavStavbu", Id, "mesto.svg");
-                        await Clients.Client(connectionId).SendAsync("ObnovSekci", HraId, "Body", hra.DejBodyHTML());
-                        await Clients.Client(connectionId).SendAsync("NastavText", hra.DejInstrukci(hrac));
-                    }
+                    await Clients.Client(connectionId).SendAsync("NastavStavbu", Id, "mesto.svg");
+                    await Clients.Client(connectionId).SendAsync("ObnovSekci", HraId, "Body", hra.DejBodyHTML());
+                    await Clients.Client(connectionId).SendAsync("NastavText", hra.DejInstrukci(hrac));
                 }
 
             }
@@ -316,7 +311,7 @@ namespace WebOsadnici.Hubs
         // Metoda pro obsluhu kliknutí na nákup
         public async Task KliknutiNaNakup(string connectionId, string Id, string HracId, string HraId)
         {
-            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), _dbContextFactory.CreateDbContext());
+            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), await _dbContextFactory.CreateDbContextAsync());
             Hrac hrac = hra.DejHrace(HracId);
             StavHrace stav = hra.DejStav(hrac);
             if (hra.stavHry != StavHry.Probiha || hrac.Id != hra.AktualniHrac().Id)
@@ -351,7 +346,7 @@ namespace WebOsadnici.Hubs
                         await Clients.Client(connectionId).SendAsync("NastavText", "Není kam postavit.");
                     else
                     {
-                        hra.PridejAktivitu(new Aktivita() { Hrac = hrac, Akce = Instrukce.StavbaVesnice });
+                        hra.PridejAktivitu(new Aktivita { Hrac = hrac, Akce = Instrukce.StavbaVesnice });
                     }
 
                     break;
@@ -360,7 +355,7 @@ namespace WebOsadnici.Hubs
                         await Clients.Client(connectionId).SendAsync("NastavText", "Není kam postavit.");
                     else
                     {
-                        hra.PridejAktivitu(new Aktivita() { Hrac = hrac, Akce = Instrukce.StavbaMesta });
+                        hra.PridejAktivitu(new Aktivita { Hrac = hrac, Akce = Instrukce.StavbaMesta });
                     }
                     break;
                 case "Cesta":
@@ -368,7 +363,7 @@ namespace WebOsadnici.Hubs
                         await Clients.Client(connectionId).SendAsync("NastavText", "Není kam postavit.");
                     else
                     {
-                        hra.PridejAktivitu(new Aktivita() { Hrac = hrac, Akce = Instrukce.StavbaCesty });
+                        hra.PridejAktivitu(new Aktivita { Hrac = hrac, Akce = Instrukce.StavbaCesty });
                     }
                     break;
                 case "Akční karta":
@@ -399,7 +394,7 @@ namespace WebOsadnici.Hubs
 
         public async Task KliknutiNaSurovinu(string connectionId, string Id, string HracId, string HraId)
         {
-            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), _dbContextFactory.CreateDbContext());
+            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), await _dbContextFactory.CreateDbContextAsync());
             Hrac hrac = hra.DejHrace(HracId);
             StavHrace stav = hra.DejStav(hrac);
             SurovinaKarta sk = stav.SurovinaKarty.FirstOrDefault(s => s.Id.ToString().Equals(Id));
@@ -436,7 +431,7 @@ namespace WebOsadnici.Hubs
         }
         public async Task KliknutiNaHrace(string connectionId, string Id, string HracId, string HraId)
         {
-            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), _dbContextFactory.CreateDbContext());
+            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), await _dbContextFactory.CreateDbContextAsync());
             Hrac hrac = hra.DejHrace(HracId);
             StavHrace stav = hra.DejStav(hrac);
             Hrac cilovyHrac = hra.hraci.FirstOrDefault(s => s.Id.ToString().Equals(Id));
@@ -465,7 +460,7 @@ namespace WebOsadnici.Hubs
         }
         public async Task KliknutiNaAkcniKartu(string connectionId, string Id, string HracId, string HraId)
         {
-            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), _dbContextFactory.CreateDbContext());
+            Hra hra = await Hra.NactiHru(Guid.Parse(HraId), await _dbContextFactory.CreateDbContextAsync());
             Hrac hrac = hra.DejHrace(HracId);
             StavHrace stav = hra.DejStav(hrac);
             AkcniKarta ak = stav.AkcniKarty.FirstOrDefault(s => s.Id.ToString().Equals(Id));

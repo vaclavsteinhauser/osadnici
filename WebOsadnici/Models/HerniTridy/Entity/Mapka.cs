@@ -8,7 +8,7 @@ namespace WebOsadnici.Models.HerniTridy;
 /// </summary>
 public class Mapka : HerniEntita
 {
-    internal static readonly Size RozmeryMrizky = new Size(30, 25);
+    internal static readonly Size RozmeryMrizky = new(30, 25);
 
     /// <summary>
     /// Reference na herní hru, ke které je mapa přiřazena.
@@ -33,7 +33,7 @@ public class Mapka : HerniEntita
     public virtual ObservableCollection<Rozcesti> Rozcesti { get; set; } = new();
     public virtual ObservableCollection<Surovina> Suroviny { get; set; } = new();
     public virtual ObservableCollection<Stavba> Stavby { get; set; } = new();
-    static private (int, int)[] polohyPolicek =
+    private static (int, int)[] polohyPolicek =
             {
             (8, 4 ),
             (12, 4 ),
@@ -56,12 +56,11 @@ public class Mapka : HerniEntita
             (16, 20 )
         };
     Pole[,] sit = new Pole[25, 25];
-    static private string[] nazvySurovin = { "Dřevo", "Dřevo", "Dřevo", "Dřevo", "Cihla", "Cihla", "Cihla", "Ovce", "Ovce", "Ovce", "Ovce", "Obilí", "Obilí", "Obilí", "Obilí", "Kámen", "Kámen", "Kámen" };
-    static private int[] cislaPolicek = { 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
-    private List<Surovina> zasobaSurovin = new List<Surovina>();
-    private List<int> zasobaCisel = new List<int>();
-    private Random rnd = new Random();
-    public Mapka() { }
+    private static string[] nazvySurovin = { "Dřevo", "Dřevo", "Dřevo", "Dřevo", "Cihla", "Cihla", "Cihla", "Ovce", "Ovce", "Ovce", "Ovce", "Obilí", "Obilí", "Obilí", "Obilí", "Kámen", "Kámen", "Kámen" };
+    private static int[] cislaPolicek = { 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
+    private List<Surovina> zasobaSurovin = new();
+    private List<int> zasobaCisel = new();
+    private Random rnd = new();
 
 
     /// <summary>

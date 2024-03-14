@@ -9,7 +9,7 @@ namespace WebOsadnici.Models.HerniTridy;
 public class Pole : HerniEntita
 {
     // Velikost herního pole
-    public static readonly Size Velikost = new Size(4, 6);
+    public static readonly Size Velikost = new(4, 6);
     public virtual Mapka? Mapka { get; set; }
 
     private int _poziceX;
@@ -137,16 +137,16 @@ public class Pole : HerniEntita
         PoziceX = sloupec;
         PoziceY = radek;
         Blokovane = blokovane;
-        Rozcesti = new ObservableCollection<Rozcesti>() { null, null, null, null, null, null };
+        Rozcesti = new ObservableCollection<Rozcesti> { null, null, null, null, null, null };
     }
     public Pole() { }
 
     public string VykresleniHTML(Hra h)
     {
-        int odsazeniX = (PoziceX - (Pole.Velikost.Width / 2)) * Mapka.RozmeryMrizky.Width;
-        int odsazeniY = (PoziceY - (Pole.Velikost.Height / 2)) * Mapka.RozmeryMrizky.Height;
-        int vyska = Pole.Velikost.Height * Mapka.RozmeryMrizky.Height;
-        int sirka = Pole.Velikost.Width * Mapka.RozmeryMrizky.Width;
+        int odsazeniX = (PoziceX - (Velikost.Width / 2)) * Mapka.RozmeryMrizky.Width;
+        int odsazeniY = (PoziceY - (Velikost.Height / 2)) * Mapka.RozmeryMrizky.Height;
+        int vyska = Velikost.Height * Mapka.RozmeryMrizky.Height;
+        int sirka = Velikost.Width * Mapka.RozmeryMrizky.Width;
         string zobrazitZlodeje = Blokovane ? "block" : "none";
         string cislo = (Cislo != 0) ? $@"<circle cx='{sirka / 2}' cy='{vyska / 2}' r='{Math.Min(sirka, vyska) / 8}' fill='white' stroke='black' stroke-width='2' style='pointer-events: none;' />
                 <text x='{sirka / 2}' y='{vyska / 2}' text-anchor='middle' alignment-baseline='middle' fill='black' font-weight='bold' font-size='{Math.Min(sirka, vyska) / 6}' style='pointer-events: none;'>{Cislo}</text>" : "";

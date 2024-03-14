@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Drawing;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Drawing;
 using WebOsadnici.Data;
 using WebOsadnici.Models.HerniTridy;
 
@@ -36,7 +36,7 @@ namespace WebOsadnici.Controllers
             }
 
             var hra = new Hra();
-            hra._dbContext = _dbContextFactory.CreateDbContext();
+            hra._dbContext = await _dbContextFactory.CreateDbContextAsync();
             await hra.Inicializace();
 
             return RedirectToAction("Pripojit", new { id = hra.Id });
@@ -51,7 +51,7 @@ namespace WebOsadnici.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var hra = await Hra.NactiHru(id, _dbContextFactory.CreateDbContext());
+            var hra = await Hra.NactiHru(id, await _dbContextFactory.CreateDbContextAsync());
             if (hra == null)
             {
                 return RedirectToAction("Index", "Home");
@@ -68,7 +68,7 @@ namespace WebOsadnici.Controllers
             var user = await GetUserAsync();
             var barva = form["barva"];
             var hraId = Guid.Parse(form["Id"]);
-            var hra = await Hra.NactiHru(hraId, _dbContextFactory.CreateDbContext());
+            var hra = await Hra.NactiHru(hraId, await _dbContextFactory.CreateDbContextAsync());
             if (hra == null)
             {
                 return RedirectToAction("Index", "Home");
@@ -92,7 +92,7 @@ namespace WebOsadnici.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var hra = await Hra.NactiHru(id, _dbContextFactory.CreateDbContext());
+            var hra = await Hra.NactiHru(id, await _dbContextFactory.CreateDbContextAsync());
             if (hra == null || !hra.hraci.Contains(user))
             {
                 return RedirectToAction("Index", "Hra");

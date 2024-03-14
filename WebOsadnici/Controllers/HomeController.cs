@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 using WebOsadnici.Data;
 using WebOsadnici.Models;
 using WebOsadnici.Models.HerniTridy;
@@ -32,7 +32,7 @@ namespace WebOsadnici.Controllers
                     .ToArrayAsync();
 
                 ViewBag.nezacate = await _dbContext.hry
-                    .Where(h => !h.stavy.Any(s => s.hrac.Id == user.Id) && h.stavHry == StavHry.Nezacala)
+                    .Where(h => h.stavy.All(s => s.hrac.Id != user.Id) && h.stavHry == StavHry.Nezacala)
                     .ToArrayAsync();
                 ViewBag.ukoncene = await _dbContext.hry
                     .Where(h => h.stavHry == StavHry.Skoncila && h.stavy.Any(s => s.hrac.Id == user.Id))

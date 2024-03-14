@@ -9,7 +9,7 @@ namespace WebOsadnici.Models.HerniTridy;
 public class Rozcesti : HerniEntita
 {
     // Velikost určuje průměr kruhu
-    internal readonly static Size Velikost = new Size(2, 2);
+    internal static readonly Size Velikost = new(2, 2);
     public virtual Mapka? Mapka { get; set; }
 
     private int _poziceX;
@@ -72,22 +72,19 @@ public class Rozcesti : HerniEntita
     /// Určuje, zda je rozcestí blokováno.
     /// </summary>
     [NotMapped]
-    public virtual bool Blokovane
-    {
-        get => Sousedi.Any(s => s.Stavba != null);
-    }
+    public virtual bool Blokovane => Sousedi.Any(s => s.Stavba != null);
+
     ///<summary>
     /// Cesty u rozcesti
     /// </summary>
     [NotMapped]
-    public IEnumerable<Cesta> Cesty { get => Mapka.Cesty.Where(c => c.rozcesti.Contains(this)); }
+    public IEnumerable<Cesta> Cesty => Mapka.Cesty.Where(c => c.rozcesti.Contains(this));
 
     ///<summary>
     /// Sousední rozcestí
     /// </summary>
     [NotMapped]
-    public IEnumerable<Rozcesti> Sousedi { get => Cesty.SelectMany(c => c.rozcesti).Where(r => r.Id != Id); }
-
+    public IEnumerable<Rozcesti> Sousedi => Cesty.SelectMany(c => c.rozcesti).Where(r => r.Id != Id);
 
 
     /// <summary>
@@ -122,10 +119,10 @@ public class Rozcesti : HerniEntita
 
     public string VykresleniHTML(Hra h)
     {
-        int odsazeniX = (PoziceX * Mapka.RozmeryMrizky.Width - (Rozcesti.Velikost.Width * Mapka.RozmeryMrizky.Width / 2));
-        int odsazeniY = (PoziceY * Mapka.RozmeryMrizky.Height - (Rozcesti.Velikost.Height * Mapka.RozmeryMrizky.Height / 2));
-        int vyska = Rozcesti.Velikost.Height * Mapka.RozmeryMrizky.Height;
-        int sirka = Rozcesti.Velikost.Width * Mapka.RozmeryMrizky.Width;
+        int odsazeniX = (PoziceX * Mapka.RozmeryMrizky.Width - (Velikost.Width * Mapka.RozmeryMrizky.Width / 2));
+        int odsazeniY = (PoziceY * Mapka.RozmeryMrizky.Height - (Velikost.Height * Mapka.RozmeryMrizky.Height / 2));
+        int vyska = Velikost.Height * Mapka.RozmeryMrizky.Height;
+        int sirka = Velikost.Width * Mapka.RozmeryMrizky.Width;
         string barva;
         if (Hrac == null)
         {

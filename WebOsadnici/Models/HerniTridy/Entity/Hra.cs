@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing;
 using System.Text;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using WebOsadnici.Data;
 using WebOsadnici.Hubs;
 
@@ -17,7 +17,7 @@ public class Hra : HerniEntita
 {
     public ApplicationDbContext _dbContext;
     public static IHubContext<ClickHub> HubContext { get; set; }
-    static public readonly int MaximalneHracu = 4;
+    public static readonly int MaximalneHracu = 4;
 
 
     public async Task Inicializace()
@@ -26,14 +26,14 @@ public class Hra : HerniEntita
         await _mapka.Inicializace(this, _dbContext);
         for (int i = 0; i < AkcniKarta.nazvy.Length; i++)
         {
-            NerozdaneAkcniKarty.Add(new AkcniKarta()
+            NerozdaneAkcniKarty.Add(new AkcniKarta
             {
                 Nazev = AkcniKarta.nazvy[i],
                 Pocet = AkcniKarta.pocty[i],
                 ImageUrl = AkcniKarta.obrazky[AkcniKarta.nazvy[i]]
             });
         }
-        NerozdaneBodoveKarty.Add(new BodovaKarta()
+        NerozdaneBodoveKarty.Add(new BodovaKarta
         {
             Nazev = "Akční body",
             ImageUrl = BodovaKarta.obrazky["Akční body"],
@@ -136,19 +136,17 @@ public class Hra : HerniEntita
         }
     }
     [NotMapped]
-    public List<Hrac> hraci
-    {
-        get => stavy.Select(s => s.hrac).ToList();
-    }
+    public List<Hrac> hraci => stavy.Select(s => s.hrac).ToList();
 
     public virtual ObservableCollection<StavHrace> stavy { get; set; } = new();
     public virtual ObservableCollection<AkcniKarta> NerozdaneAkcniKarty { get; set; } = new();
     public virtual ObservableCollection<BodovaKarta> NerozdaneBodoveKarty { get; set; } = new();
 
     [NotMapped]
-    public IEnumerable<AkcniKarta> NerozdaneKarty { get => NerozdaneAkcniKarty.Concat(NerozdaneBodoveKarty); }
+    public IEnumerable<AkcniKarta> NerozdaneKarty => NerozdaneAkcniKarty.Concat(NerozdaneBodoveKarty);
+
     [NotMapped]
-    public int pocetNerozdanychKaret { get => NerozdaneKarty.Sum(k => k.Pocet); }
+    public int pocetNerozdanychKaret => NerozdaneKarty.Sum(k => k.Pocet);
 
     public virtual ObservableCollection<Aktivita> bufferAktivit { get; set; } = new();
 
@@ -168,7 +166,7 @@ public class Hra : HerniEntita
             }
         }
     }
-    private int _hozene = 0;
+    private int _hozene;
     public virtual int Hozene
     {
         get => _hozene;
@@ -205,7 +203,7 @@ public class Hra : HerniEntita
     public void PridejAktivitu(Aktivita a)
     {
         int i;
-        if (bufferAktivit.Count() > 0)
+        if (bufferAktivit.Any())
             i = bufferAktivit.Select(x => x.CisloAktivity).Max() + 1;
         else
             i = 1;
@@ -272,7 +270,7 @@ public class Hra : HerniEntita
             var k = DejStav(h).BodoveKarty.FirstOrDefault(b => b.Nazev.Equals(karta.Nazev));
             if (k == null)
             {
-                k = new BodovaKarta()
+                k = new BodovaKarta
                 {
                     Nazev = karta.Nazev,
                     ImageUrl = karta.ImageUrl,
@@ -290,7 +288,7 @@ public class Hra : HerniEntita
             var k = DejStav(h).AkcniKarty.FirstOrDefault(b => b.Nazev.Equals(karta.Nazev));
             if (k == null)
             {
-                k = new AkcniKarta()
+                k = new AkcniKarta
                 {
                     Nazev = karta.Nazev,
                     ImageUrl = karta.ImageUrl,
@@ -308,7 +306,7 @@ public class Hra : HerniEntita
     public Surovina SeberSurovinu(Hrac h)
     {
         var s = DejStav(h).SurovinaKarty.Where(s => s.Pocet > 0).ToList();
-        if (s.Count() == 0)
+        if (!s.Any())
             return null;
         List<SurovinaKarta> vybirane = new();
         foreach (var sk in s)
@@ -339,17 +337,14 @@ public class Hra : HerniEntita
                 {
                     return "Začni hru nebo čekej na další hráče";
                 }
-                else
-                {
-                    return "Čekej na další hráče";
-                }
+
+                return "Čekej na další hráče";
             }
-            else
-            {
-                return "Čekej na začátek hry";
-            }
+
+            return "Čekej na začátek hry";
         }
-        else if (stavHry == StavHry.Probiha)
+
+        if (stavHry == StavHry.Probiha)
         {
             if (AktualniHrac() == h)
             {
@@ -377,20 +372,14 @@ public class Hra : HerniEntita
                             return "";
                     }
                 }
-                else
-                {
-                    return "Vyber akci";
-                }
+
+                return "Vyber akci";
             }
-            else
-            {
-                return "Nejsi na tahu, můžeš jen souhlasit se směnami.";
-            }
+
+            return "Nejsi na tahu, můžeš jen souhlasit se směnami.";
         }
-        else
-        {
-            return "Hra skončila";
-        }
+
+        return "Hra skončila";
     }
 
     public string DejNakupHTML(Hrac hrac)
@@ -398,11 +387,7 @@ public class Hra : HerniEntita
         StringBuilder sb = new();
         foreach (Stavba s in mapka.Stavby)
         {
-            bool zapnute = false;
-            if (s.Cena.All(sc => DejStav(hrac).SurovinaKarty.Any(sk => sk.Surovina == sc.Surovina && sk.Pocet >= sc.Pocet)))
-            {
-                zapnute = true;
-            }
+            bool zapnute = s.Cena.All(sc => DejStav(hrac).SurovinaKarty.Any(sk => sk.Surovina == sc.Surovina && sk.Pocet >= sc.Pocet));
             if (s.Nazev == "Vesnice" && !DejStav(hrac).MistaProVesnici)
             {
                 zapnute = false;
@@ -575,7 +560,7 @@ public class Hra : HerniEntita
 
 
         var sb = new StringBuilder();
-        if (vstupniSurovina.Count() > 0)
+        if (vstupniSurovina.Any())
         {
             sb.AppendLine("<form id='smena-s-hrou-form'>");
             sb.AppendLine("<label for='smena_hra_vstup'>Vyberte nabízené suroviny:</label>");
@@ -646,7 +631,7 @@ public class Hra : HerniEntita
     private Mapka? _mapka;
     public virtual Mapka? mapka { get => _mapka; set => _mapka = value; }
 
-    public Random kostka = new Random();
+    public Random kostka = new();
 
     public void PrepocitejNejdelsiCestu()
     {
@@ -693,7 +678,7 @@ public class Hra : HerniEntita
         int hodnotaKostek = 0;
         for (int i = 0; i < pocet; i++)
         {
-            hodnotaKostek += (int)(kostka.Next() % 6) + 1;
+            hodnotaKostek += kostka.Next() % 6 + 1;
         }
         return hodnotaKostek;
     }
@@ -714,7 +699,7 @@ public class Hra : HerniEntita
             var AktualniHrac = await _dbContext.hraci
                 .Where(r => r.Id == h.Id)
                 .FirstOrDefaultAsync();
-            StavHrace s = new StavHrace()
+            StavHrace s = new StavHrace
             {
                 poradi = stavy.Count,
                 hra = AktualniHra,
@@ -732,7 +717,7 @@ public class Hra : HerniEntita
                 {
                     continue;
                 }
-                SurovinaKarta k = new SurovinaKarta()
+                SurovinaKarta k = new SurovinaKarta
                 {
                     Surovina = x,
                     Pocet = 0
@@ -744,7 +729,7 @@ public class Hra : HerniEntita
 
             foreach (String nazev in AkcniKarta.nazvy)
             {
-                s.AkcniKarty.Add(new AkcniKarta()
+                s.AkcniKarty.Add(new AkcniKarta
                 {
                     Nazev = nazev,
                     Pocet = 0,
@@ -754,7 +739,7 @@ public class Hra : HerniEntita
 
             foreach (String nazev in BodovaKarta.nazvy)
             {
-                s.BodoveKarty.Add(new BodovaKarta()
+                s.BodoveKarty.Add(new BodovaKarta
                 {
                     Nazev = nazev,
                     Pocet = 0,
@@ -770,7 +755,7 @@ public class Hra : HerniEntita
             await transaction.RollbackAsync();
             throw ex;
         }
-        if (stavy.Count == Hra.MaximalneHracu)
+        if (stavy.Count == MaximalneHracu)
         {
             await ZacniHru();
         }
@@ -790,13 +775,13 @@ public class Hra : HerniEntita
         stavHry = StavHry.Probiha;
         for (int i = 0; i < stavy.Count; i++)
         {
-            PridejAktivitu(new Aktivita()
+            PridejAktivitu(new Aktivita
             {
                 Akce = Instrukce.StavbaVesnice,
                 Hrac = DejStav(DejHrace(i)).hrac
 
             });
-            PridejAktivitu(new Aktivita()
+            PridejAktivitu(new Aktivita
             {
                 Akce = Instrukce.StavbaCesty,
                 Hrac = DejStav(DejHrace(i)).hrac
@@ -804,13 +789,13 @@ public class Hra : HerniEntita
         }
         for (int i = stavy.Count - 1; i >= 0; i--)
         {
-            PridejAktivitu(new Aktivita()
+            PridejAktivitu(new Aktivita
             {
                 Akce = Instrukce.StavbaVesnice,
                 Hrac = DejStav(DejHrace(i)).hrac
 
             });
-            PridejAktivitu(new Aktivita()
+            PridejAktivitu(new Aktivita
             {
                 Akce = Instrukce.StavbaCesty,
                 Hrac = DejStav(DejHrace(i)).hrac
@@ -824,13 +809,14 @@ public class Hra : HerniEntita
 
     private async Task ObnovStrankuVsem()
     {
-        await Hra.HubContext.Clients.All.SendAsync("ObnovitStrankuHry", Id.ToString());
+        await HubContext.Clients.All.SendAsync("ObnovitStrankuHry", Id.ToString());
     }
 
     public async Task DalsiHrac()
     {
         if (stavy.Any(s => s.body >= 10))
         {
+            hracNaTahu = -1;
             stavHry = StavHry.Skoncila;
             await _dbContext.SaveChangesAsync();
             await ObnovStrankuVsem();
@@ -851,7 +837,7 @@ public class Hra : HerniEntita
         Hozene = HodKostkou();
         if (Hozene == 7)
         {
-            PridejAktivitu(new Aktivita() { Akce = Instrukce.PresunZlodeje, Hrac = AktualniHrac() });
+            PridejAktivitu(new Aktivita { Akce = Instrukce.PresunZlodeje, Hrac = AktualniHrac() });
         }
         else
         {

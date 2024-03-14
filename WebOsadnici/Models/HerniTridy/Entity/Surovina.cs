@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 using WebOsadnici.Data;
 
 namespace WebOsadnici.Models.HerniTridy;
@@ -13,6 +14,7 @@ public class Surovina : HerniEntita
     /// <summary>
     /// Název suroviny.
     /// </summary>
+    [MaxLength(100)]
     public virtual string Nazev
     {
         get => _nazev;
@@ -32,6 +34,7 @@ public class Surovina : HerniEntita
     /// <summary>
     /// URL adresa obrázku suroviny.
     /// </summary>
+    [MaxLength(100)]
     public virtual string ImageUrl
     {
         get => _imageUrl;
@@ -51,6 +54,7 @@ public class Surovina : HerniEntita
     /// <summary>
     /// Barva pozadí suroviny.
     /// </summary>
+    [MaxLength(100)]
     public virtual string BackColor
     {
         get => _backColor;
@@ -80,7 +84,7 @@ public class Surovina : HerniEntita
             Surovina s = await _dbContext.suroviny.Where(s => s.Nazev.Equals(nazvy[i])).FirstOrDefaultAsync();
             if (s == null)
             {
-                s = new Surovina()
+                s = new Surovina
                 {
                     Nazev = nazvy[i],
                     ImageUrl = imageUrls[i],
